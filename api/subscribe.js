@@ -20,7 +20,12 @@ export default async function handler(req, res) {
 
   // Validate that an email was provided
   if (!email) {
-    return res.status(400).json({ error: 'Email is required' });
+    return res.status(400).json({ error: 'Email is required', debug: 'no email in body', body: req.body });
+  }
+
+  // Check env var is present
+  if (!process.env.CONVERTKIT_API_KEY) {
+    return res.status(500).json({ error: 'CONVERTKIT_API_KEY env var is missing' });
   }
 
   // Forward the subscribe request to ConvertKit, using the secret key from env
@@ -35,6 +40,6 @@ export default async function handler(req, res) {
 
   const data = await response.json();
 
-  // Pass through the response status and body to the browser
-  return res.status(response.ok ? 200 : response.status).json(data);
+  // Pass through the response status and body to the browser (includes full error detail)
+  return res.status(response.ok ? 200 : response.status).json({ ...data, _status: response.status });
 }

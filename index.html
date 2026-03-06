@@ -1205,7 +1205,7 @@
           } else {
             // Kit returned an error (e.g. invalid email, duplicate)
             const data = await res.json().catch(() => ({}));
-            const msg = data?.errors?.[0]?.detail || 'Something went wrong. Try again.';
+            const msg = data?.errors?.[0]?.detail || data?.error || JSON.stringify(data) || 'Something went wrong. Try again.';
             showStatus(msg, 'rgba(245,245,240,0.5)');
             btn.disabled = false;
             btn.textContent = 'IKZ →';
