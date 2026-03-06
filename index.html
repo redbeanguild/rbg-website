@@ -471,7 +471,7 @@
       <a href="#ranks" class="nav-link uppercase"
          style="font-size: 10px; letter-spacing: 0.18em; color: var(--text-tertiary);">RANKS</a>
       <!-- Auth CTA — red brutalist button -->
-      <a id="auth-link" href="login.html"
+      <a id="auth-link" href="wip.html"
          class="uppercase"
          style="font-size: 8px; letter-spacing: 0.28em;
                 background-color: var(--accent); color: #F5F5F0;
@@ -507,7 +507,7 @@
     <a href="#ranks" class="nav-link uppercase"
        style="font-size: 11px; letter-spacing: 0.2em; color: var(--text-secondary);">RANKS</a>
     <!-- Mobile auth CTA — red brutalist button -->
-    <a id="auth-link-mobile" href="login.html"
+    <a id="auth-link-mobile" href="wip.html"
        class="self-start uppercase"
        style="font-size: 9px; letter-spacing: 0.28em;
               background-color: var(--accent); color: #F5F5F0;
@@ -721,45 +721,16 @@
       </p>
     </div>
 
-    <!-- 3-column editorial card grid — 2 cols on mobile -->
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+    <!-- Horizontal scroll strip — 7 drops, scroll-snap for smooth swipe -->
+    <div style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+                gap: 12px; padding-bottom: 16px;
+                scrollbar-width: none; -ms-overflow-style: none;">
 
-      <!-- === CARD 1: REDEMPTION / リデンプション === -->
-      <article class="reveal reveal-delay-1 card-hover relative overflow-hidden cursor-pointer group"
-               style="aspect-ratio: 2/3; background: var(--bg-elevated);">
+      <!-- === CARD 1: REDEMPTION === -->
+      <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
+               style="width: 280px; aspect-ratio: 2/3; scroll-snap-align: start; background: var(--bg-elevated);">
         <div class="absolute inset-0">
-          <img src="brand_assets/2025_drops/FINAL-R.png"
-               alt="REDEMPTION drop"
-               class="card-img w-full h-full object-cover">
-          <!-- Dark gradient: bottom-heavy for text legibility -->
-          <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
-          <!-- Red color treatment layer -->
-          <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
-        </div>
-        <!-- Top label -->
-        <div class="absolute top-3 left-3 z-10">
-          <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
-        </div>
-        <!-- Bottom content -->
-        <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
-          <!-- リデンプション = "Redemption" in phonetic Japanese katakana -->
-          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1"
-             style="font-size: clamp(16px, 2.5vw, 24px);">リデンプション</p>
-          <p class="font-sans font-black text-rbg-white uppercase leading-tight"
-             style="font-size: clamp(12px, 1.8vw, 18px); letter-spacing: -0.02em;">REDEMPTION</p>
-          <p class="text-rbg-white/35 mt-2 uppercase"
-             style="font-size: 8px; letter-spacing: 0.18em;">01.25 — DROP 01</p>
-        </div>
-        <!-- Hover border reveal -->
-        <div class="card-border absolute inset-0 border border-transparent z-10"></div>
-      </article>
-
-      <!-- === CARD 2: KYOUSHIN / 狂真 === -->
-      <article class="reveal reveal-delay-2 card-hover relative overflow-hidden cursor-pointer group"
-               style="aspect-ratio: 2/3; background: var(--bg-elevated);">
-        <div class="absolute inset-0">
-          <img src="brand_assets/2025_drops/D2-Yume-Poster.png"
-               alt="KYOUSHIN drop"
+          <img src="brand_assets/2025_drops/1-RBG-AD-POSTCARD1-02.png" alt="REDEMPTION drop"
                class="card-img w-full h-full object-cover">
           <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
           <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
@@ -768,22 +739,18 @@
           <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
         </div>
         <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
-          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1"
-             style="font-size: clamp(16px, 2.5vw, 24px);">狂真</p>
-          <p class="font-sans font-black text-rbg-white uppercase leading-tight"
-             style="font-size: clamp(12px, 1.8vw, 18px); letter-spacing: -0.02em;">KYOUSHIN</p>
-          <p class="text-rbg-white/35 mt-2 uppercase"
-             style="font-size: 8px; letter-spacing: 0.18em;">02.08 — DROP 02</p>
+          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1" style="font-size: 20px;">リデンプション</p>
+          <p class="font-sans font-black text-rbg-white uppercase leading-tight" style="font-size: 15px; letter-spacing: -0.02em;">REDEMPTION</p>
+          <p class="text-rbg-white/35 mt-2 uppercase" style="font-size: 8px; letter-spacing: 0.18em;">DROP 01</p>
         </div>
         <div class="card-border absolute inset-0 border border-transparent z-10"></div>
       </article>
 
-      <!-- === CARD 3: THUNDER ARMOUR / 雷鎧 === -->
-      <article class="reveal reveal-delay-3 card-hover relative overflow-hidden cursor-pointer group"
-               style="aspect-ratio: 2/3; background: var(--bg-elevated);">
+      <!-- === CARD 2: RETALIATION === -->
+      <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
+               style="width: 280px; aspect-ratio: 2/3; scroll-snap-align: start; background: var(--bg-elevated);">
         <div class="absolute inset-0">
-          <img src="brand_assets/2025_drops/TTGTA-V2.png"
-               alt="THUNDER ARMOUR drop"
+          <img src="brand_assets/2025_drops/2-Yume-Poster.png" alt="RETALIATION drop"
                class="card-img w-full h-full object-cover">
           <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
           <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
@@ -792,22 +759,18 @@
           <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
         </div>
         <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
-          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1"
-             style="font-size: clamp(16px, 2.5vw, 24px);">雷鎧</p>
-          <p class="font-sans font-black text-rbg-white uppercase leading-tight"
-             style="font-size: clamp(12px, 1.8vw, 18px); letter-spacing: -0.02em;">THUNDER ARMOUR</p>
-          <p class="text-rbg-white/35 mt-2 uppercase"
-             style="font-size: 8px; letter-spacing: 0.18em;">03.01 — DROP 03</p>
+          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1" style="font-size: 20px;">報復</p>
+          <p class="font-sans font-black text-rbg-white uppercase leading-tight" style="font-size: 15px; letter-spacing: -0.02em;">RETALIATION</p>
+          <p class="text-rbg-white/35 mt-2 uppercase" style="font-size: 8px; letter-spacing: 0.18em;">DROP 02</p>
         </div>
         <div class="card-border absolute inset-0 border border-transparent z-10"></div>
       </article>
 
-      <!-- === CARD 4: REIGNITED / 再点火 === -->
-      <article class="reveal reveal-delay-4 card-hover relative overflow-hidden cursor-pointer group"
-               style="aspect-ratio: 2/3; background: var(--bg-elevated);">
+      <!-- === CARD 3: SUMMER MADNESS === -->
+      <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
+               style="width: 280px; aspect-ratio: 2/3; scroll-snap-align: start; background: var(--bg-elevated);">
         <div class="absolute inset-0">
-          <img src="brand_assets/2025_drops/X-THRD.png"
-               alt="REIGNITED drop"
+          <img src="brand_assets/2025_drops/3X-THRD.png" alt="SUMMER MADNESS drop"
                class="card-img w-full h-full object-cover">
           <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
           <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
@@ -816,22 +779,18 @@
           <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
         </div>
         <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
-          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1"
-             style="font-size: clamp(16px, 2.5vw, 24px);">再点火</p>
-          <p class="font-sans font-black text-rbg-white uppercase leading-tight"
-             style="font-size: clamp(12px, 1.8vw, 18px); letter-spacing: -0.02em;">REIGNITED</p>
-          <p class="text-rbg-white/35 mt-2 uppercase"
-             style="font-size: 8px; letter-spacing: 0.18em;">04.12 — DROP 04</p>
+          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1" style="font-size: 20px;">サマーマッドネス</p>
+          <p class="font-sans font-black text-rbg-white uppercase leading-tight" style="font-size: 15px; letter-spacing: -0.02em;">SUMMER MADNESS</p>
+          <p class="text-rbg-white/35 mt-2 uppercase" style="font-size: 8px; letter-spacing: 0.18em;">DROP 03</p>
         </div>
         <div class="card-border absolute inset-0 border border-transparent z-10"></div>
       </article>
 
-      <!-- === CARD 5: RETALIATION / 報復 === -->
-      <article class="reveal reveal-delay-5 card-hover relative overflow-hidden cursor-pointer group"
-               style="aspect-ratio: 2/3; background: var(--bg-elevated);">
+      <!-- === CARD 4: IKZ TRAINING CLUB === -->
+      <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
+               style="width: 280px; aspect-ratio: 2/3; scroll-snap-align: start; background: var(--bg-elevated);">
         <div class="absolute inset-0">
-          <img src="brand_assets/2025_drops/RUN-TGT-BW.png"
-               alt="RETALIATION drop"
+          <img src="brand_assets/2025_drops/4-RUN-TGT-BW.png" alt="IKZ TRAINING CLUB drop"
                class="card-img w-full h-full object-cover">
           <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
           <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
@@ -840,22 +799,18 @@
           <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
         </div>
         <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
-          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1"
-             style="font-size: clamp(16px, 2.5vw, 24px);">報復</p>
-          <p class="font-sans font-black text-rbg-white uppercase leading-tight"
-             style="font-size: clamp(12px, 1.8vw, 18px); letter-spacing: -0.02em;">RETALIATION</p>
-          <p class="text-rbg-white/35 mt-2 uppercase"
-             style="font-size: 8px; letter-spacing: 0.18em;">05.20 — DROP 05</p>
+          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1" style="font-size: 20px;">IKZトレーニングクラブ</p>
+          <p class="font-sans font-black text-rbg-white uppercase leading-tight" style="font-size: 15px; letter-spacing: -0.02em;">IKZ TRAINING CLUB</p>
+          <p class="text-rbg-white/35 mt-2 uppercase" style="font-size: 8px; letter-spacing: 0.18em;">DROP 04</p>
         </div>
         <div class="card-border absolute inset-0 border border-transparent z-10"></div>
       </article>
 
-      <!-- === CARD 6: ANIME SPECIAL / アニメスペシャル === -->
-      <article class="reveal reveal-delay-6 card-hover relative overflow-hidden cursor-pointer group"
-               style="aspect-ratio: 2/3; background: var(--bg-elevated);">
+      <!-- === CARD 5: THUNDER ARMOR === -->
+      <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
+               style="width: 280px; aspect-ratio: 2/3; scroll-snap-align: start; background: var(--bg-elevated);">
         <div class="absolute inset-0">
-          <img src="brand_assets/2025_drops/RBG-AD-POSTCARD1-02.png"
-               alt="ANIME SPECIAL drop"
+          <img src="brand_assets/2025_drops/5TTGTA-V2.png" alt="THUNDER ARMOR drop"
                class="card-img w-full h-full object-cover">
           <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
           <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
@@ -864,17 +819,54 @@
           <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
         </div>
         <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
-          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1"
-             style="font-size: clamp(16px, 2.5vw, 24px);">アニメスペシャル</p>
-          <p class="font-sans font-black text-rbg-white uppercase leading-tight"
-             style="font-size: clamp(12px, 1.8vw, 18px); letter-spacing: -0.02em;">ANIME SPECIAL</p>
-          <p class="text-rbg-white/35 mt-2 uppercase"
-             style="font-size: 8px; letter-spacing: 0.18em;">06.07 — DROP 06</p>
+          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1" style="font-size: 20px;">雷鎧</p>
+          <p class="font-sans font-black text-rbg-white uppercase leading-tight" style="font-size: 15px; letter-spacing: -0.02em;">THUNDER ARMOR</p>
+          <p class="text-rbg-white/35 mt-2 uppercase" style="font-size: 8px; letter-spacing: 0.18em;">DROP 05</p>
         </div>
         <div class="card-border absolute inset-0 border border-transparent z-10"></div>
       </article>
 
-    </div><!-- /grid -->
+      <!-- === CARD 6: REIGNITED === -->
+      <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
+               style="width: 280px; aspect-ratio: 2/3; scroll-snap-align: start; background: var(--bg-elevated);">
+        <div class="absolute inset-0">
+          <img src="brand_assets/2025_drops/6-RBG_FW_GROUPSHOT.png" alt="REIGNITED drop"
+               class="card-img w-full h-full object-cover">
+          <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+          <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+        </div>
+        <div class="absolute top-3 left-3 z-10">
+          <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1" style="font-size: 20px;">再点火</p>
+          <p class="font-sans font-black text-rbg-white uppercase leading-tight" style="font-size: 15px; letter-spacing: -0.02em;">REIGNITED</p>
+          <p class="text-rbg-white/35 mt-2 uppercase" style="font-size: 8px; letter-spacing: 0.18em;">DROP 06</p>
+        </div>
+        <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+      </article>
+
+      <!-- === CARD 7: THE LAST FINAL RECKONING === -->
+      <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
+               style="width: 280px; aspect-ratio: 2/3; scroll-snap-align: start; background: var(--bg-elevated);">
+        <div class="absolute inset-0">
+          <img src="brand_assets/2025_drops/7-FINAL-R.png" alt="THE LAST FINAL RECKONING drop"
+               class="card-img w-full h-full object-cover">
+          <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+          <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+        </div>
+        <div class="absolute top-3 left-3 z-10">
+          <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1" style="font-size: 20px;">最後の審判</p>
+          <p class="font-sans font-black text-rbg-white uppercase leading-tight" style="font-size: 13px; letter-spacing: -0.02em;">THE LAST FINAL RECKONING</p>
+          <p class="text-rbg-white/35 mt-2 uppercase" style="font-size: 8px; letter-spacing: 0.18em;">DROP 07</p>
+        </div>
+        <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+      </article>
+
+    </div><!-- /horizontal scroll -->
   </section>
 
   <!-- ================================================================
@@ -899,7 +891,7 @@
     </div>
 
     <!-- Intro text -->
-    <div class="reveal reveal-delay-1 max-w-5xl mx-auto mb-16">
+    <div class="reveal reveal-delay-1 max-w-5xl mx-auto mb-20">
       <h2 class="font-sans font-black text-rbg-white mb-4"
           style="font-size: clamp(28px, 4.5vw, 52px); letter-spacing: -0.04em; line-height: 1.05;">
         EARN YOUR RANK.
@@ -918,11 +910,11 @@
 
       <!-- ── RANK 01: INITIATE / 入門 ── -->
       <!-- 入門 (Nyūmon) = "Entering the gate" — the first step of any dojo journey -->
-      <div class="reveal rank-row flex items-start gap-4 md:gap-8 py-8 border-b border-rbg-white/5 group relative">
+      <div class="reveal rank-row flex items-start gap-4 md:gap-8 py-12 border-b border-rbg-white/5 group relative">
         <!-- Rank number — large, ghosted behind content -->
         <div class="flex-shrink-0 w-14 md:w-20 select-none">
           <p class="font-sans font-black text-rbg-white/6 leading-none"
-             style="font-size: clamp(48px, 7vw, 80px); letter-spacing: -0.06em; line-height: 0.8;">01</p>
+             style="font-size: clamp(56px, 9vw, 100px); letter-spacing: -0.06em; line-height: 0.8;">01</p>
         </div>
         <!-- Thin red vertical separator -->
         <div class="flex-shrink-0 w-px self-stretch bg-rbg-red/20 group-hover:bg-rbg-red/50"
@@ -934,7 +926,7 @@
             <p class="font-jp font-black text-rbg-white/80 leading-tight"
                style="font-size: clamp(22px, 2.8vw, 32px);">入門</p>
             <p class="font-sans font-black text-rbg-white/40 uppercase"
-               style="font-size: 10px; letter-spacing: 0.18em;">INITIATE</p>
+               style="font-size: 11px; letter-spacing: 0.18em;">INITIATE</p>
           </div>
           <!-- Description -->
           <p class="flex-1 text-rbg-white/35"
@@ -953,10 +945,10 @@
 
       <!-- ── RANK 02: RONIN / 浪人 ── -->
       <!-- 浪人 (Rōnin) = "Wandering samurai" — in the dojo but still finding your path -->
-      <div class="reveal rank-row flex items-start gap-4 md:gap-8 py-8 border-b border-rbg-white/5 group relative">
+      <div class="reveal rank-row flex items-start gap-4 md:gap-8 py-12 border-b border-rbg-white/5 group relative">
         <div class="flex-shrink-0 w-14 md:w-20 select-none">
           <p class="font-sans font-black text-rbg-white/6 leading-none"
-             style="font-size: clamp(48px, 7vw, 80px); letter-spacing: -0.06em; line-height: 0.8;">02</p>
+             style="font-size: clamp(56px, 9vw, 100px); letter-spacing: -0.06em; line-height: 0.8;">02</p>
         </div>
         <div class="flex-shrink-0 w-px self-stretch bg-rbg-red/20 group-hover:bg-rbg-red/50"
              style="transition: background-color 0.25s ease;"></div>
@@ -965,7 +957,7 @@
             <p class="font-jp font-black text-rbg-white/80 leading-tight"
                style="font-size: clamp(22px, 2.8vw, 32px);">浪人</p>
             <p class="font-sans font-black text-rbg-white/40 uppercase"
-               style="font-size: 10px; letter-spacing: 0.18em;">RONIN</p>
+               style="font-size: 11px; letter-spacing: 0.18em;">RONIN</p>
           </div>
           <p class="flex-1 text-rbg-white/35"
              style="font-size: 13px; line-height: 1.75; max-width: 420px;">
@@ -982,7 +974,7 @@
 
       <!-- ── RANK 03: KENSHI / 剣士 ── (most visible — proven rank) -->
       <!-- 剣士 (Kenshi) = "Swordsman" — proven, has receipts, peers look to them -->
-      <div class="reveal rank-row flex items-start gap-4 md:gap-8 py-8 border-b border-rbg-white/5 group relative">
+      <div class="reveal rank-row flex items-start gap-4 md:gap-8 py-12 border-b border-rbg-white/5 group relative">
         <div class="flex-shrink-0 w-14 md:w-20 select-none">
           <p class="font-sans font-black leading-none"
              style="font-size: clamp(48px, 7vw, 80px); letter-spacing: -0.06em; line-height: 0.8;
@@ -996,7 +988,7 @@
             <p class="font-jp font-black text-rbg-white leading-tight"
                style="font-size: clamp(22px, 2.8vw, 32px);">剣士</p>
             <p class="font-sans font-black text-rbg-red uppercase"
-               style="font-size: 10px; letter-spacing: 0.18em;">KENSHI</p>
+               style="font-size: 11px; letter-spacing: 0.18em;">KENSHI</p>
           </div>
           <p class="flex-1 text-rbg-white/55"
              style="font-size: 13px; line-height: 1.75; max-width: 420px;">
@@ -1013,7 +1005,7 @@
 
       <!-- ── RANK 04: GUILD MASTER / ギルドマスター ── -->
       <!-- ギルドマスター = "Guild Master" — leader, mentor, inner circle -->
-      <div class="reveal rank-row flex items-start gap-4 md:gap-8 py-8 border-b border-rbg-white/5 group relative">
+      <div class="reveal rank-row flex items-start gap-4 md:gap-8 py-12 border-b border-rbg-white/5 group relative">
         <div class="flex-shrink-0 w-14 md:w-20 select-none">
           <p class="font-sans font-black leading-none"
              style="font-size: clamp(48px, 7vw, 80px); letter-spacing: -0.06em; line-height: 0.8;
@@ -1026,7 +1018,7 @@
             <p class="font-jp font-black text-rbg-white leading-tight"
                style="font-size: clamp(18px, 2.2vw, 26px); white-space: nowrap;">ギルドマスター</p>
             <p class="font-sans font-black text-rbg-red uppercase"
-               style="font-size: 10px; letter-spacing: 0.18em;">GUILD MASTER</p>
+               style="font-size: 11px; letter-spacing: 0.18em;">GUILD MASTER</p>
           </div>
           <p class="flex-1 text-rbg-white/55"
              style="font-size: 13px; line-height: 1.75; max-width: 420px;">
@@ -1056,7 +1048,7 @@
             <p class="font-jp font-black text-rbg-white leading-tight"
                style="font-size: clamp(16px, 2vw, 24px); white-space: nowrap;">大ギルドマスター</p>
             <p class="font-sans font-black text-rbg-red uppercase"
-               style="font-size: 10px; letter-spacing: 0.18em;">GRAND GUILD MASTER</p>
+               style="font-size: 11px; letter-spacing: 0.18em;">GRAND GUILD MASTER</p>
           </div>
           <div class="flex-1">
             <p class="text-rbg-white/65 mb-2"
@@ -1444,7 +1436,7 @@
             link.href = 'profile.html';
           } else {
             link.textContent = 'SIGN IN';
-            link.href = 'login.html';
+            link.href = 'wip.html';
           }
         });
       });
