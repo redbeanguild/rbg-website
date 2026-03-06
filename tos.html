@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RedBean Guild — Terms of Use</title>
+
+  <!-- Google Fonts: same as main site -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <!-- Flash prevention: apply saved theme before paint -->
+  <script>
+    (function() {
+      var t = localStorage.getItem('rbg-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind config: same brand colors as main site -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'rbg-black': '#0d0202',
+            'rbg-red':   '#E31A20',
+            'rbg-white': '#F5F5F0',
+          },
+          fontFamily: {
+            'sans': ['"Helvetica Neue"', 'Helvetica', 'Arial', 'system-ui', 'sans-serif'],
+            'jp':   ['"Noto Serif JP"', 'serif'],
+            'mono': ['"Courier New"', 'Courier', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ---- Theme variables — brutalist (black/white/red) ---- */
+    :root,
+    [data-theme="dark"] {
+      --bg-primary:       #0a0a0a;
+      --bg-elevated:      #111111;
+      --text-primary:     #F5F5F0;
+      --text-secondary:   rgba(245, 245, 240, 0.65);
+      --text-tertiary:    rgba(245, 245, 240, 0.40);
+      --accent:           #E31A20;
+      --accent-hover:     #FF2227;
+      --accent-border:    rgba(227, 26, 32, 0.18);
+      --border-subtle:    rgba(245, 245, 240, 0.05);
+      --border-medium:    rgba(245, 245, 240, 0.10);
+      --grain-opacity:    0.035;
+    }
+
+    [data-theme="light"] {
+      --bg-primary:       #F5F5F0;
+      --bg-elevated:      #EDEDEA;
+      --text-primary:     #0a0a0a;
+      --text-secondary:   rgba(10, 10, 10, 0.70);
+      --text-tertiary:    rgba(10, 10, 10, 0.45);
+      --accent:           #CC1518;
+      --accent-hover:     #DD1A1E;
+      --accent-border:    rgba(204, 21, 24, 0.20);
+      --border-subtle:    rgba(10, 10, 10, 0.06);
+      --border-medium:    rgba(10, 10, 10, 0.12);
+      --grain-opacity:    0.02;
+    }
+
+    /* ---- Base styles ---- */
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    /* ---- Spin animation for logo ---- */
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* ---- Grain overlay ---- */
+    .grain::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: var(--grain-opacity);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* ---- Section divider — red-tinted rule ---- */
+    .tos-section {
+      padding: 28px 0;
+      border-bottom: 1px solid var(--accent-border);
+    }
+
+    .tos-section:last-child {
+      border-bottom: none;
+    }
+
+    /* ---- Section number — red accent ---- */
+    .section-num {
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    /* ---- Section heading ---- */
+    .section-heading {
+      font-family: 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+      font-weight: 900;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+    }
+
+    /* ---- Body copy ---- */
+    .section-body {
+      font-size: 13px;
+      line-height: 1.85;
+      color: var(--text-secondary);
+    }
+
+    .section-body a {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .section-body a:hover {
+      color: var(--accent-hover);
+    }
+  </style>
+</head>
+
+<body class="grain">
+
+  <!-- ================================================================
+       NAV — simple, matches site style
+       ================================================================ -->
+  <nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 md:px-14"
+       style="background-color: var(--bg-primary); backdrop-filter: blur(2px);">
+
+    <!-- Left: spinning logo -->
+    <a href="index.html" class="flex items-center gap-3" aria-label="RedBean Guild home">
+      <img src="brand_assets/RBG_MAIN.png" alt="RBG" class="object-contain"
+           style="width: 24px; height: 24px; animation: spin 8s linear infinite;">
+    </a>
+
+    <!-- Right: back link -->
+    <a href="index.html"
+       style="font-size: 9px; letter-spacing: 0.15em; color: var(--text-tertiary);
+              text-transform: uppercase; text-decoration: none;">
+      ← Back to RedBeanGuild
+    </a>
+  </nav>
+
+  <!-- ================================================================
+       MAIN CONTENT — Terms of Use
+       ================================================================ -->
+  <main class="max-w-2xl mx-auto px-6 pt-28 pb-20">
+
+    <!-- Page title -->
+    <div class="mb-6">
+      <h1 class="font-sans font-black uppercase mb-2"
+          style="font-size: clamp(24px, 4vw, 40px); letter-spacing: -0.02em; color: var(--text-primary);">
+        Terms of Use
+      </h1>
+      <p class="font-jp"
+         style="font-size: 10px; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase;">
+        利用規約
+      </p>
+    </div>
+
+    <!-- Last updated -->
+    <p style="font-size: 11px; color: var(--text-tertiary); letter-spacing: 0.05em; margin-bottom: 32px;">
+      Last updated: March 3, 2026
+    </p>
+
+    <!-- Divider before sections -->
+    <div style="border-top: 1px solid var(--accent-border); margin-bottom: 8px;"></div>
+
+    <!-- ---- SECTION 1 ---- -->
+    <div class="tos-section">
+      <p class="section-num">01 — Acceptance of Terms</p>
+      <h2 class="section-heading">Your Agreement</h2>
+      <p class="section-body">
+        By accessing or using the RedBean Guild website ("Site"), you agree to be bound by these Terms of Use. If you do not agree to these terms, do not use the Site. We reserve the right to update these terms at any time, and your continued use of the Site constitutes acceptance of any changes.
+      </p>
+    </div>
+
+    <!-- ---- SECTION 2 ---- -->
+    <div class="tos-section">
+      <p class="section-num">02 — Use of the Site</p>
+      <h2 class="section-heading">Acceptable Use</h2>
+      <p class="section-body">
+        You agree to use the Site only for lawful purposes. You may not use the Site in any way that could damage, disable, or impair the Site or interfere with any other party's use. You are responsible for maintaining the confidentiality of your account information and for all activities under your account.
+      </p>
+    </div>
+
+    <!-- ---- SECTION 3 ---- -->
+    <div class="tos-section">
+      <p class="section-num">03 — Intellectual Property</p>
+      <h2 class="section-heading">Ownership</h2>
+      <p class="section-body">
+        All content on the Site — including text, graphics, logos, images, designs, and software — is the property of RedBean Guild or its content suppliers and is protected by intellectual property laws. You may not reproduce, distribute, or create derivative works from any content without prior written consent.
+      </p>
+    </div>
+
+    <!-- ---- SECTION 4 ---- -->
+    <div class="tos-section">
+      <p class="section-num">04 — User Accounts</p>
+      <h2 class="section-heading">Registration & Responsibility</h2>
+      <p class="section-body">
+        To access certain features, you may need to create an account. You agree to provide accurate information and keep it up to date. You are solely responsible for activity on your account. If you suspect unauthorized use, notify us immediately. We reserve the right to suspend or terminate accounts that violate these terms.
+      </p>
+    </div>
+
+    <!-- ---- SECTION 5 ---- -->
+    <div class="tos-section">
+      <p class="section-num">05 — Purchases & Orders</p>
+      <h2 class="section-heading">Transactions</h2>
+      <p class="section-body">
+        All purchases through the Site are subject to product availability and acceptance of your order. Prices are subject to change without notice. We reserve the right to refuse or cancel any order. Payment must be received before order processing. All sales are final unless otherwise stated in our return policy.
+      </p>
+    </div>
+
+    <!-- ---- SECTION 6 ---- -->
+    <div class="tos-section">
+      <p class="section-num">06 — Privacy</p>
+      <h2 class="section-heading">Your Data</h2>
+      <p class="section-body">
+        Your use of the Site is also governed by our Privacy Policy. We collect only the information necessary to provide our services. We do not sell your personal data to third parties. Wallet addresses and on-chain data connected through the Site are used solely for token verification purposes.
+      </p>
+    </div>
+
+    <!-- ---- SECTION 7 ---- -->
+    <div class="tos-section">
+      <p class="section-num">07 — Limitation of Liability</p>
+      <h2 class="section-heading">Disclaimers</h2>
+      <p class="section-body">
+        The Site is provided "as is" without warranties of any kind, express or implied. RedBean Guild shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the Site. This includes, but is not limited to, loss of data, digital assets, or profits.
+      </p>
+    </div>
+
+    <!-- ---- SECTION 8 ---- -->
+    <div class="tos-section">
+      <p class="section-num">08 — Changes to Terms</p>
+      <h2 class="section-heading">Updates</h2>
+      <p class="section-body">
+        We may revise these Terms of Use at any time by posting the updated version on this page. The "Last updated" date at the top will reflect the most recent revision. Your continued use of the Site after changes are posted constitutes your acceptance of the revised terms.
+      </p>
+    </div>
+
+    <!-- ---- SECTION 9 ---- -->
+    <div class="tos-section">
+      <p class="section-num">09 — Contact</p>
+      <h2 class="section-heading">Get in Touch</h2>
+      <p class="section-body">
+        If you have questions about these Terms of Use, reach out to us through our official channels on
+        <a href="https://www.instagram.com/redbeanguild/" target="_blank" rel="noopener">Instagram</a> or
+        <a href="https://twitter.com/RedBeanGuild" target="_blank" rel="noopener">X (Twitter)</a>.
+      </p>
+    </div>
+
+  </main>
+
+  <!-- ================================================================
+       FOOTER — minimal
+       ================================================================ -->
+  <footer class="text-center py-12 px-6"
+          style="border-top: 1px solid var(--accent-border);">
+    <p class="font-jp" style="font-size: 10px; color: var(--text-tertiary); letter-spacing: 0.05em;">
+      © 2026 レッドビーングルード — RedBean Guild. All rights reserved.
+    </p>
+    <p class="mt-3 uppercase"
+       style="font-size: 9px; letter-spacing: 0.2em; opacity: 0.2; color: var(--text-secondary);">
+      REV 2.1.1
+    </p>
+  </footer>
+
+</body>
+</html>

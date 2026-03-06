@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RedBean Guild — 2026 SZN</title>
+
+  <!-- Google Fonts: Noto Serif JP for Japanese typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <!-- Flash prevention: apply saved theme before any CSS renders -->
+  <script>
+    (function() {
+      var t = localStorage.getItem('rbg-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind custom config: brand colors + typography -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'rbg-black': '#0d0202',
+            'rbg-red':   '#E31A20',
+            'rbg-white': '#F5F5F0',
+            'rbg-pure':  '#0a0a0a',
+          },
+          fontFamily: {
+            'sans': ['"Helvetica Neue"', 'Helvetica', 'Arial', 'system-ui', 'sans-serif'],
+            'jp':   ['"Noto Serif JP"', 'serif'],
+            'mono': ['"Courier New"', 'Courier', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* === TAILWIND COLOR OVERRIDES ===
+       These remap Tailwind's generated color classes to our CSS variables.
+       In dark mode, these match the original colors exactly.
+       In light mode, they switch to the light palette automatically. */
+
+    /* Solid text colors */
+    .text-rbg-white   { color: var(--text-primary) !important; }
+    .text-rbg-red     { color: var(--accent) !important; }
+    .text-rbg-black   { color: var(--bg-primary) !important; }
+
+    /* Text with opacity variants */
+    .text-rbg-white\/95 { color: var(--text-primary) !important; opacity: 0.95; }
+    .text-rbg-white\/80 { color: var(--text-primary) !important; opacity: 0.80; }
+    .text-rbg-white\/70 { color: var(--text-secondary) !important; }
+    .text-rbg-white\/65 { color: var(--text-secondary) !important; }
+    .text-rbg-white\/55 { color: var(--text-secondary) !important; }
+    .text-rbg-white\/40 { color: var(--text-tertiary) !important; }
+    .text-rbg-white\/35 { color: var(--text-tertiary) !important; }
+    .text-rbg-white\/30 { color: var(--text-muted) !important; }
+    .text-rbg-white\/25 { color: var(--text-muted) !important; }
+    .text-rbg-white\/20 { color: var(--text-muted) !important; }
+
+    /* Red opacity variants */
+    .text-rbg-red\/80 { color: var(--accent) !important; opacity: 0.8; }
+    .text-rbg-red\/60 { color: var(--accent) !important; opacity: 0.6; }
+    .text-rbg-red\/50 { color: var(--accent) !important; opacity: 0.5; }
+
+    /* Ghost text (rank numbers) */
+    .text-rbg-white\/6 { color: var(--text-ghost) !important; }
+
+    /* Background overrides */
+    .bg-rbg-black  { background-color: var(--bg-primary) !important; }
+    .bg-rbg-red    { background-color: var(--accent) !important; }
+    .bg-rbg-white  { background-color: var(--text-primary) !important; }
+    .bg-rbg-pure   { background-color: var(--bg-footer) !important; }
+
+    /* Background red with opacity (card overlays, lines) */
+    .bg-rbg-red\/8  { background-color: var(--accent-subtle) !important; }
+    .bg-rbg-red\/20 { background-color: var(--accent-border) !important; }
+    .bg-rbg-red\/30 { background-color: var(--accent-border) !important; }
+    .bg-rbg-red\/35 { background-color: var(--accent-border) !important; }
+    .bg-rbg-red\/40 { background-color: var(--accent-border-hover) !important; }
+    .bg-rbg-red\/50 { background-color: var(--accent-border-hover) !important; }
+    .bg-rbg-red\/60 { background-color: var(--accent-border-hover) !important; }
+
+    /* Border overrides */
+    .border-rbg-white\/5  { border-color: var(--border-subtle) !important; }
+    .border-rbg-white\/10 { border-color: var(--border-medium) !important; }
+    .border-rbg-red       { border-color: var(--accent) !important; }
+    .border-rbg-red\/30   { border-color: var(--accent-border) !important; }
+    .border-rbg-red\/50   { border-color: var(--accent-border-hover) !important; }
+
+    /* Placeholder text */
+    .placeholder-rbg-white\/20::placeholder { color: var(--text-muted) !important; }
+
+    /* === SCROLL REVEAL ANIMATIONS ===
+       Elements start invisible + offset, then transition to their
+       natural position when they scroll into view. Think of it like
+       items being "unveiled" as you walk through a gallery. */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    .reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-24px);
+    }
+    .reveal-left.revealed {
+      opacity: 1;
+      transform: translateX(0);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    /* Stagger delays for grouped reveals */
+    .reveal-delay-1 { transition-delay: 0.1s !important; }
+    .reveal-delay-2 { transition-delay: 0.2s !important; }
+    .reveal-delay-3 { transition-delay: 0.3s !important; }
+    .reveal-delay-4 { transition-delay: 0.4s !important; }
+    .reveal-delay-5 { transition-delay: 0.5s !important; }
+    .reveal-delay-6 { transition-delay: 0.6s !important; }
+
+    /* Light mode: hide the dark hero background image and adjust decorative kanji */
+    [data-theme="light"] #hero .absolute.inset-0.z-0 { opacity: 0.08; }
+    [data-theme="light"] .text-rbg-red\/10 { color: var(--accent) !important; opacity: 0.06; }
+
+    /* === COLOR SYSTEM (CSS Custom Properties) ===
+       Think of these like a paint palette — instead of reaching for a
+       specific hex color each time, we label swatches on the palette.
+       When we switch to light mode, we just swap the palette and
+       every surface using that swatch updates automatically. */
+
+    /* Dark mode — monochrome (no red, except RBG_MAIN logo) */
+    :root,
+    [data-theme="dark"] {
+      --bg-primary:       #0a0a0a;
+      --bg-elevated:      #111111;
+      --bg-floating:      #161616;
+      --bg-footer:        #0a0a0a;
+
+      --text-primary:     #F5F5F0;
+      --text-secondary:   rgba(245, 245, 240, 0.65);
+      --text-tertiary:    rgba(245, 245, 240, 0.40);
+      --text-ghost:       rgba(245, 245, 240, 0.06);
+      --text-muted:       rgba(245, 245, 240, 0.25);
+
+      --accent:           #E31A20;
+      --accent-hover:     #FF2227;
+      --accent-pressed:   #CC1518;
+      --accent-glow:      rgba(227, 26, 32, 0.10);
+      --accent-subtle:    rgba(227, 26, 32, 0.04);
+      --accent-border:    rgba(227, 26, 32, 0.18);
+      --accent-border-hover: rgba(227, 26, 32, 0.50);
+
+      --border-subtle:    rgba(245, 245, 240, 0.05);
+      --border-medium:    rgba(245, 245, 240, 0.10);
+
+      --scrollbar-track:  #0a0a0a;
+      --scrollbar-thumb:  rgba(245, 245, 240, 0.3);
+      --grain-opacity:    0.035;
+      --nav-bg:           rgba(10, 10, 10, 0.97);
+      --nav-bg-end:       rgba(10, 10, 10, 0.0);
+      --logo-invert:      invert(1);
+    }
+
+    /* Light mode — monochrome (near-black accent) */
+    [data-theme="light"] {
+      --bg-primary:       #F5F5F0;
+      --bg-elevated:      #EDEDEA;
+      --bg-floating:      #FFFFFF;
+      --bg-footer:        #E8E8E3;
+
+      --text-primary:     #0a0a0a;
+      --text-secondary:   rgba(10, 10, 10, 0.70);
+      --text-tertiary:    rgba(10, 10, 10, 0.45);
+      --text-ghost:       rgba(10, 10, 10, 0.06);
+      --text-muted:       rgba(10, 10, 10, 0.30);
+
+      --accent:           #CC1518;
+      --accent-hover:     #DD1A1E;
+      --accent-pressed:   #AA1215;
+      --accent-glow:      rgba(204, 21, 24, 0.08);
+      --accent-subtle:    rgba(204, 21, 24, 0.04);
+      --accent-border:    rgba(204, 21, 24, 0.20);
+      --accent-border-hover: rgba(204, 21, 24, 0.55);
+
+      --border-subtle:    rgba(10, 10, 10, 0.06);
+      --border-medium:    rgba(10, 10, 10, 0.12);
+
+      --scrollbar-track:  #F5F5F0;
+      --scrollbar-thumb:  rgba(10, 10, 10, 0.3);
+      --grain-opacity:    0.02;
+      --nav-bg:           rgba(245, 245, 240, 0.97);
+      --nav-bg-end:       rgba(245, 245, 240, 0.0);
+      --logo-invert:      invert(0);
+    }
+
+    /* Smooth transition when toggling themes — only active during toggle */
+    html.theme-transitioning,
+    html.theme-transitioning * {
+      transition: background-color 0.4s ease, color 0.3s ease, border-color 0.3s ease !important;
+    }
+
+    /* === GRAIN OVERLAY ===
+       This adds a very subtle film-grain texture across the whole page.
+       Think of it like a matte finish on a photograph — it adds depth
+       without being visible at a glance. */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none; /* clicks pass right through it */
+      z-index: 9999;
+      opacity: var(--grain-opacity);
+      filter: url(#grain);
+      background: transparent;
+    }
+
+    /* === ENTRANCE ANIMATION ===
+       Elements fade in while moving upward slightly — like they're
+       rising into view. Spring-style easing (cubic-bezier) makes it
+       feel less mechanical than a linear fade. */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* === LOGO ===
+       Nav logo hidden by default, fades in after scrolling past the hero.
+       Slow spin animation (8s per rotation) — subtle, always turning. */
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .logo-mark {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      animation: spin 8s linear infinite;  /* slow continuous spin */
+    }
+    /* JS adds this class when hero scrolls out of view */
+    .logo-mark.logo-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .logo-mark.logo-visible:hover {
+      opacity: 0.7;
+    }
+
+    .animate-fade-up {
+      animation: fadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* Stagger delays so elements animate in one after another */
+    .delay-1 { animation-delay: 0.15s; }
+    .delay-2 { animation-delay: 0.30s; }
+    .delay-3 { animation-delay: 0.45s; }
+    .delay-4 { animation-delay: 0.60s; }
+
+    /* === CARD HOVER — brutalist: abrupt, no softness ===
+       Faster transitions, no image zoom, red-tinted borders. */
+    .card-hover {
+      transition: transform 0.25s ease-out,
+                  box-shadow 0.25s ease-out;
+    }
+    .card-hover:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px rgba(227, 26, 32, 0.08);
+    }
+
+    /* No card image zoom — brutalist keeps things static */
+    .card-img {
+      transition: none;
+    }
+
+    /* Card default + hover border — red-tinted */
+    .card-border {
+      border-color: var(--accent-border);
+      transition: border-color 0.2s ease-out;
+    }
+    .card-hover:hover .card-border {
+      border-color: var(--accent-border-hover);
+    }
+
+    /* Nav link hover */
+    .nav-link {
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+    .nav-link:hover {
+      color: var(--text-primary) !important;
+    }
+
+    /* Text selection — inverted for monochrome legibility */
+    ::selection {
+      background: var(--text-primary);
+      color: var(--bg-primary);
+    }
+
+    /* Smooth scroll for anchor links */
+    html { scroll-behavior: smooth; }
+
+    /* Hide scrollbar on webkit (keeps the page clean) */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
+
+
+
+    /* === RANK SECTION ===
+       Each row is like a line on a dojo honor board.
+       Think of it as a printed hierarchy scroll — formal, earned. */
+    .rank-row {
+      transition: background-color 0.25s ease;
+    }
+    .rank-row:hover {
+      background-color: var(--accent-subtle);
+    }
+
+    /* Grand Guild Master gets a full red left-edge mark — visually elevated */
+    .rank-grandmaster {
+      border-left: 2px solid var(--accent-border-hover);
+      background: linear-gradient(to right, var(--accent-subtle) 0%, transparent 50%);
+    }
+
+    /* Gate badge on each rank */
+    .gate-badge {
+      transition: border-color 0.2s ease, color 0.2s ease;
+    }
+    .rank-row:hover .gate-badge {
+      border-color: var(--accent-border-hover);
+      color: var(--accent);
+    }
+
+    /* IKZ button interactive states */
+    .ikz-btn {
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .ikz-btn:hover {
+      background-color: var(--accent);
+      color: var(--text-primary);
+    }
+    .ikz-btn:active {
+      background-color: var(--accent-pressed);
+    }
+    .ikz-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    /* Footer social links */
+    .footer-link {
+      transition: color 0.2s ease;
+    }
+    .footer-link:hover { color: var(--accent); }
+    .footer-link:focus-visible {
+      outline: 1px solid var(--accent);
+      outline-offset: 3px;
+      color: var(--accent);
+    }
+
+    /* Email input focus — uses CSS variables instead of inline JS */
+    #join-email:focus {
+      border-color: var(--accent-border-hover) !important;
+    }
+
+    /* Theme toggle button */
+    .theme-toggle {
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+    .theme-toggle:hover {
+      color: var(--accent);
+      transform: scale(1.1);
+    }
+
+    /* Mobile menu */
+    .mobile-menu {
+      transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .mobile-menu.hidden {
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events: none;
+    }
+    .mobile-menu.open {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+  </style>
+</head>
+
+<body class="font-mono overflow-x-hidden" style="background-color: var(--bg-primary); color: var(--text-primary);">
+
+  <!-- === SVG GRAIN FILTER DEFINITION ===
+       This SVG is invisible — it just defines the grain filter that
+       body::after references. Think of it as defining a texture stamp
+       you can apply to any surface. -->
+  <svg class="hidden" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <filter id="grain">
+        <!-- feTurbulence generates random noise patterns -->
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.65"
+          numOctaves="3"
+          stitchTiles="stitch"
+        />
+        <!-- feColorMatrix removes all color — makes it pure grey grain -->
+        <feColorMatrix type="saturate" values="0"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- ================================================================
+       NAV — Fixed top bar
+       ================================================================ -->
+  <nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 md:px-14"
+       style="background: linear-gradient(to bottom, var(--nav-bg) 0%, var(--nav-bg-end) 100%);
+              backdrop-filter: blur(2px);">
+
+    <!-- LEFT: Logo mark + dark mode toggle -->
+    <div class="flex items-center gap-3">
+      <a href="#" aria-label="RedBean Guild home">
+        <img
+          src="brand_assets/RBG_MAIN.png"
+          alt="RBG"
+          class="logo-mark object-contain"
+          style="width: 24px; height: 24px;"
+        >
+      </a>
+      <!-- Theme toggle: sun = dark mode (click for light), moon = light mode (click for dark) -->
+      <button id="theme-toggle" class="theme-toggle flex items-center justify-center w-8 h-8"
+              aria-label="Toggle dark/light mode"
+              style="color: var(--text-tertiary);">
+        <!-- Sun icon (visible in dark mode — click to go light) -->
+        <svg id="icon-sun" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <!-- Moon icon (visible in light mode — click to go dark) -->
+        <svg id="icon-moon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- RIGHT DESKTOP: Nav links + auth CTA -->
+    <div class="hidden md:flex items-center gap-10">
+      <a href="#about" class="nav-link uppercase"
+         style="font-size: 10px; letter-spacing: 0.18em; color: var(--text-tertiary);">MANIFESTO</a>
+      <a href="#drops" class="nav-link uppercase"
+         style="font-size: 10px; letter-spacing: 0.18em; color: var(--text-tertiary);">DROPS</a>
+      <a href="#ranks" class="nav-link uppercase"
+         style="font-size: 10px; letter-spacing: 0.18em; color: var(--text-tertiary);">RANKS</a>
+      <!-- Auth CTA — red brutalist button -->
+      <a id="auth-link" href="login.html"
+         class="uppercase"
+         style="font-size: 8px; letter-spacing: 0.28em;
+                background-color: var(--accent); color: #F5F5F0;
+                padding: 7px 16px; display: inline-block;
+                transition: opacity 0.2s ease;">
+        SIGN IN
+      </a>
+    </div>
+
+    <!-- MOBILE: Hamburger button -->
+    <button
+      id="menu-btn"
+      class="md:hidden flex flex-col gap-1.5 p-2"
+      aria-label="Open navigation menu"
+      aria-expanded="false">
+      <span class="block w-6 h-px" style="background-color: var(--text-primary);"
+            style="transition: transform 0.25s ease, opacity 0.25s ease;"></span>
+      <span class="block w-6 h-px" style="background-color: var(--text-primary);"
+            style="transition: transform 0.25s ease, opacity 0.25s ease;"></span>
+      <span class="block w-4 h-px" style="background-color: var(--text-primary);"
+            style="transition: transform 0.25s ease, opacity 0.25s ease;"></span>
+    </button>
+  </nav>
+
+  <!-- MOBILE MENU DROPDOWN -->
+  <div id="mobile-menu"
+       class="mobile-menu hidden fixed top-16 left-0 right-0 z-40 px-6 py-6 flex flex-col gap-5"
+       style="background-color: var(--bg-primary); opacity: 0.98; border-bottom: 1px solid var(--accent-border);">
+    <a href="#about"  class="nav-link uppercase"
+       style="font-size: 11px; letter-spacing: 0.2em; color: var(--text-secondary);">MANIFESTO</a>
+    <a href="#drops"  class="nav-link uppercase"
+       style="font-size: 11px; letter-spacing: 0.2em; color: var(--text-secondary);">DROPS</a>
+    <a href="#ranks" class="nav-link uppercase"
+       style="font-size: 11px; letter-spacing: 0.2em; color: var(--text-secondary);">RANKS</a>
+    <!-- Mobile auth CTA — red brutalist button -->
+    <a id="auth-link-mobile" href="login.html"
+       class="self-start uppercase"
+       style="font-size: 9px; letter-spacing: 0.28em;
+              background-color: var(--accent); color: #F5F5F0;
+              padding: 10px 22px; display: inline-block;
+              transition: opacity 0.2s ease;">
+      SIGN IN
+    </a>
+  </div>
+
+  <!-- ================================================================
+       HERO — Full viewport opening
+       ================================================================ -->
+  <section id="hero"
+           class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+           style="background-color: var(--bg-primary);">
+
+    <!-- LAYER 1: Background placeholder image (dark red tinted) -->
+    <div class="absolute inset-0 z-0">
+      <img
+        src="https://placehold.co/1920x1080/0a0a0a/0a0a0a"
+        alt=""
+        aria-hidden="true"
+        class="w-full h-full object-cover"
+        style="opacity: 0.5;"
+      >
+      <!-- Vignette gradient: dark edges, bright center -->
+      <div class="absolute inset-0" style="
+        background:
+          linear-gradient(to bottom, var(--bg-primary) 0%, transparent 30%, transparent 70%, var(--bg-primary) 100%),
+          linear-gradient(to right, var(--bg-primary) 0%, transparent 25%, transparent 75%, var(--bg-primary) 100%);
+      "></div>
+    </div>
+
+    <!-- LAYER 2: Red glow — subtle, restrained -->
+    <div class="absolute inset-0 z-10 pointer-events-none" style="
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 45%, var(--accent-glow) 0%, transparent 70%);
+    "></div>
+
+    <!-- LAYER 3: Main hero content — luxury: minimal, lots of air -->
+    <div class="relative z-20 flex flex-col items-center text-center px-6 pt-32 pb-20">
+
+      <!-- Season label — small, wide-tracked, red -->
+      <p class="animate-fade-up font-jp mb-4"
+         style="font-size: 9px; letter-spacing: 0.4em; opacity: 0.7; color: var(--accent);">
+        2026年シーズン &nbsp;·&nbsp; 2026 SZN
+      </p>
+      <!-- Founding year — Roman numerals, ghosted, brutalist editorial -->
+      <p class="animate-fade-up text-rbg-white/30 uppercase mb-14"
+         style="font-size: 9px; letter-spacing: 0.2em;">
+        Est. MMXXIII
+      </p>
+
+      <!-- Logo mark — small, still, confident. Luxury = restraint. -->
+      <div class="animate-fade-up delay-1 mb-16">
+        <img
+          src="brand_assets/RBG_MAIN.png"
+          alt="RedBean Guild mark"
+          class="object-contain"
+          style="width: 64px; height: 64px;
+                 filter: drop-shadow(0 0 20px rgba(227,26,32,0.15));
+                 animation: spin 8s linear infinite;"
+        >
+      </div>
+
+      <!-- Wordmark — monochrome: desaturated + brightened to white -->
+      <img
+        src="brand_assets/RBG-AKA.png"
+        alt="REDBEANGUILD"
+        class="animate-fade-up delay-2 w-full object-contain mb-10"
+        style="max-width: min(200px, 50vw);
+               filter: grayscale(1) brightness(3) drop-shadow(0 0 16px rgba(245,245,240,0.08));"
+      >
+
+      <!-- IKZ_TASHI.png — brush calligraphy, subtle accent -->
+      <div class="animate-fade-up delay-3 flex items-center gap-5 mb-10">
+        <div class="w-10 h-px" style="background-color: var(--accent-border);"></div>
+        <img src="brand_assets/IKZ_TASHI.png"
+             alt="行くぞ — Let's go"
+             class="object-contain"
+             style="height: min(48px, 10vw); filter: grayscale(1) brightness(4) drop-shadow(0 0 8px rgba(245,245,240,0.1));">
+        <div class="w-10 h-px" style="background-color: var(--accent-border);"></div>
+      </div>
+
+      <!-- Subtitle — phonetic guild name + founding tag -->
+      <!-- レッドビーングルード = "Red Bean Guild" in katakana -->
+      <p class="animate-fade-up delay-4"
+         style="font-size: 10px; letter-spacing: 0.22em; font-family: 'Noto Serif JP', serif; color: var(--text-tertiary);">
+        レッドビーングルード &nbsp;·&nbsp; EST. MMXXIII
+      </p>
+
+      <!-- Scroll cue — thin red line dropping down -->
+      <div class="animate-fade-up delay-4 mt-20 flex flex-col items-center gap-3">
+        <span class="uppercase"
+              style="font-size: 8px; letter-spacing: 0.3em; color: var(--text-muted);">SCROLL</span>
+        <div class="w-px h-14" style="background: linear-gradient(to bottom, rgba(227,26,32,0.6), transparent);"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       MANIFESTO — Brand statement
+       ================================================================ -->
+  <section id="about"
+           class="relative py-36 md:py-44 px-6 md:px-12 overflow-hidden"
+           style="background-color: var(--bg-primary);">
+
+    <!-- Subtle left-side radial glow -->
+    <div class="absolute inset-0 pointer-events-none" style="
+      background: radial-gradient(ellipse 55% 55% at -5% 50%, var(--accent-subtle) 0%, transparent 70%);
+    "></div>
+
+    <!-- Section marker: line + Japanese label -->
+    <!-- 道場訓 (Dojo-kun) = the dojo code / creed. A real martial arts term. -->
+    <div class="reveal flex items-center gap-4 mb-16">
+      <div class="w-8 h-px bg-rbg-red"></div>
+      <span class="font-jp text-rbg-red"
+            style="font-size: 9px; letter-spacing: 0.3em;">道場訓</span>
+      <span class="text-rbg-white/25 uppercase"
+            style="font-size: 8px; letter-spacing: 0.2em;">DOJO CODE</span>
+    </div>
+
+    <!-- Two-column layout: decorative kanji | text content -->
+    <div class="reveal reveal-delay-1 grid grid-cols-1 md:grid-cols-[auto_1fr] gap-10 md:gap-20 max-w-5xl mx-auto">
+
+      <!-- LEFT: Decorative vertical kanji — 道場 (Dojo) = "Training Hall"
+           Two characters stacked vertically: 道 (way/path) + 場 (place/ground).
+           Together: the place where you walk the path. -->
+      <div class="flex justify-start md:justify-center">
+        <p class="font-jp font-black text-rbg-red/10 select-none leading-none"
+           style="font-size: clamp(90px, 16vw, 200px);
+                  writing-mode: vertical-rl;
+                  letter-spacing: -0.05em;">
+          道場
+        </p>
+      </div>
+
+      <!-- RIGHT: Actual manifesto text -->
+      <div class="flex flex-col justify-center">
+
+        <!-- Main headline — Helvetica black, tight tracking -->
+        <h2 class="font-sans font-black text-rbg-white mb-4"
+            style="font-size: clamp(32px, 5.5vw, 72px);
+                   letter-spacing: -0.04em;
+                   line-height: 1.02;">
+          A GUILD.<br>
+          <span class="text-rbg-red">A DOJO.</span>
+        </h2>
+
+        <!-- Japanese subtitle -->
+        <!-- 道場 (Dojo) = training hall. 仲間 (Nakama) = crew/comrades. -->
+        <!-- 道場と仲間 = "Dojo and Crew" -->
+        <p class="font-jp text-rbg-white/40 mb-10"
+           style="font-size: 13px; letter-spacing: 0.06em;">
+          道場と仲間 — The dojo. The crew. The grind.
+        </p>
+
+        <!-- Body copy -->
+        <p class="text-rbg-white/65 mb-5"
+           style="font-size: 15px; line-height: 1.85; max-width: 500px;">
+          Red Bean Guild (RBG) is for those who refuse to drift. We set goals. We track progress. We train daily. Discipline over excuses. Action over talk. Together, we build momentum, sharpen our craft, and level up in real life. This is our arc.
+        </p>
+        <p class="text-rbg-white/35"
+           style="font-size: 13px; line-height: 1.8; max-width: 500px; font-family: 'Noto Serif JP', serif;">
+          鍛錬. 仲間. 覚悟. — Train. Crew. Resolve.
+        </p>
+
+        <!-- Decorative accent: lines + small logo mark -->
+        <div class="flex items-center gap-4 mt-14">
+          <div class="h-px w-14 bg-rbg-red/35"></div>
+          <img src="brand_assets/RBG_MAIN.png"
+               alt=""
+               aria-hidden="true"
+               class="w-5 h-5 object-contain"
+               style="opacity: 0.5;">
+          <div class="h-px w-14 bg-rbg-red/35"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       DROPS — Editorial card grid (the centrepiece)
+       ================================================================ -->
+  <section id="drops"
+           class="relative py-24 px-4 md:px-8 overflow-hidden"
+           style="background-color: var(--bg-primary);">
+
+    <!-- Right-side radial glow (balances the manifesto left glow) -->
+    <div class="absolute inset-0 pointer-events-none" style="
+      background: radial-gradient(ellipse 60% 50% at 105% 40%, var(--accent-subtle) 0%, transparent 70%);
+    "></div>
+
+    <!-- Section header -->
+    <div class="reveal flex items-end justify-between mb-10 px-2">
+      <div>
+        <!-- ドロップス = "Drops" in phonetic Japanese -->
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-5 h-px bg-rbg-red"></div>
+          <span class="font-jp text-rbg-red" style="font-size: 9px; letter-spacing: 0.28em;">ドロップス</span>
+        </div>
+        <h2 class="font-sans font-black text-rbg-white"
+            style="font-size: clamp(26px, 4.5vw, 52px); letter-spacing: -0.04em; line-height: 1.05;">
+          2025 DROPS
+        </h2>
+      </div>
+      <!-- 今シーズンの全リリース = "All releases this season" -->
+      <p class="font-jp text-rbg-white/20 text-right hidden md:block"
+         style="font-size: 10px; line-height: 1.7; max-width: 140px;">
+        今シーズンの<br>全リリース
+      </p>
+    </div>
+
+    <!-- 3-column editorial card grid — 2 cols on mobile -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+
+      <!-- === CARD 1: REDEMPTION / リデンプション === -->
+      <article class="reveal reveal-delay-1 card-hover relative overflow-hidden cursor-pointer group"
+               style="aspect-ratio: 2/3; background: var(--bg-elevated);">
+        <div class="absolute inset-0">
+          <img src="brand_assets/2025_drops/FINAL-R.png"
+               alt="REDEMPTION drop"
+               class="card-img w-full h-full object-cover">
+          <!-- Dark gradient: bottom-heavy for text legibility -->
+          <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+          <!-- Red color treatment layer -->
+          <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+        </div>
+        <!-- Top label -->
+        <div class="absolute top-3 left-3 z-10">
+          <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+        </div>
+        <!-- Bottom content -->
+        <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+          <!-- リデンプション = "Redemption" in phonetic Japanese katakana -->
+          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1"
+             style="font-size: clamp(16px, 2.5vw, 24px);">リデンプション</p>
+          <p class="font-sans font-black text-rbg-white uppercase leading-tight"
+             style="font-size: clamp(12px, 1.8vw, 18px); letter-spacing: -0.02em;">REDEMPTION</p>
+          <p class="text-rbg-white/35 mt-2 uppercase"
+             style="font-size: 8px; letter-spacing: 0.18em;">01.25 — DROP 01</p>
+        </div>
+        <!-- Hover border reveal -->
+        <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+      </article>
+
+      <!-- === CARD 2: KYOUSHIN / 狂真 === -->
+      <article class="reveal reveal-delay-2 card-hover relative overflow-hidden cursor-pointer group"
+               style="aspect-ratio: 2/3; background: var(--bg-elevated);">
+        <div class="absolute inset-0">
+          <img src="brand_assets/2025_drops/D2-Yume-Poster.png"
+               alt="KYOUSHIN drop"
+               class="card-img w-full h-full object-cover">
+          <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+          <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+        </div>
+        <div class="absolute top-3 left-3 z-10">
+          <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1"
+             style="font-size: clamp(16px, 2.5vw, 24px);">狂真</p>
+          <p class="font-sans font-black text-rbg-white uppercase leading-tight"
+             style="font-size: clamp(12px, 1.8vw, 18px); letter-spacing: -0.02em;">KYOUSHIN</p>
+          <p class="text-rbg-white/35 mt-2 uppercase"
+             style="font-size: 8px; letter-spacing: 0.18em;">02.08 — DROP 02</p>
+        </div>
+        <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+      </article>
+
+      <!-- === CARD 3: THUNDER ARMOUR / 雷鎧 === -->
+      <article class="reveal reveal-delay-3 card-hover relative overflow-hidden cursor-pointer group"
+               style="aspect-ratio: 2/3; background: var(--bg-elevated);">
+        <div class="absolute inset-0">
+          <img src="brand_assets/2025_drops/TTGTA-V2.png"
+               alt="THUNDER ARMOUR drop"
+               class="card-img w-full h-full object-cover">
+          <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+          <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+        </div>
+        <div class="absolute top-3 left-3 z-10">
+          <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1"
+             style="font-size: clamp(16px, 2.5vw, 24px);">雷鎧</p>
+          <p class="font-sans font-black text-rbg-white uppercase leading-tight"
+             style="font-size: clamp(12px, 1.8vw, 18px); letter-spacing: -0.02em;">THUNDER ARMOUR</p>
+          <p class="text-rbg-white/35 mt-2 uppercase"
+             style="font-size: 8px; letter-spacing: 0.18em;">03.01 — DROP 03</p>
+        </div>
+        <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+      </article>
+
+      <!-- === CARD 4: REIGNITED / 再点火 === -->
+      <article class="reveal reveal-delay-4 card-hover relative overflow-hidden cursor-pointer group"
+               style="aspect-ratio: 2/3; background: var(--bg-elevated);">
+        <div class="absolute inset-0">
+          <img src="brand_assets/2025_drops/X-THRD.png"
+               alt="REIGNITED drop"
+               class="card-img w-full h-full object-cover">
+          <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+          <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+        </div>
+        <div class="absolute top-3 left-3 z-10">
+          <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1"
+             style="font-size: clamp(16px, 2.5vw, 24px);">再点火</p>
+          <p class="font-sans font-black text-rbg-white uppercase leading-tight"
+             style="font-size: clamp(12px, 1.8vw, 18px); letter-spacing: -0.02em;">REIGNITED</p>
+          <p class="text-rbg-white/35 mt-2 uppercase"
+             style="font-size: 8px; letter-spacing: 0.18em;">04.12 — DROP 04</p>
+        </div>
+        <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+      </article>
+
+      <!-- === CARD 5: RETALIATION / 報復 === -->
+      <article class="reveal reveal-delay-5 card-hover relative overflow-hidden cursor-pointer group"
+               style="aspect-ratio: 2/3; background: var(--bg-elevated);">
+        <div class="absolute inset-0">
+          <img src="brand_assets/2025_drops/RUN-TGT-BW.png"
+               alt="RETALIATION drop"
+               class="card-img w-full h-full object-cover">
+          <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+          <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+        </div>
+        <div class="absolute top-3 left-3 z-10">
+          <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1"
+             style="font-size: clamp(16px, 2.5vw, 24px);">報復</p>
+          <p class="font-sans font-black text-rbg-white uppercase leading-tight"
+             style="font-size: clamp(12px, 1.8vw, 18px); letter-spacing: -0.02em;">RETALIATION</p>
+          <p class="text-rbg-white/35 mt-2 uppercase"
+             style="font-size: 8px; letter-spacing: 0.18em;">05.20 — DROP 05</p>
+        </div>
+        <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+      </article>
+
+      <!-- === CARD 6: ANIME SPECIAL / アニメスペシャル === -->
+      <article class="reveal reveal-delay-6 card-hover relative overflow-hidden cursor-pointer group"
+               style="aspect-ratio: 2/3; background: var(--bg-elevated);">
+        <div class="absolute inset-0">
+          <img src="brand_assets/2025_drops/RBG-AD-POSTCARD1-02.png"
+               alt="ANIME SPECIAL drop"
+               class="card-img w-full h-full object-cover">
+          <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+          <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+        </div>
+        <div class="absolute top-3 left-3 z-10">
+          <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+          <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1"
+             style="font-size: clamp(16px, 2.5vw, 24px);">アニメスペシャル</p>
+          <p class="font-sans font-black text-rbg-white uppercase leading-tight"
+             style="font-size: clamp(12px, 1.8vw, 18px); letter-spacing: -0.02em;">ANIME SPECIAL</p>
+          <p class="text-rbg-white/35 mt-2 uppercase"
+             style="font-size: 8px; letter-spacing: 0.18em;">06.07 — DROP 06</p>
+        </div>
+        <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+      </article>
+
+    </div><!-- /grid -->
+  </section>
+
+  <!-- ================================================================
+       RANKS — Guild hierarchy / honor board
+       ================================================================ -->
+  <section id="ranks"
+           class="relative py-32 md:py-40 px-6 md:px-12 overflow-hidden"
+           style="background-color: var(--bg-primary); border-top: 1px solid var(--accent-border);">
+
+    <!-- Right-side glow -->
+    <div class="absolute inset-0 pointer-events-none" style="
+      background: radial-gradient(ellipse 50% 50% at 100% 30%, var(--accent-subtle) 0%, transparent 70%);
+    "></div>
+
+    <!-- Section header -->
+    <div class="reveal flex items-center gap-4 mb-5">
+      <div class="w-8 h-px bg-rbg-red"></div>
+      <span class="font-jp text-rbg-red"
+            style="font-size: 9px; letter-spacing: 0.3em;">階級制度</span>
+      <span class="text-rbg-white/25 uppercase"
+            style="font-size: 8px; letter-spacing: 0.2em;">GUILD RANKS</span>
+    </div>
+
+    <!-- Intro text -->
+    <div class="reveal reveal-delay-1 max-w-5xl mx-auto mb-16">
+      <h2 class="font-sans font-black text-rbg-white mb-4"
+          style="font-size: clamp(28px, 4.5vw, 52px); letter-spacing: -0.04em; line-height: 1.05;">
+        EARN YOUR RANK.
+      </h2>
+      <!-- 段位は与えられない、積み上げるもの = "Rank is not given, it is built." -->
+      <p class="font-jp text-rbg-white/30"
+         style="font-size: 12px; letter-spacing: 0.05em;">
+        段位は与えられない、積み上げるもの。
+      </p>
+    </div>
+
+    <!-- =====================================================
+         RANK ROWS — one per rank, reads like a dojo scroll
+         ===================================================== -->
+    <div class="max-w-5xl mx-auto">
+
+      <!-- ── RANK 01: INITIATE / 入門 ── -->
+      <!-- 入門 (Nyūmon) = "Entering the gate" — the first step of any dojo journey -->
+      <div class="reveal rank-row flex items-start gap-4 md:gap-8 py-8 border-b border-rbg-white/5 group relative">
+        <!-- Rank number — large, ghosted behind content -->
+        <div class="flex-shrink-0 w-14 md:w-20 select-none">
+          <p class="font-sans font-black text-rbg-white/6 leading-none"
+             style="font-size: clamp(48px, 7vw, 80px); letter-spacing: -0.06em; line-height: 0.8;">01</p>
+        </div>
+        <!-- Thin red vertical separator -->
+        <div class="flex-shrink-0 w-px self-stretch bg-rbg-red/20 group-hover:bg-rbg-red/50"
+             style="transition: background-color 0.25s ease;"></div>
+        <!-- Content: name + description + gate -->
+        <div class="flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-8">
+          <!-- Name block -->
+          <div class="flex-shrink-0 md:w-52">
+            <p class="font-jp font-black text-rbg-white/80 leading-tight"
+               style="font-size: clamp(22px, 2.8vw, 32px);">入門</p>
+            <p class="font-sans font-black text-rbg-white/40 uppercase"
+               style="font-size: 10px; letter-spacing: 0.18em;">INITIATE</p>
+          </div>
+          <!-- Description -->
+          <p class="flex-1 text-rbg-white/35"
+             style="font-size: 13px; line-height: 1.75; max-width: 420px;">
+            You've joined the guild and stepped through the gate. Welcome to the beginning.
+          </p>
+          <!-- Gate badge — what earns this rank -->
+          <div class="flex-shrink-0">
+            <span class="gate-badge border border-rbg-white/10 text-rbg-white/25 uppercase px-3 py-1.5 block text-center"
+                  style="font-size: 8px; letter-spacing: 0.18em; white-space: nowrap;">
+              JOIN GUILD
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── RANK 02: RONIN / 浪人 ── -->
+      <!-- 浪人 (Rōnin) = "Wandering samurai" — in the dojo but still finding your path -->
+      <div class="reveal rank-row flex items-start gap-4 md:gap-8 py-8 border-b border-rbg-white/5 group relative">
+        <div class="flex-shrink-0 w-14 md:w-20 select-none">
+          <p class="font-sans font-black text-rbg-white/6 leading-none"
+             style="font-size: clamp(48px, 7vw, 80px); letter-spacing: -0.06em; line-height: 0.8;">02</p>
+        </div>
+        <div class="flex-shrink-0 w-px self-stretch bg-rbg-red/20 group-hover:bg-rbg-red/50"
+             style="transition: background-color 0.25s ease;"></div>
+        <div class="flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-8">
+          <div class="flex-shrink-0 md:w-52">
+            <p class="font-jp font-black text-rbg-white/80 leading-tight"
+               style="font-size: clamp(22px, 2.8vw, 32px);">浪人</p>
+            <p class="font-sans font-black text-rbg-white/40 uppercase"
+               style="font-size: 10px; letter-spacing: 0.18em;">RONIN</p>
+          </div>
+          <p class="flex-1 text-rbg-white/35"
+             style="font-size: 13px; line-height: 1.75; max-width: 420px;">
+            Four orders placed. You're no longer just passing through — you're committed.
+          </p>
+          <div class="flex-shrink-0">
+            <span class="gate-badge border border-rbg-white/10 text-rbg-white/25 uppercase px-3 py-1.5 block text-center"
+                  style="font-size: 8px; letter-spacing: 0.18em; white-space: nowrap;">
+              4 ORDERS
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── RANK 03: KENSHI / 剣士 ── (most visible — proven rank) -->
+      <!-- 剣士 (Kenshi) = "Swordsman" — proven, has receipts, peers look to them -->
+      <div class="reveal rank-row flex items-start gap-4 md:gap-8 py-8 border-b border-rbg-white/5 group relative">
+        <div class="flex-shrink-0 w-14 md:w-20 select-none">
+          <p class="font-sans font-black leading-none"
+             style="font-size: clamp(48px, 7vw, 80px); letter-spacing: -0.06em; line-height: 0.8;
+                    color: rgba(245,245,240,0.07);">03</p>
+        </div>
+        <div class="flex-shrink-0 w-px self-stretch bg-rbg-red/35 group-hover:bg-rbg-red/70"
+             style="transition: background-color 0.25s ease;"></div>
+        <div class="flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-8">
+          <div class="flex-shrink-0 md:w-52">
+            <!-- Kenshi gets full-opacity white — the standout rank -->
+            <p class="font-jp font-black text-rbg-white leading-tight"
+               style="font-size: clamp(22px, 2.8vw, 32px);">剣士</p>
+            <p class="font-sans font-black text-rbg-red uppercase"
+               style="font-size: 10px; letter-spacing: 0.18em;">KENSHI</p>
+          </div>
+          <p class="flex-1 text-rbg-white/55"
+             style="font-size: 13px; line-height: 1.75; max-width: 420px;">
+            Ten orders or more. Battle-tested. You have receipts. Peers look to you for how it's done.
+          </p>
+          <div class="flex-shrink-0">
+            <span class="gate-badge border border-rbg-red/30 text-rbg-red/60 uppercase px-3 py-1.5 block text-center"
+                  style="font-size: 8px; letter-spacing: 0.18em; white-space: nowrap;">
+              10+ ORDERS
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── RANK 04: GUILD MASTER / ギルドマスター ── -->
+      <!-- ギルドマスター = "Guild Master" — leader, mentor, inner circle -->
+      <div class="reveal rank-row flex items-start gap-4 md:gap-8 py-8 border-b border-rbg-white/5 group relative">
+        <div class="flex-shrink-0 w-14 md:w-20 select-none">
+          <p class="font-sans font-black leading-none"
+             style="font-size: clamp(48px, 7vw, 80px); letter-spacing: -0.06em; line-height: 0.8;
+                    color: rgba(245,245,240,0.10);">04</p>
+        </div>
+        <div class="flex-shrink-0 w-px self-stretch bg-rbg-red/40 group-hover:bg-rbg-red/80"
+             style="transition: background-color 0.25s ease;"></div>
+        <div class="flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-8">
+          <div class="flex-shrink-0">
+            <p class="font-jp font-black text-rbg-white leading-tight"
+               style="font-size: clamp(18px, 2.2vw, 26px); white-space: nowrap;">ギルドマスター</p>
+            <p class="font-sans font-black text-rbg-red uppercase"
+               style="font-size: 10px; letter-spacing: 0.18em;">GUILD MASTER</p>
+          </div>
+          <p class="flex-1 text-rbg-white/55"
+             style="font-size: 13px; line-height: 1.75; max-width: 420px;">
+            Twenty orders or more. You're deep in it — a pillar of the guild and trusted by all.
+          </p>
+          <div class="flex-shrink-0">
+            <span class="gate-badge border border-rbg-red/30 text-rbg-red/60 uppercase px-3 py-1.5 block text-center"
+                  style="font-size: 8px; letter-spacing: 0.18em; white-space: nowrap;">
+              20+ ORDERS
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── RANK 05: GRAND GUILD MASTER / 大ギルドマスター ── (RARE) -->
+      <!-- 大 (Dai) = "Great/Grand" — this rank is rare, founding-level -->
+      <div class="reveal rank-row rank-grandmaster flex items-start gap-4 md:gap-8 py-10 group relative">
+        <div class="flex-shrink-0 w-14 md:w-20 select-none">
+          <p class="font-sans font-black leading-none"
+             style="font-size: clamp(48px, 7vw, 80px); letter-spacing: -0.06em; line-height: 0.8;
+                    color: rgba(245,245,240,0.16);">05</p>
+        </div>
+        <div class="flex-shrink-0 w-px self-stretch bg-rbg-red/60 group-hover:bg-rbg-red"
+             style="transition: background-color 0.25s ease;"></div>
+        <div class="flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-8">
+          <div class="flex-shrink-0">
+            <p class="font-jp font-black text-rbg-white leading-tight"
+               style="font-size: clamp(16px, 2vw, 24px); white-space: nowrap;">大ギルドマスター</p>
+            <p class="font-sans font-black text-rbg-red uppercase"
+               style="font-size: 10px; letter-spacing: 0.18em;">GRAND GUILD MASTER</p>
+          </div>
+          <div class="flex-1">
+            <p class="text-rbg-white/65 mb-2"
+               style="font-size: 13px; line-height: 1.75; max-width: 420px;">
+              Rare. Reserved for those who've shaped the guild itself — founding members, exceptional contributors, those whose arc is undeniable.
+            </p>
+            <!-- 生きる証明 = "Living proof" -->
+            <p class="font-jp text-rbg-red/50"
+               style="font-size: 11px; letter-spacing: 0.05em;">生きる証明。</p>
+          </div>
+          <div class="flex-shrink-0">
+            <span class="border border-rbg-red/50 text-rbg-red uppercase px-3 py-1.5 block text-center"
+                  style="font-size: 8px; letter-spacing: 0.18em; white-space: nowrap;">
+              ★ INVITE ONLY
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /rank rows -->
+  </section>
+
+  <!-- ================================================================
+       JOIN — Email capture, powered by Kit API v4
+       ================================================================ -->
+  <section id="join"
+           class="relative py-32 px-6 overflow-hidden"
+           style="background-color: var(--bg-primary); border-top: 1px solid var(--accent-border);">
+
+    <!-- Subtle radial glow in centre -->
+    <div class="absolute inset-0 pointer-events-none" style="
+      background: radial-gradient(ellipse 70% 60% at 50% 80%, var(--accent-subtle) 0%, transparent 70%);
+    "></div>
+
+    <div class="reveal relative z-10 max-w-xl mx-auto text-center">
+
+      <!-- Section label -->
+      <p class="text-rbg-red uppercase mb-4"
+         style="font-size: 10px; letter-spacing: 0.3em; font-family: 'Helvetica Neue', sans-serif;">
+        ギルドに参加する / JOIN THE GUILD
+      </p>
+
+      <!-- Headline -->
+      <h2 class="font-sans text-rbg-white font-black uppercase mb-3"
+          style="font-family: 'Helvetica Neue', sans-serif;
+                 font-size: clamp(32px, 6vw, 56px);
+                 letter-spacing: -0.03em;
+                 line-height: 1.05;">
+        FIRST TO KNOW.<br>
+        <span style="color: var(--accent);">FIRST TO DROP.</span>
+      </h2>
+
+      <!-- Subtext -->
+      <p class="text-rbg-white/40 mb-10"
+         style="font-size: 13px; font-family: 'Noto Serif JP', serif; letter-spacing: 0.05em;">
+        ドロップ情報、限定コンテンツを最速でお届け。
+      </p>
+
+      <!-- Email form -->
+      <form id="join-form" class="flex flex-col sm:flex-row gap-3" novalidate>
+        <input
+          id="join-email"
+          type="email"
+          placeholder="your@email.com"
+          autocomplete="email"
+          required
+          class="flex-1 bg-transparent text-rbg-white placeholder-rbg-white/20 outline-none"
+          style="
+            border: 1px solid var(--accent-border);
+            padding: 12px 16px;
+            font-size: 13px;
+            font-family: 'Helvetica Neue', sans-serif;
+            letter-spacing: 0.04em;
+            transition: border-color 0.2s ease;
+            color: var(--text-primary);
+          "
+        >
+        <button
+          type="submit"
+          id="join-btn"
+          class="bg-rbg-red text-rbg-white uppercase font-black"
+          style="
+            padding: 12px 24px;
+            font-size: 10px;
+            font-family: 'Helvetica Neue', sans-serif;
+            letter-spacing: 0.2em;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+          "
+          onmouseover="this.style.opacity='0.85'"
+          onmouseout="this.style.opacity='1'"
+          onmousedown="this.style.transform='scale(0.97)'"
+          onmouseup="this.style.transform='scale(1)'"
+        >
+          IKZ →
+        </button>
+      </form>
+
+      <!-- Status message (hidden by default) -->
+      <p id="join-status" class="mt-5 text-sm" style="display:none; font-family:'Helvetica Neue',sans-serif; letter-spacing:0.05em;"></p>
+
+    </div>
+  </section>
+
+  <!-- Kit API v4 email capture logic -->
+  <script>
+    (function () {
+      // Email subscribe — calls our own serverless function (/api/subscribe)
+      // which holds the ConvertKit API key securely on the server side.
+
+      const form   = document.getElementById('join-form');
+      const input  = document.getElementById('join-email');
+      const btn    = document.getElementById('join-btn');
+      const status = document.getElementById('join-status');
+
+      // Helper: show the status message in a given colour
+      function showStatus(msg, color) {
+        status.textContent = msg;
+        status.style.color = color;
+        status.style.display = 'block';
+      }
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault(); // Stop the browser from reloading the page
+
+        const email = input.value.trim();
+        if (!email) return;
+
+        // Lock the button while the request is in flight
+        btn.disabled = true;
+        btn.textContent = '...';
+
+        try {
+          // POST to our serverless function — API key lives on the server
+          const res = await fetch('/api/subscribe', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email_address: email }),
+          });
+
+          if (res.ok) {
+            // Success — hide the form, show confirmation
+            form.style.display = 'none';
+            showStatus('行くぞ。 You\'re in — watch your inbox.', '#C8102E');
+          } else {
+            // Kit returned an error (e.g. invalid email, duplicate)
+            const data = await res.json().catch(() => ({}));
+            const msg = data?.errors?.[0]?.detail || 'Something went wrong. Try again.';
+            showStatus(msg, 'rgba(245,245,240,0.5)');
+            btn.disabled = false;
+            btn.textContent = 'IKZ →';
+          }
+        } catch (err) {
+          // Network failure
+          showStatus('Connection error. Please try again.', 'rgba(245,245,240,0.5)');
+          btn.disabled = false;
+          btn.textContent = 'IKZ →';
+        }
+      });
+    })();
+  </script>
+
+  <!-- ================================================================
+       FOOTER
+       ================================================================ -->
+  <footer id="footer"
+          class="relative overflow-hidden py-24 px-6 md:px-12"
+          style="background-color: var(--bg-footer); border-top: 1px solid var(--accent-border);">
+
+    <!-- Subtle center glow -->
+    <div class="absolute inset-0 pointer-events-none" style="
+      background: radial-gradient(ellipse 60% 40% at 50% 80%, var(--accent-subtle) 0%, transparent 70%);
+    "></div>
+
+    <!-- Top: IKZ sign-off → tagline stacked -->
+    <div class="reveal relative z-10 flex flex-col items-center text-center mb-12">
+      <!-- IKZ brand mark — primary footer sign-off, desaturated monochrome -->
+      <img
+        src="brand_assets/IKZ-Red@2x.png"
+        alt="IKZ"
+        class="object-contain mb-6"
+        style="width: min(120px, 28vw);
+               filter: grayscale(1) brightness(3) drop-shadow(0 0 16px rgba(245,245,240,0.15));"
+      >
+      <!-- 無限に前へ = "Forever forward" -->
+      <p class="font-jp text-rbg-white/20"
+         style="font-size: 10px; letter-spacing: 0.12em;">
+        無限に前へ
+      </p>
+    </div>
+
+    <!-- Bottom row: copyright + social links -->
+    <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-5 pt-6"
+         style="border-top: 1px solid var(--border-subtle);">
+
+      <!-- Copyright in Japanese + English -->
+      <!-- レッドビーングルード = "RedBean Guild" phonetic Japanese -->
+      <p class="font-jp text-rbg-white/20"
+         style="font-size: 10px; letter-spacing: 0.05em;">
+        © 2026 レッドビーングルード — RedBean Guild. All rights reserved.
+      </p>
+
+      <!-- Social links -->
+      <div class="flex items-center gap-6">
+        <a href="https://www.instagram.com/redbeanguild/" target="_blank" rel="noopener"
+           class="footer-link text-rbg-white/30 uppercase"
+           style="font-size: 9px; letter-spacing: 0.2em;"
+           aria-label="RedBean Guild on Instagram">INSTAGRAM</a>
+        <a href="https://twitter.com/RedBeanGuild" target="_blank" rel="noopener"
+           class="footer-link text-rbg-white/30 uppercase"
+           style="font-size: 9px; letter-spacing: 0.2em;"
+           aria-label="RedBean Guild on X">X</a>
+        <a href="tos.html"
+           class="footer-link text-rbg-white/30 uppercase"
+           style="font-size: 9px; letter-spacing: 0.2em;">TERMS</a>
+      </div>
+    </div>
+
+    <!-- Build version stamp -->
+    <p class="relative z-10 text-center mt-6 uppercase"
+       style="font-size: 9px; letter-spacing: 0.2em; opacity: 0.2; color: var(--text-secondary);">
+      REV 2.1.1
+    </p>
+  </footer>
+
+  <!-- ================================================================
+       MOBILE MENU JAVASCRIPT
+       ================================================================ -->
+  <script>
+    // Mobile nav toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuBtn.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.contains('open');
+
+      if (isOpen) {
+        // Close menu
+        mobileMenu.classList.remove('open');
+        mobileMenu.classList.add('hidden');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      } else {
+        // Open menu
+        mobileMenu.classList.remove('hidden');
+        // Small delay so the transition fires (display change needs a tick)
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            mobileMenu.classList.add('open');
+          });
+        });
+        menuBtn.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    // Close mobile menu when a link is clicked
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        mobileMenu.classList.add('hidden');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+  </script>
+
+  <!-- ================================================================
+       THEME TOGGLE — Dark/Light mode switch
+       ================================================================ -->
+  <script>
+    (function() {
+      const toggle  = document.getElementById('theme-toggle');
+      const sunIcon = document.getElementById('icon-sun');
+      const moonIcon = document.getElementById('icon-moon');
+      const html    = document.documentElement;
+
+      // Read the current theme (already set by the flash-prevention script in <head>)
+      function updateIcons(theme) {
+        if (theme === 'dark') {
+          sunIcon.classList.remove('hidden');
+          moonIcon.classList.add('hidden');
+        } else {
+          sunIcon.classList.add('hidden');
+          moonIcon.classList.remove('hidden');
+        }
+      }
+
+      // Set initial icon state
+      updateIcons(html.getAttribute('data-theme') || 'dark');
+
+      toggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+
+        // Add transition class for smooth switch
+        html.classList.add('theme-transitioning');
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('rbg-theme', next);
+        updateIcons(next);
+
+        // Remove transition class after animation completes
+        setTimeout(() => html.classList.remove('theme-transitioning'), 500);
+      });
+    })();
+  </script>
+
+  <!-- ================================================================
+       SCROLL REVEAL — IntersectionObserver triggers animations
+       ================================================================ -->
+  <script>
+    (function() {
+      // Create an observer that watches for elements entering the viewport
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              // Element is visible — trigger the animation
+              entry.target.classList.add('revealed');
+              // Stop watching (animate only once, don't re-trigger)
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        {
+          threshold: 0.15,            // Trigger when 15% visible
+          rootMargin: '0px 0px -40px 0px' // Slightly early trigger
+        }
+      );
+
+      // Watch all elements with reveal classes
+      document.querySelectorAll('.reveal, .reveal-left').forEach(el => {
+        observer.observe(el);
+      });
+    })();
+  </script>
+
+  <!-- ================================================================
+       NAV LOGO SCROLL — Show logo mark after scrolling past hero
+       ================================================================ -->
+  <script>
+    (function() {
+      const hero = document.getElementById('hero');
+      const logoMark = document.querySelector('.logo-mark');
+
+      if (!hero || !logoMark) return;
+
+      // Watch the hero section — when it leaves the viewport, show the nav logo
+      const heroObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              // Hero is visible — hide nav logo (we're at the top)
+              logoMark.classList.remove('logo-visible');
+            } else {
+              // Hero scrolled out of view — show nav logo
+              logoMark.classList.add('logo-visible');
+            }
+          });
+        },
+        {
+          threshold: 0.1  // Trigger when hero is 10% visible/hidden
+        }
+      );
+
+      heroObserver.observe(hero);
+    })();
+  </script>
+
+  <!-- ================================================================
+       AUTH CHECK — Update nav "SIGN IN" / "PROFILE" based on login state
+       ================================================================ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    (function() {
+      // Check if user is logged in and update nav links accordingly
+      getCurrentUser().then(function(user) {
+        var authLink = document.getElementById('auth-link');
+        var authLinkMobile = document.getElementById('auth-link-mobile');
+
+        var links = [authLink, authLinkMobile].filter(Boolean);
+
+        links.forEach(function(link) {
+          if (user) {
+            link.textContent = 'PROFILE';
+            link.href = 'profile.html';
+          } else {
+            link.textContent = 'SIGN IN';
+            link.href = 'login.html';
+          }
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>

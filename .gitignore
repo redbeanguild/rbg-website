@@ -1,0 +1,13 @@
+# Node dependencies
+node_modules/
+
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.production
+
+# Dev artifacts
+temporary screenshots/
+
+# macOS system files
+.DS_Store

@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RedBean Guild — Sign In</title>
+
+  <!-- Google Fonts: same as main site -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <!-- Flash prevention: apply saved theme before paint -->
+  <script>
+    (function() {
+      var t = localStorage.getItem('rbg-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind config: same brand colors as main site -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'rbg-black': '#0d0202',
+            'rbg-red':   '#E31A20',
+            'rbg-white': '#F5F5F0',
+          },
+          fontFamily: {
+            'sans': ['"Helvetica Neue"', 'Helvetica', 'Arial', 'system-ui', 'sans-serif'],
+            'jp':   ['"Noto Serif JP"', 'serif'],
+            'mono': ['"Courier New"', 'Courier', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <!-- Supabase JS SDK (loaded via CDN — no npm needed) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* ---- Theme variables — brutalist (black/white/red) ---- */
+    :root,
+    [data-theme="dark"] {
+      --bg-primary:       #0a0a0a;
+      --bg-elevated:      #111111;
+      --text-primary:     #F5F5F0;
+      --text-secondary:   rgba(245, 245, 240, 0.65);
+      --text-tertiary:    rgba(245, 245, 240, 0.40);
+      --accent:           #E31A20;
+      --accent-hover:     #FF2227;
+      --accent-border:    rgba(227, 26, 32, 0.18);
+      --border-subtle:    rgba(245, 245, 240, 0.05);
+      --border-medium:    rgba(245, 245, 240, 0.10);
+      --grain-opacity:    0.035;
+    }
+
+    [data-theme="light"] {
+      --bg-primary:       #F5F5F0;
+      --bg-elevated:      #EDEDEA;
+      --text-primary:     #0a0a0a;
+      --text-secondary:   rgba(10, 10, 10, 0.70);
+      --text-tertiary:    rgba(10, 10, 10, 0.45);
+      --accent:           #CC1518;
+      --accent-hover:     #DD1A1E;
+      --accent-border:    rgba(204, 21, 24, 0.20);
+      --border-subtle:    rgba(10, 10, 10, 0.06);
+      --border-medium:    rgba(10, 10, 10, 0.12);
+      --grain-opacity:    0.02;
+    }
+
+    /* ---- Base styles ---- */
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ---- Spin animation for logo ---- */
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* ---- Grain overlay (matches main site) ---- */
+    .grain::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: var(--grain-opacity);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* ---- Input styling — precise, luxury fashion register ---- */
+    .auth-input {
+      width: 100%;
+      padding: 14px 20px;
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border-medium);
+      color: var(--text-primary);
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      outline: none;
+      border-radius: 0;            /* no rounded corners — Stone Island precision */
+      transition: border-color 0.2s ease;
+    }
+
+    .auth-input::placeholder {
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      font-size: 9px;
+      letter-spacing: 0.22em;     /* wide tracking on labels */
+    }
+
+    .auth-input:focus {
+      border-color: var(--accent);
+    }
+
+    /* ---- Button styling — clean rectangular, no decoration ---- */
+    .auth-btn {
+      width: 100%;
+      padding: 14px 28px;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.3em;      /* very wide — editorial fashion */
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .auth-btn:hover {
+      opacity: 0.82;
+    }
+
+    .auth-btn:active {
+      opacity: 0.65;
+    }
+
+    .auth-btn-primary {
+      background-color: var(--accent);
+      color: #F5F5F0;             /* always white text on red bg */
+      border: none;
+    }
+
+    .auth-btn-secondary {
+      background-color: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-medium);
+    }
+
+    .auth-btn-secondary:hover {
+      border-color: var(--border-medium);
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+
+<body class="grain">
+
+  <!-- EMAIL CONFIRMATION SCREEN (hidden by default, shown after signup) -->
+  <div id="confirm-screen" class="hidden w-full max-w-md px-6 text-center">
+
+    <!-- Spinning logo -->
+    <div class="flex justify-center mb-8">
+      <img src="brand_assets/RBG_MAIN.png" alt="RBG" class="object-contain"
+           style="width: 56px; height: 56px; animation: spin 8s linear infinite;">
+    </div>
+
+    <!-- Bold heading -->
+    <h1 class="font-sans font-black uppercase mb-3"
+        style="font-size: 22px; letter-spacing: 0.08em; color: var(--text-primary);">
+      You're Almost In.
+    </h1>
+
+    <!-- Japanese accent -->
+    <p class="font-jp mb-8"
+       style="font-size: 10px; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase;">
+      確認メール送信済み · Email Sent
+    </p>
+
+    <!-- Instructions -->
+    <div style="border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);
+                padding: 24px 0; margin-bottom: 32px;">
+      <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 12px;">
+        We sent a confirmation link to
+      </p>
+      <p id="confirm-email" class="font-black"
+         style="font-size: 16px; color: var(--text-primary); letter-spacing: 0.02em; margin-bottom: 12px;">
+      </p>
+      <p style="font-size: 13px; color: var(--text-tertiary); line-height: 1.7;">
+        Open it. Click the link. Then come back and sign in.
+      </p>
+    </div>
+
+    <!-- CTA to go back to sign in -->
+    <button id="back-to-signin-btn" class="auth-btn auth-btn-primary" style="max-width: 280px; margin: 0 auto;">
+      I've Confirmed — Sign In
+    </button>
+
+    <p class="mt-6"
+       style="font-size: 9px; color: var(--text-tertiary); letter-spacing: 0.1em;">
+      No email? Check your spam folder.
+    </p>
+
+  </div>
+
+  <!-- RESET PASSWORD SCREEN (hidden by default) -->
+  <div id="reset-screen" class="hidden w-full max-w-sm px-6">
+
+    <div class="flex justify-center mb-10">
+      <img src="brand_assets/RBG_MAIN.png" alt="RBG" class="object-contain"
+           style="width: 48px; height: 48px; animation: spin 8s linear infinite;">
+    </div>
+
+    <h1 class="text-center font-sans font-black uppercase mb-2"
+        style="font-size: 13px; letter-spacing: 0.25em; color: var(--text-primary);">
+      Reset Password
+    </h1>
+    <p class="text-center font-jp mb-10"
+       style="font-size: 10px; color: var(--text-tertiary); letter-spacing: 0.12em;">
+      パスワードをリセット
+    </p>
+
+    <div id="reset-status" class="hidden text-center mb-6"
+         style="font-size: 11px; letter-spacing: 0.05em;"></div>
+
+    <form id="reset-form" class="flex flex-col gap-4 mb-6">
+      <input type="email" id="reset-email" class="auth-input"
+             placeholder="Your email address" required autocomplete="email">
+      <button type="submit" class="auth-btn auth-btn-primary mt-2">
+        Send Reset Email
+      </button>
+    </form>
+
+    <div class="text-center">
+      <button id="back-to-login-btn"
+              style="font-size: 9px; letter-spacing: 0.15em; color: var(--text-tertiary);
+                     background: none; border: none; cursor: pointer; text-transform: uppercase;
+                     font-family: inherit;">
+        ← Back to Sign In
+      </button>
+    </div>
+
+  </div>
+
+  <!-- RESET CONFIRMATION SCREEN (hidden by default) -->
+  <div id="reset-confirm-screen" class="hidden w-full max-w-md px-6 text-center">
+
+    <div class="flex justify-center mb-8">
+      <img src="brand_assets/RBG_MAIN.png" alt="RBG" class="object-contain"
+           style="width: 56px; height: 56px; animation: spin 8s linear infinite;">
+    </div>
+
+    <h1 class="font-sans font-black uppercase mb-3"
+        style="font-size: 22px; letter-spacing: 0.08em; color: var(--text-primary);">
+      Check Your Email
+    </h1>
+
+    <p class="font-jp mb-8"
+       style="font-size: 10px; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase;">
+      リセットリンク送信済み · Reset Link Sent
+    </p>
+
+    <div style="border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);
+                padding: 24px 0; margin-bottom: 32px;">
+      <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 12px;">
+        We sent a password reset link to
+      </p>
+      <p id="reset-confirm-email" class="font-black"
+         style="font-size: 16px; color: var(--text-primary); letter-spacing: 0.02em; margin-bottom: 12px;">
+      </p>
+      <p style="font-size: 13px; color: var(--text-tertiary); line-height: 1.7;">
+        Click the link in the email, then set your new password.
+      </p>
+    </div>
+
+    <button id="reset-done-btn" class="auth-btn auth-btn-primary" style="max-width: 280px; margin: 0 auto;">
+      Back to Sign In
+    </button>
+
+    <p class="mt-6" style="font-size: 9px; color: var(--text-tertiary); letter-spacing: 0.1em;">
+      No email? Check your spam folder.
+    </p>
+
+  </div>
+
+  <!-- Main login card -->
+  <div id="login-card" class="w-full max-w-sm px-6">
+
+    <!-- Logo — spinning, centered -->
+    <div class="flex justify-center mb-10">
+      <img
+        src="brand_assets/RBG_MAIN.png"
+        alt="RBG"
+        class="object-contain"
+        style="width: 48px; height: 48px; animation: spin 8s linear infinite;"
+      >
+    </div>
+
+    <!-- Heading -->
+    <h1 class="text-center font-sans font-black uppercase mb-2"
+        style="font-size: 13px; letter-spacing: 0.25em; color: var(--text-primary);">
+      Welcome to the Guild
+    </h1>
+    <p class="text-center font-jp mb-10"
+       style="font-size: 10px; color: var(--text-tertiary); letter-spacing: 0.12em;">
+      ギルドへようこそ
+    </p>
+
+    <!-- Status message (errors / success) -->
+    <div id="status-msg" class="hidden text-center mb-6"
+         style="font-size: 11px; letter-spacing: 0.05em;">
+    </div>
+
+    <!-- Sign In Form (shown by default) -->
+    <form id="signin-form" class="flex flex-col gap-4 mb-6">
+      <input
+        type="email"
+        id="signin-email"
+        class="auth-input"
+        placeholder="Email"
+        required
+        autocomplete="email"
+      >
+      <input
+        type="password"
+        id="signin-password"
+        class="auth-input"
+        placeholder="Password"
+        required
+        autocomplete="current-password"
+      >
+      <button type="submit" class="auth-btn auth-btn-primary mt-2">
+        Sign In
+      </button>
+    </form>
+
+    <!-- Forgot password link — shown under sign-in form, hidden during sign-up -->
+    <div id="forgot-link-row" class="text-center mb-2 -mt-2">
+      <button id="forgot-btn"
+              style="font-size: 9px; letter-spacing: 0.12em; color: var(--text-tertiary);
+                     background: none; border: none; cursor: pointer; text-transform: uppercase;
+                     text-decoration: underline; text-underline-offset: 3px; font-family: inherit;">
+        Forgot password?
+      </button>
+    </div>
+
+    <!-- Sign Up Form (hidden by default) -->
+    <form id="signup-form" class="hidden flex flex-col gap-4 mb-6">
+      <input
+        type="email"
+        id="signup-email"
+        class="auth-input"
+        placeholder="Email"
+        required
+        autocomplete="email"
+      >
+      <input
+        type="password"
+        id="signup-password"
+        class="auth-input"
+        placeholder="Password (min 6 characters)"
+        required
+        minlength="6"
+        autocomplete="new-password"
+      >
+      <button type="submit" class="auth-btn auth-btn-primary mt-2">
+        Create Account
+      </button>
+    </form>
+
+    <!-- Toggle between Sign In / Sign Up -->
+    <div class="text-center mb-8">
+      <button id="toggle-btn" class="auth-btn-secondary"
+              style="font-size: 10px; letter-spacing: 0.15em; cursor: pointer;
+                     background: none; border: none; color: var(--text-tertiary);
+                     text-transform: uppercase; padding: 8px;">
+        Don't have an account? <span style="color: var(--accent);">Sign Up</span>
+      </button>
+    </div>
+
+    <!-- Back to main site link -->
+    <div class="text-center">
+      <a href="index.html"
+         style="font-size: 9px; letter-spacing: 0.15em; color: var(--text-tertiary);
+                text-transform: uppercase; text-decoration: none;">
+        ← Back to RedBeanGuild
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Auth logic -->
+  <script src="js/auth.js"></script>
+  <script>
+    (function() {
+      // ---- DOM elements ----
+      const signinForm      = document.getElementById('signin-form');
+      const signupForm      = document.getElementById('signup-form');
+      const toggleBtn       = document.getElementById('toggle-btn');
+      const statusMsg       = document.getElementById('status-msg');
+      const forgotLinkRow   = document.getElementById('forgot-link-row');
+      const forgotBtn       = document.getElementById('forgot-btn');
+      const loginCard       = document.getElementById('login-card');
+      const resetScreen     = document.getElementById('reset-screen');
+      const resetConfirmScr = document.getElementById('reset-confirm-screen');
+
+      let isSignUp = false; // tracks which form is showing
+
+      // ---- Toggle between Sign In and Sign Up ----
+      toggleBtn.addEventListener('click', () => {
+        isSignUp = !isSignUp;
+
+        if (isSignUp) {
+          signinForm.classList.add('hidden');
+          signupForm.classList.remove('hidden');
+          forgotLinkRow.classList.add('hidden'); // hide forgot link during sign-up
+          toggleBtn.innerHTML = 'Already have an account? <span style="color: var(--accent);">Sign In</span>';
+        } else {
+          signupForm.classList.add('hidden');
+          signinForm.classList.remove('hidden');
+          forgotLinkRow.classList.remove('hidden'); // show forgot link during sign-in
+          toggleBtn.innerHTML = 'Don\'t have an account? <span style="color: var(--accent);">Sign Up</span>';
+        }
+
+        // Clear any error messages when switching forms
+        hideStatus();
+      });
+
+      // ---- Forgot password: show reset form ----
+      forgotBtn.addEventListener('click', () => {
+        loginCard.classList.add('hidden');
+        resetScreen.classList.remove('hidden');
+      });
+
+      // ---- Reset form: send password reset email ----
+      document.getElementById('reset-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('reset-email').value;
+        const statusEl = document.getElementById('reset-status');
+
+        try {
+          await resetPassword(email);
+          // Show the confirmation screen
+          resetScreen.classList.add('hidden');
+          resetConfirmScr.classList.remove('hidden');
+          document.getElementById('reset-confirm-email').textContent = email;
+        } catch (err) {
+          statusEl.textContent = err.message;
+          statusEl.style.color = 'var(--accent)';
+          statusEl.classList.remove('hidden');
+        }
+      });
+
+      // ---- Back to login from reset form ----
+      document.getElementById('back-to-login-btn').addEventListener('click', () => {
+        resetScreen.classList.add('hidden');
+        loginCard.classList.remove('hidden');
+      });
+
+      // ---- Back to login from reset confirmation ----
+      document.getElementById('reset-done-btn').addEventListener('click', () => {
+        resetConfirmScr.classList.add('hidden');
+        loginCard.classList.remove('hidden');
+      });
+
+      // ---- Show status message ----
+      function showStatus(message, isError) {
+        statusMsg.textContent = message;
+        statusMsg.style.color = isError ? 'var(--accent)' : 'var(--text-secondary)';
+        statusMsg.classList.remove('hidden');
+      }
+
+      function hideStatus() {
+        statusMsg.classList.add('hidden');
+      }
+
+      // ---- Handle Sign In ----
+      signinForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); // stop the page from reloading
+        hideStatus();
+
+        const email = document.getElementById('signin-email').value;
+        const password = document.getElementById('signin-password').value;
+
+        try {
+          await signIn(email, password);
+          // Success — go to profile page
+          window.location.href = 'profile.html';
+        } catch (error) {
+          showStatus(error.message, true);
+        }
+      });
+
+      // ---- Handle Sign Up ----
+      signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideStatus();
+
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+
+        try {
+          const data = await signUp(email, password);
+
+          // Check if email confirmation is required
+          if (data.user && !data.session) {
+            // Show the big confirmation screen
+            document.getElementById('login-card').classList.add('hidden');
+            document.getElementById('confirm-screen').classList.remove('hidden');
+            document.getElementById('confirm-email').textContent = email;
+          } else {
+            // Auto-confirmed — go to profile
+            window.location.href = 'profile.html';
+          }
+        } catch (error) {
+          showStatus(error.message, true);
+        }
+      });
+
+      // ---- "I've Confirmed" button — goes back to sign in form ----
+      document.getElementById('back-to-signin-btn').addEventListener('click', () => {
+        document.getElementById('confirm-screen').classList.add('hidden');
+        document.getElementById('login-card').classList.remove('hidden');
+        // Switch to sign-in form
+        signupForm.classList.add('hidden');
+        signinForm.classList.remove('hidden');
+        isSignUp = false;
+        toggleBtn.innerHTML = 'Don\'t have an account? <span style="color: var(--accent);">Sign Up</span>';
+      });
+
+      // ---- If already logged in, redirect to profile ----
+      getCurrentUser().then(user => {
+        if (user) {
+          window.location.href = 'profile.html';
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

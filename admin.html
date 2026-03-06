@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RedBean Guild — Admin</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <!-- Flash prevention: apply saved theme before paint (avoids white flash on load) -->
+  <script>
+    (function() {
+      var t = localStorage.getItem('rbg-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind config: brand colors + font families (matches rest of site) -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'rbg-black': '#0d0202',
+            'rbg-red':   '#E31A20',
+            'rbg-white': '#F5F5F0',
+          },
+          fontFamily: {
+            'sans': ['"Helvetica Neue"', 'Helvetica', 'Arial', 'system-ui', 'sans-serif'],
+            'jp':   ['"Noto Serif JP"', 'serif'],
+            'mono': ['"Courier New"', 'Courier', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- auth.js: sbClient, requireAuth, getProfile, updateProfile, signOut -->
+  <script src="js/auth.js"></script>
+
+  <style>
+    /* ================================================================
+       THEME VARIABLES — dark (default) and light mode
+       Same system as profile.html and index.html
+       ================================================================ */
+    :root,
+    [data-theme="dark"] {
+      --bg-primary:     #0a0a0a;
+      --bg-elevated:    #111111;
+      --bg-floating:    #161616;
+      --text-primary:   #F5F5F0;
+      --text-secondary: rgba(245, 245, 240, 0.65);
+      --text-tertiary:  rgba(245, 245, 240, 0.40);
+      --text-muted:     rgba(245, 245, 240, 0.25);
+      --accent:         #E31A20;
+      --accent-hover:   #FF2227;
+      --accent-border:  rgba(227, 26, 32, 0.18);
+      --border-subtle:  rgba(245, 245, 240, 0.05);
+      --border-medium:  rgba(245, 245, 240, 0.10);
+      --grain-opacity:  0.035;
+    }
+
+    [data-theme="light"] {
+      --bg-primary:     #F5F5F0;
+      --bg-elevated:    #EDEDEA;
+      --bg-floating:    #FFFFFF;
+      --text-primary:   #0a0a0a;
+      --text-secondary: rgba(10, 10, 10, 0.70);
+      --text-tertiary:  rgba(10, 10, 10, 0.45);
+      --text-muted:     rgba(10, 10, 10, 0.30);
+      --accent:         #CC1518;
+      --accent-hover:   #DD1A1E;
+      --accent-border:  rgba(204, 21, 24, 0.20);
+      --border-subtle:  rgba(10, 10, 10, 0.06);
+      --border-medium:  rgba(10, 10, 10, 0.12);
+      --grain-opacity:  0.02;
+    }
+
+    /* ---- Base styles ---- */
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    /* ---- Grain texture overlay (same as all other pages) ---- */
+    .grain::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: var(--grain-opacity);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* ---- Spinning logo animation ---- */
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* ---- Theme toggle button ---- */
+    .theme-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--text-tertiary);
+      transition: color 0.2s;
+      line-height: 1;
+    }
+    .theme-toggle:hover { color: var(--text-primary); }
+
+    /* ---- Nav link style ---- */
+    .nav-link {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--text-tertiary);
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--text-primary); }
+
+    /* ---- Admin table ---- */
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    /* Table header row */
+    .admin-table thead tr {
+      border-bottom: 1px solid var(--accent-border);
+    }
+
+    /* Column header labels */
+    .admin-table th {
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0 12px 12px 0;
+      text-align: left;
+    }
+
+    /* Individual member rows */
+    .admin-table tbody tr {
+      border-bottom: 1px solid var(--border-subtle);
+      transition: background-color 0.15s;
+    }
+
+    .admin-table tbody tr:hover {
+      background-color: var(--bg-elevated);
+    }
+
+    /* Table cells */
+    .admin-table td {
+      padding: 14px 12px 14px 0;
+      vertical-align: middle;
+    }
+
+    /* ---- Member avatar circle ---- */
+    /* Shows the first letter of the member's name or email */
+    .member-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: var(--accent-border);
+      border: 1px solid var(--accent-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+
+    /* ---- Member name ---- */
+    .member-name {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text-primary);
+      text-transform: uppercase;
+    }
+
+    /* No display_name set — shows in muted gray */
+    .member-name.no-name {
+      color: var(--text-muted);
+      font-style: italic;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    /* ---- Member email ---- */
+    .member-email {
+      font-size: 10px;
+      color: var(--text-tertiary);
+    }
+
+    /* ---- Join date ---- */
+    .member-joined {
+      font-size: 9px;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* ---- Rank dropdown ---- */
+    /* Styled to look brutalist: no background, red accent text, uppercase */
+    .rank-select {
+      background: transparent;
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-family: 'Courier New', Courier, monospace;
+      outline: none;
+      appearance: none;       /* removes default browser arrow */
+      -webkit-appearance: none;
+      white-space: nowrap;
+    }
+
+    .rank-select:focus {
+      border-color: var(--accent);
+    }
+
+    /* ---- "✓ SAVED" confirmation indicator ---- */
+    /* Appears next to the dropdown briefly after a successful save */
+    .save-indicator {
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      opacity: 0;
+      transition: opacity 0.2s;
+      margin-left: 8px;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .save-indicator.visible {
+      opacity: 1;
+    }
+
+    /* ---- Member count badge ---- */
+    .count-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+      padding: 2px 7px;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    /* ---- Error / access denied message ---- */
+    .error-state {
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    /* ---- Loading / access-denied / login centered states ---- */
+    .centered-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 64px);
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    /* ---- Inline admin login form ---- */
+    .admin-input {
+      width: 100%;
+      padding: 12px 16px;
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border-medium);
+      color: var(--text-primary);
+      font-size: 12px;
+      letter-spacing: 0.02em;
+      outline: none;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .admin-input::placeholder {
+      color: var(--text-tertiary);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .admin-input:focus {
+      border-color: var(--accent);
+    }
+
+    .admin-login-btn {
+      width: 100%;
+      padding: 12px 24px;
+      background-color: var(--accent);
+      color: #F5F5F0;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      font-family: 'Courier New', Courier, monospace;
+      transition: opacity 0.2s;
+    }
+    .admin-login-btn:hover { opacity: 0.82; }
+    .admin-login-btn:active { opacity: 0.65; }
+
+    /* ---- Loading / denied small text ---- */
+    .state-label {
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+
+<body class="grain">
+
+  <!-- ================================================================
+       NAV — spinning logo + theme toggle + HOME + SIGN OUT
+       Matches profile.html nav pattern exactly
+       ================================================================ -->
+  <nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 md:px-14"
+       style="background-color: var(--bg-primary); border-bottom: 1px solid var(--border-subtle);">
+
+    <!-- Left: spinning logo -->
+    <a href="index.html" class="flex items-center gap-3" aria-label="RedBean Guild home">
+      <img src="brand_assets/RBG_MAIN.png" alt="RBG" class="object-contain"
+           style="width: 24px; height: 24px; animation: spin 8s linear infinite;">
+    </a>
+
+    <!-- Right: theme toggle + nav links -->
+    <div class="flex items-center gap-6">
+
+      <!-- Theme toggle (sun = light / moon = dark) -->
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <!-- Sun icon — shown in dark mode (clicking switches TO light) -->
+        <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <!-- Moon icon — shown in light mode (clicking switches TO dark) -->
+        <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             style="display: none;">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+
+      <!-- Home link -->
+      <a href="index.html" class="nav-link">Home</a>
+
+      <!-- Sign out -->
+      <button id="sign-out-btn" class="nav-link"
+              style="background: none; border: none; cursor: pointer;">
+        Sign Out
+      </button>
+    </div>
+  </nav>
+
+  <!-- ================================================================
+       MAIN CONTENT — three views, only one shown at a time
+       ================================================================ -->
+  <main>
+
+    <!-- ── VIEW: LOADING ─────────────────────────────────────────── -->
+    <!-- Shown briefly while we check session status -->
+    <div id="view-loading" class="centered-state">
+      <p class="state-label">Loading · 読み込み中...</p>
+    </div>
+
+    <!-- ── VIEW: LOGIN ───────────────────────────────────────────── -->
+    <!-- Shown when user is NOT logged in — inline admin login form -->
+    <div id="view-login" class="centered-state" style="display: none;">
+      <div style="width: 100%; max-width: 320px;">
+
+        <!-- Logo -->
+        <div class="flex justify-center mb-8">
+          <img src="brand_assets/RBG_MAIN.png" alt="RBG" class="object-contain"
+               style="width: 40px; height: 40px; animation: spin 8s linear infinite;">
+        </div>
+
+        <!-- Heading -->
+        <h1 class="font-sans font-black uppercase text-center mb-1"
+            style="font-size: 12px; letter-spacing: 0.28em; color: var(--text-primary);">
+          Admin Access
+        </h1>
+        <p class="font-jp text-center mb-8"
+           style="font-size: 9px; color: var(--text-tertiary); letter-spacing: 0.12em;">
+          管理者専用
+        </p>
+
+        <!-- Error message (hidden by default) -->
+        <div id="login-error" class="hidden text-center mb-4"
+             style="font-size: 10px; letter-spacing: 0.05em; color: var(--accent);"></div>
+
+        <!-- Sign in form -->
+        <form id="admin-login-form" style="display: flex; flex-direction: column; gap: 10px;">
+          <input type="email" id="admin-email" class="admin-input"
+                 placeholder="Email" required autocomplete="email">
+          <input type="password" id="admin-password" class="admin-input"
+                 placeholder="Password" required autocomplete="current-password">
+          <button type="submit" class="admin-login-btn" style="margin-top: 6px;">
+            Sign In
+          </button>
+        </form>
+
+        <!-- Back to main site -->
+        <div class="text-center mt-6">
+          <a href="index.html"
+             style="font-size: 9px; letter-spacing: 0.15em; color: var(--text-tertiary);
+                    text-transform: uppercase; text-decoration: none;">
+            ← RedBeanGuild
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── VIEW: DENIED ──────────────────────────────────────────── -->
+    <!-- Shown when user is logged in but not an admin -->
+    <div id="view-denied" class="centered-state" style="display: none;">
+      <p class="font-sans font-black uppercase mb-3"
+         style="font-size: 18px; letter-spacing: 0.15em; color: var(--accent);">
+        Access Denied
+      </p>
+      <p class="state-label mb-8">アクセスが拒否されました</p>
+      <button id="denied-signout-btn"
+              style="font-size: 9px; letter-spacing: 0.18em; color: var(--text-tertiary);
+                     background: none; border: 1px solid var(--border-medium); cursor: pointer;
+                     padding: 8px 16px; text-transform: uppercase; font-family: inherit;">
+        Sign Out
+      </button>
+    </div>
+
+    <!-- ── VIEW: PANEL ───────────────────────────────────────────── -->
+    <!-- Shown when user is an authorized admin -->
+    <div id="view-panel" class="max-w-5xl mx-auto px-6 pt-28 pb-20 md:px-14"
+         style="display: none;">
+
+      <!-- Page header -->
+      <div class="mb-10">
+        <div class="flex items-baseline gap-3 mb-2">
+          <h1 class="font-sans font-black uppercase"
+              style="font-size: clamp(28px, 5vw, 48px); letter-spacing: -0.02em; color: var(--text-primary);">
+            Admin
+          </h1>
+          <span id="member-count" class="count-badge">— MEMBERS</span>
+        </div>
+        <p class="font-jp"
+           style="font-size: 10px; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase;">
+          管理画面
+        </p>
+      </div>
+
+      <div style="border-top: 1px solid var(--accent-border); margin-bottom: 28px;"></div>
+
+      <!-- Member table -->
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th style="width: 40px;"></th>
+            <th>Member</th>
+            <th>Email</th>
+            <th>Joined</th>
+            <th>Rank</th>
+          </tr>
+        </thead>
+        <tbody id="member-tbody"></tbody>
+      </table>
+
+      <div id="empty-state" style="display: none; text-align: center; padding: 48px 0;">
+        <p style="font-size: 9px; letter-spacing: 0.3em; color: var(--text-muted); text-transform: uppercase;">
+          No members found
+        </p>
+      </div>
+
+    </div><!-- end #view-panel -->
+
+  </main>
+
+  <!-- ================================================================
+       FOOTER — minimal, matches site style
+       ================================================================ -->
+  <footer class="text-center py-10 px-6"
+          style="border-top: 1px solid var(--accent-border);">
+    <p class="font-jp" style="font-size: 10px; color: var(--text-tertiary); letter-spacing: 0.05em;">
+      © 2026 レッドビーングルード — RedBean Guild. All rights reserved.
+    </p>
+    <p class="mt-3 uppercase"
+       style="font-size: 9px; letter-spacing: 0.2em; opacity: 0.2; color: var(--text-secondary);">
+      ADMIN PANEL — REV 2.1.1
+    </p>
+  </footer>
+
+  <!-- ================================================================
+       JAVASCRIPT
+       ================================================================ -->
+  <script>
+
+    // ----------------------------------------------------------------
+    // RANK LOOKUP TABLE
+    // Maps the stored rank code (e.g. '02') to display text
+    // Same codes used in profile.html and admin-migration.sql
+    // ----------------------------------------------------------------
+    const RANKS = {
+      '01': { code: '01', en: 'INITIATE',          jp: '入門' },
+      '02': { code: '02', en: 'RONIN',              jp: '浪人' },
+      '03': { code: '03', en: 'KENSHI',             jp: '剣士' },
+      '04': { code: '04', en: 'GUILD MASTER',       jp: 'ギルドマスター' },
+      '05': { code: '05', en: 'GRAND GUILD MASTER', jp: '大ギルドマスター' },
+    };
+
+
+    // ----------------------------------------------------------------
+    // THEME TOGGLE — same logic as profile.html and index.html
+    // ----------------------------------------------------------------
+    const themeToggle = document.getElementById('theme-toggle');
+    const iconSun     = document.getElementById('icon-sun');
+    const iconMoon    = document.getElementById('icon-moon');
+
+    // Apply the saved theme on load (also done in <head> to prevent flash,
+    // but we need to sync the icon state here)
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('rbg-theme', theme);
+
+      if (theme === 'dark') {
+        iconSun.style.display  = '';     // show sun (click to go light)
+        iconMoon.style.display = 'none';
+      } else {
+        iconSun.style.display  = 'none';
+        iconMoon.style.display = '';     // show moon (click to go dark)
+      }
+    }
+
+    // Set initial icon state based on saved theme
+    applyTheme(localStorage.getItem('rbg-theme') || 'dark');
+
+    // Toggle on button click
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+
+
+    // ----------------------------------------------------------------
+    // VIEW HELPER — show one view, hide the others
+    // ----------------------------------------------------------------
+    function showView(id) {
+      ['view-loading', 'view-login', 'view-denied', 'view-panel'].forEach(v => {
+        document.getElementById(v).style.display = (v === id) ? '' : 'none';
+      });
+    }
+
+
+    // ----------------------------------------------------------------
+    // AUTHORIZATION CHECK
+    // Returns true if the user is allowed to access the admin panel.
+    // Two ways in:
+    //   1. profile.is_admin === true (set manually in Supabase dashboard)
+    //   2. email is the hardcoded main admin email
+    // ----------------------------------------------------------------
+    function isAuthorizedAdmin(user, profile) {
+      return profile?.is_admin === true || user?.email === 'ikuzoden@gmail.com';
+    }
+
+
+    // ----------------------------------------------------------------
+    // SIGN OUT — from nav button and access-denied screen
+    // ----------------------------------------------------------------
+    async function handleSignOut() {
+      await signOut();
+      showView('view-login');
+    }
+
+    document.getElementById('sign-out-btn').addEventListener('click', handleSignOut);
+    document.getElementById('denied-signout-btn').addEventListener('click', handleSignOut);
+
+
+    // ----------------------------------------------------------------
+    // ADMIN LOGIN FORM — shown when user is not logged in
+    // After successful sign-in, runs the auth check again
+    // ----------------------------------------------------------------
+    document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errorEl  = document.getElementById('login-error');
+      const email    = document.getElementById('admin-email').value;
+      const password = document.getElementById('admin-password').value;
+
+      errorEl.classList.add('hidden');
+
+      try {
+        await signIn(email, password);
+        await runAuthCheck(); // re-check after successful login
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.classList.remove('hidden');
+      }
+    });
+
+
+    // ----------------------------------------------------------------
+    // MAIN AUTH CHECK
+    // 1. getCurrentUser() — no redirect, just check
+    // 2. Not logged in → show login form
+    // 3. Logged in → check isAuthorizedAdmin
+    // 4. Not authorized → show access denied
+    // 5. Authorized → show admin panel, load members
+    // ----------------------------------------------------------------
+    async function runAuthCheck() {
+      try {
+        const currentUser = await getCurrentUser();
+
+        if (!currentUser) {
+          showView('view-login');
+          return;
+        }
+
+        const myProfile = await getProfile(currentUser.id);
+
+        if (!isAuthorizedAdmin(currentUser, myProfile)) {
+          showView('view-denied');
+          return;
+        }
+
+        // Authorized — show the panel
+        showView('view-panel');
+        await loadMembers();
+
+      } catch (err) {
+        console.error('Admin auth error:', err);
+        showView('view-login');
+      }
+    }
+
+    // Run auth check on page load
+    runAuthCheck();
+
+
+    // ----------------------------------------------------------------
+    // LOAD MEMBERS
+    // Fetches ALL profiles from Supabase (admin RLS policy allows this)
+    // Then renders a table row for each member
+    // ----------------------------------------------------------------
+    async function loadMembers() {
+      // Fetch all profiles, sorted newest member first
+      const { data: profiles, error } = await sbClient
+        .from('profiles')
+        .select('*')
+        .order('joined_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching members:', error);
+        return;
+      }
+
+      // Show empty state if no members found
+      if (!profiles || profiles.length === 0) {
+        document.getElementById('empty-state').style.display = 'block';
+        return;
+      }
+
+      // Update the member count badge in the header
+      document.getElementById('member-count').textContent = `${profiles.length} MEMBERS`;
+
+      // Build and inject a row for each member
+      const tbody = document.getElementById('member-tbody');
+      tbody.innerHTML = ''; // clear any previous content
+
+      profiles.forEach(profile => {
+        const row = buildMemberRow(profile);
+        tbody.appendChild(row);
+      });
+    }
+
+
+    // ----------------------------------------------------------------
+    // BUILD MEMBER ROW
+    // Creates a <tr> element for one member with all columns filled
+    // ----------------------------------------------------------------
+    function buildMemberRow(profile) {
+      const tr = document.createElement('tr');
+
+      // ── Avatar: first letter of display_name or email ──
+      // We pull the first character and show it in a small circle
+      const nameOrEmail   = profile.display_name || profile.email || '?';
+      const avatarLetter  = nameOrEmail.charAt(0).toUpperCase();
+
+      // ── Display name ──
+      const hasName       = !!profile.display_name;
+      const displayName   = profile.display_name || '(no name)';
+
+      // ── Email ──
+      const email         = profile.email || '—';
+
+      // ── Join date — formatted as "Mar 2026" ──
+      let joinedText = '—';
+      if (profile.joined_at) {
+        const d = new Date(profile.joined_at);
+        joinedText = d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      }
+
+      // ── Rank — default to '01' if not set in DB yet ──
+      const rankCode = profile.rank || '01';
+
+      // Build the HTML for this row
+      tr.innerHTML = `
+        <!-- Column 1: Avatar circle -->
+        <td>
+          <div class="member-avatar">${avatarLetter}</div>
+        </td>
+
+        <!-- Column 2: Display name -->
+        <td>
+          <span class="member-name ${hasName ? '' : 'no-name'}">${displayName}</span>
+        </td>
+
+        <!-- Column 3: Email (ghosted) -->
+        <td>
+          <span class="member-email">${email}</span>
+        </td>
+
+        <!-- Column 4: Join date -->
+        <td>
+          <span class="member-joined">${joinedText}</span>
+        </td>
+
+        <!-- Column 5: Rank dropdown + save indicator -->
+        <td>
+          <div style="display: flex; align-items: center;">
+            <select class="rank-select" data-user-id="${profile.id}">
+              <option value="01" ${rankCode === '01' ? 'selected' : ''}>01 — INITIATE 入門</option>
+              <option value="02" ${rankCode === '02' ? 'selected' : ''}>02 — RONIN 浪人</option>
+              <option value="03" ${rankCode === '03' ? 'selected' : ''}>03 — KENSHI 剣士</option>
+              <option value="04" ${rankCode === '04' ? 'selected' : ''}>04 — GUILD MASTER ギルドマスター</option>
+              <option value="05" ${rankCode === '05' ? 'selected' : ''}>05 — GRAND GUILD MASTER 大ギルドマスター</option>
+            </select>
+            <!-- This "✓ SAVED" text fades in briefly after a successful rank update -->
+            <span class="save-indicator">✓ SAVED</span>
+          </div>
+        </td>
+      `;
+
+      // ── Wire up the rank dropdown change handler ──
+      // We do this after innerHTML so we can get a reference to the actual elements
+      const select        = tr.querySelector('.rank-select');
+      const saveIndicator = tr.querySelector('.save-indicator');
+
+      select.addEventListener('change', async () => {
+        await saveRank(profile.id, select.value, saveIndicator);
+      });
+
+      return tr;
+    }
+
+
+    // ----------------------------------------------------------------
+    // SAVE RANK
+    // Called when a rank dropdown changes
+    // Updates the profile row in Supabase, then shows a brief "✓ SAVED"
+    // ----------------------------------------------------------------
+    async function saveRank(userId, newRankCode, saveIndicator) {
+      try {
+        // Update just the rank field for this member
+        await updateProfile(userId, { rank: newRankCode });
+
+        // Show "✓ SAVED" briefly — fade in, wait, fade out
+        saveIndicator.classList.add('visible');
+        setTimeout(() => {
+          saveIndicator.classList.remove('visible');
+        }, 1500); // disappears after 1.5 seconds
+
+      } catch (err) {
+        console.error('Failed to save rank:', err);
+        // Show an error state in the indicator
+        saveIndicator.textContent = '✗ ERROR';
+        saveIndicator.style.color = 'var(--text-muted)';
+        saveIndicator.classList.add('visible');
+        setTimeout(() => {
+          saveIndicator.classList.remove('visible');
+          saveIndicator.textContent = '✓ SAVED';      // reset for next time
+          saveIndicator.style.color = 'var(--accent)';
+        }, 2000);
+      }
+    }
+
+  </script>
+
+</body>
+</html>

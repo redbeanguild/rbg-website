@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RedBean Guild — Profile</title>
+
+  <!-- Flash prevention: apply saved theme before paint (prevents white flash) -->
+  <script>
+    (function() {
+      var t = localStorage.getItem('rbg-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'rbg-black': '#0d0202',
+            'rbg-red':   '#C8102E',
+            'rbg-white': '#F5F5F0',
+          },
+          fontFamily: {
+            'sans': ['"Helvetica Neue"', 'Helvetica', 'Arial', 'system-ui', 'sans-serif'],
+            'mono': ['"Courier New"', 'Courier', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <!-- Supabase SDK + ethers.js for wallet verification -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+
+  <style>
+    /* ================================================================
+       THEME VARIABLES
+       ================================================================ */
+    :root,
+    [data-theme="dark"] {
+      --bg-primary:     #0a0a0a;
+      --bg-elevated:    #111111;
+      --bg-floating:    #161616;
+      --text-primary:   #F5F5F0;
+      --text-secondary: rgba(245, 245, 240, 0.65);
+      --text-tertiary:  rgba(245, 245, 240, 0.40);
+      --text-muted:     rgba(245, 245, 240, 0.25);
+      --text-ghost:     rgba(245, 245, 240, 0.12);
+      --accent:         #C8102E;
+      --accent-hover:   #E8132E;
+      --accent-border:  rgba(200, 16, 46, 0.18);
+      --accent-dim:     rgba(200, 16, 46, 0.06);
+      --border-subtle:  rgba(245, 245, 240, 0.05);
+      --border-std:     rgba(245, 245, 240, 0.08);
+      --border-medium:  rgba(245, 245, 240, 0.10);
+      --border-strong:  rgba(245, 245, 240, 0.12);
+      --grain-opacity:  0.035;
+    }
+
+    [data-theme="light"] {
+      --bg-primary:     #F5F5F0;
+      --bg-elevated:    #EDEDEA;
+      --bg-floating:    #FFFFFF;
+      --text-primary:   #0a0a0a;
+      --text-secondary: rgba(10, 10, 10, 0.70);
+      --text-tertiary:  rgba(10, 10, 10, 0.45);
+      --text-muted:     rgba(10, 10, 10, 0.30);
+      --text-ghost:     rgba(10, 10, 10, 0.12);
+      --accent:         #CC1518;
+      --accent-hover:   #DD1A1E;
+      --accent-border:  rgba(204, 21, 24, 0.20);
+      --accent-dim:     rgba(204, 21, 24, 0.06);
+      --border-subtle:  rgba(10, 10, 10, 0.06);
+      --border-std:     rgba(10, 10, 10, 0.08);
+      --border-medium:  rgba(10, 10, 10, 0.12);
+      --border-strong:  rgba(10, 10, 10, 0.16);
+      --grain-opacity:  0.02;
+    }
+
+    /* ================================================================
+       BASE — Design system: Courier body, grid background
+       ================================================================ */
+    body {
+      background-color: var(--bg-primary);
+      /* Faint grid overlay — structural texture per design spec */
+      background-image:
+        linear-gradient(rgba(245, 245, 240, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245, 245, 240, 0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+      color: var(--text-primary);
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    /* Selection highlight — design system spec */
+    ::selection {
+      background: var(--accent);
+      color: #F5F5F0;
+    }
+
+    /* Scrollbar — 3px red thumb (design system spec) */
+    ::-webkit-scrollbar       { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); }
+
+    /* ================================================================
+       GRAIN OVERLAY
+       ================================================================ */
+    .grain::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: var(--grain-opacity);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* ================================================================
+       ANIMATIONS
+       ================================================================ */
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* Blink — for the "● ACTIVE" rank indicator (step-end per design spec) */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    /* Ticker marquee */
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ================================================================
+       TICKER TAPE — 22px red bar below nav
+       ================================================================ */
+    .ticker {
+      position: fixed;
+      top: 56px;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      height: 22px;
+      background-color: var(--accent);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    .ticker-track {
+      display: flex;
+      white-space: nowrap;
+      animation: marquee 18s linear infinite;
+    }
+
+    .ticker-text {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: #F5F5F0;
+      text-transform: uppercase;
+      padding-right: 40px;
+    }
+
+    /* ================================================================
+       NAV — 56px fixed bar
+       ================================================================ */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background-color: var(--bg-primary);
+      border-bottom: 1px solid var(--border-std);
+    }
+
+    .nav-btn {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-btn:hover { color: var(--text-primary); }
+
+    /* ================================================================
+       PAGE LAYOUT — 2-column grid
+       ================================================================ */
+    /* Account for fixed nav (56px) + ticker (22px) = 78px top offset */
+    .page-wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 78px 24px 48px;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    /* Right column — sticky so it stays in view while left scrolls */
+    .right-col {
+      position: sticky;
+      top: 86px;
+    }
+
+    /* ================================================================
+       HERO BLOCK
+       ================================================================ */
+    .hero {
+      padding: 24px 0 20px;
+    }
+
+    /* Top row: avatar + rank badge + username */
+    .hero-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    /* Avatar — 80×80px square (design spec: 80×80, 1px border, corner pip) */
+    .avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    #avatar-ring {
+      width: 80px;
+      height: 80px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid var(--border-medium);
+      background-color: var(--bg-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    #avatar-ring:hover .avatar-overlay { opacity: 1; }
+
+    .avatar-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.15s;
+      font-size: 7px;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      color: #F5F5F0;
+    }
+
+    #avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #avatar-initials {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 900;
+      font-size: 26px;
+      color: var(--text-secondary);
+    }
+
+    /* Red corner pip — design spec: 8×8px bottom-right of avatar */
+    .avatar-pip {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent);
+      pointer-events: none;
+    }
+
+    /* Rank badge — design spec: 36×36px box, 1px red border, numeral centered */
+    #rank-badge-box {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    #rank-num {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 900;
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: 0;
+    }
+
+    /* Username + rank name block */
+    .hero-identity {
+      flex: 1;
+      min-width: 0;
+    }
+
+    #username-input {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: 0.06em;
+      color: var(--text-primary);
+      background: transparent;
+      border: none;
+      outline: none;
+      width: 100%;
+      padding: 0;
+      text-transform: uppercase;
+    }
+
+    #username-input::placeholder {
+      font-size: 13px;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      text-transform: none;
+    }
+
+    /* Rank name display under username */
+    .rank-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 3px;
+    }
+
+    #rank-en {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.25em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    #rank-jp {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+    /* ================================================================
+       XP BAR — 3px red fill on dark track (design spec)
+       ================================================================ */
+    .xp-track {
+      height: 3px;
+      background: var(--border-std);
+      margin-bottom: 16px;
+    }
+
+    #xp-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.8s ease;
+    }
+
+    /* ================================================================
+       STATS ROW — 4 columns with 1px vertical dividers (design spec)
+       ================================================================ */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin-bottom: 16px;
+    }
+
+    .stat-col {
+      padding: 8px 0;
+      text-align: center;
+      border-right: 1px solid var(--border-std);
+    }
+    .stat-col:first-child { text-align: left; padding-left: 0; }
+    .stat-col:last-child  { border-right: none; }
+
+    .stat-value {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 900;
+      font-size: 13px;
+      color: var(--text-primary);
+      display: block;
+      /* First stat (pieces) gets red — assigned in HTML */
+    }
+
+    .stat-label {
+      font-size: 7px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* ================================================================
+       MISOGI LORE BLOCK — Courier italic, red left stripe
+       ================================================================ */
+    .lore-block {
+      border-left: 3px solid rgba(200, 16, 46, 0.44);
+      padding-left: 12px;
+      margin-bottom: 14px;
+    }
+
+    #misogi-input {
+      width: 100%;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 11px;
+      font-style: italic;
+      letter-spacing: 0.01em;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    #misogi-input::placeholder {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* ================================================================
+       SOCIAL ROW — inline @handles + LINKS+ button
+       ================================================================ */
+    .social-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .social-handle-link {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--text-tertiary);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.15s;
+    }
+    .social-handle-link:hover  { color: var(--text-primary); }
+    .social-handle-link.active { color: var(--text-secondary); }
+
+    #edit-links-btn {
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      background: none;
+      border: 1px solid var(--accent-border);
+      padding: 3px 7px;
+      cursor: pointer;
+      font-family: inherit;
+      text-transform: uppercase;
+      transition: border-color 0.15s;
+    }
+    #edit-links-btn:hover { border-color: var(--accent); }
+
+    /* ================================================================
+       WALLET SECTION — below social row
+       ================================================================ */
+    .wallet-section {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .connect-btn {
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: transparent;
+      border: 1px solid var(--accent-border);
+      padding: 7px 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background-color 0.15s, color 0.15s;
+    }
+    .connect-btn:hover {
+      background-color: var(--accent);
+      color: #F5F5F0;
+    }
+    .connect-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .wallet-meta {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #wallet-address {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 9px;
+      color: var(--text-secondary);
+    }
+
+    #wallet-status {
+      font-size: 9px;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+    }
+
+    #wallet-error {
+      font-size: 9px;
+      color: var(--accent);
+      margin-top: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    .reverify-btn {
+      font-size: 8px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: none;
+      border: 1px solid var(--border-std);
+      padding: 2px 6px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color 0.15s;
+    }
+    .reverify-btn:hover { color: var(--text-primary); }
+
+    /* ================================================================
+       WARDROBE GRID — 3 columns, gap:0, borders form the grid
+       ================================================================ */
+    .wardrobe-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      /* No gap — 1px borders on cells create the grid lines */
+    }
+
+    .wardrobe-cell {
+      aspect-ratio: 1 / 1;
+      border: 1px solid var(--border-std);
+      position: relative;
+      overflow: hidden;
+      background-color: var(--bg-elevated);
+    }
+
+    /* Owned cell — slight bg tint, red hover */
+    .wardrobe-cell.owned {
+      background-color: rgba(245, 245, 240, 0.02);
+      cursor: pointer;
+      transition: background-color 0.15s;
+    }
+    .wardrobe-cell.owned:hover {
+      background-color: rgba(200, 16, 46, 0.06);
+    }
+
+    /* Locked cell — grayed out (design spec: opacity 0.25) */
+    .wardrobe-cell.locked {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+
+    /* Piece number watermark — Helvetica 900, 52px, red ghost, bottom-right */
+    .piece-watermark {
+      position: absolute;
+      bottom: 2px;
+      right: 4px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 900;
+      font-size: 52px;
+      color: rgba(200, 16, 46, 0.08);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Drop tag — Courier 8px, muted, top-left */
+    .drop-tag {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      font-size: 7px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* Piece name block — bottom-left */
+    .piece-name-block {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+    }
+
+    .piece-name {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 9px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      display: block;
+    }
+
+    /* Red 16×1px bar under piece name (design spec: shown only for owned) */
+    .piece-bar {
+      width: 16px;
+      height: 1px;
+      background: var(--accent);
+      margin-top: 3px;
+    }
+
+    /* Piece image inside owned cell */
+    .piece-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    /* ================================================================
+       RANKS TAB — progression list (design spec)
+       ================================================================ */
+    .rank-row {
+      display: flex;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border-std);
+      position: relative;
+      transition: background-color 0.1s;
+    }
+
+    /* Active row — red left stripe + dim red bg */
+    .rank-row.active {
+      background-color: rgba(200, 16, 46, 0.06);
+      padding-left: 0;
+      border-left: 3px solid var(--accent);
+      padding-left: 8px;
+    }
+
+    /* Rank numeral column — 64px (design spec) */
+    .rank-numeral {
+      width: 64px;
+      text-align: center;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 900;
+      font-size: 24px;
+      letter-spacing: 0;
+      flex-shrink: 0;
+    }
+
+    /* Numeral colors per state */
+    .rank-numeral.state-active   { color: var(--accent); }
+    .rank-numeral.state-achieved { color: var(--text-secondary); }
+    .rank-numeral.state-locked   { color: var(--text-ghost); }
+
+    /* Rank name column */
+    .rank-info {
+      flex: 1;
+    }
+
+    .rank-en-name {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 900;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      display: block;
+    }
+
+    .rank-jp-name {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 8px;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .rank-row.locked-row .rank-en-name,
+    .rank-row.locked-row .rank-jp-name {
+      opacity: 0.3;
+    }
+
+    /* "● ACTIVE" blinking badge */
+    .active-badge {
+      font-size: 7px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-left: 6px;
+      display: inline-block;
+      animation: blink 2s step-end infinite;
+    }
+
+    /* Status mark — right side */
+    .rank-status {
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+    .rank-status.achieved { color: var(--accent); }
+    .rank-status.locked   { color: var(--text-ghost); }
+
+    /* ================================================================
+       PERKS TAB — perks list (design spec)
+       ================================================================ */
+    .perk-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-std);
+    }
+
+    .perk-row.locked { opacity: 0.3; }
+
+    /* Red dash — left side */
+    .perk-dash {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 10px;
+      color: var(--accent);
+      flex-shrink: 0;
+      line-height: 1.5;
+    }
+
+    /* Perk body text */
+    .perk-text {
+      flex: 1;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 400;
+      font-size: 12px;
+      letter-spacing: 0.02em;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Check mark / X — right side */
+    .perk-status {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      flex-shrink: 0;
+      line-height: 2;
+    }
+    .perk-status.unlocked { color: var(--text-secondary); }
+    .perk-status.locked   { color: var(--text-muted); }
+
+    /* ================================================================
+       SOCIAL BUBBLE MODAL (unchanged from before)
+       ================================================================ */
+    .social-bubble {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .social-bubble.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .social-bubble-card {
+      background-color: var(--bg-floating);
+      border: 1px solid var(--border-medium);
+      padding: 28px 32px;
+      width: 100%;
+      max-width: 320px;
+      transform: translateY(8px);
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .social-bubble.open .social-bubble-card {
+      transform: translateY(0);
+    }
+
+    .bubble-close-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--text-tertiary);
+      line-height: 1;
+      padding: 0;
+      font-family: inherit;
+    }
+    .bubble-close-btn:hover { color: var(--text-primary); }
+
+    /* Inline edit input inside bubble */
+    .inline-edit {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border-medium);
+      outline: none;
+      color: var(--text-primary);
+      font-family: 'Courier New', Courier, monospace;
+      width: 100%;
+      padding: 4px 0;
+      transition: border-color 0.2s;
+    }
+    .inline-edit:focus { border-bottom-color: var(--accent); }
+    .inline-edit::placeholder { color: var(--text-muted); font-size: 11px; }
+
+    /* ================================================================
+       TAB BAR — right column, 3 tabs
+       ================================================================ */
+    .tab-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--border-std);
+      margin-bottom: 0;
+    }
+
+    .tab {
+      padding: 10px 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-align: center;
+      background: transparent;
+      border: none;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      transition: background-color 0.15s, color 0.15s;
+    }
+
+    .tab.active {
+      background-color: var(--accent);
+      color: #F5F5F0;
+    }
+
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active { display: block; }
+
+    /* ================================================================
+       RANK ICONS — in ranks tab rows
+       ================================================================ */
+    .rank-icon {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .rank-icon.locked-icon { opacity: 0.15; }
+  </style>
+</head>
+
+<body class="grain">
+
+  <!-- Profile is disabled for the MVP launch — redirect to homepage -->
+  <script>window.location.replace('index.html');</script>
+
+  <!-- ================================================================
+       NAV — logo | theme toggle | HOME | SIGN OUT
+       ================================================================ -->
+  <nav>
+    <a href="index.html" aria-label="RedBean Guild home">
+      <img src="brand_assets/RBG_MAIN.png" alt="RBG"
+           style="width: 24px; height: 24px; animation: spin 8s linear infinite; object-fit: contain;">
+    </a>
+
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <!-- Theme toggle -->
+      <button id="theme-toggle" class="nav-btn" style="padding: 0;" aria-label="Toggle theme">
+        <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             style="display: none;">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+
+      <a href="index.html" class="nav-btn">Home</a>
+
+      <button id="signout-btn" class="nav-btn">Sign Out</button>
+    </div>
+  </nav>
+
+  <!-- ================================================================
+       TICKER TAPE — red marquee bar (design spec)
+       ================================================================ -->
+  <div class="ticker">
+    <div class="ticker-track">
+      <!-- Duplicate text so the marquee loops seamlessly -->
+      <span class="ticker-text">RBG GUILD REGISTRY ——— PRODUCTS ARE ARMOR FOR YOUR ARC ——— </span>
+      <span class="ticker-text">RBG GUILD REGISTRY ——— PRODUCTS ARE ARMOR FOR YOUR ARC ——— </span>
+      <span class="ticker-text">RBG GUILD REGISTRY ——— PRODUCTS ARE ARMOR FOR YOUR ARC ——— </span>
+      <span class="ticker-text">RBG GUILD REGISTRY ——— PRODUCTS ARE ARMOR FOR YOUR ARC ——— </span>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       PROFILE CONTENT — hidden until auth passes
+       ================================================================ -->
+  <div id="profile-content" class="hidden">
+    <div class="page-wrap">
+
+      <!-- ══ LEFT COLUMN: profile identity ══════════════════════ -->
+      <div class="left-col">
+
+        <section class="hero">
+
+          <!-- Top row: avatar + rank badge + identity -->
+          <div class="hero-top">
+
+            <!-- Avatar (80×80 square) -->
+            <div class="avatar-wrap">
+              <div id="avatar-ring">
+                <img id="avatar-img" class="piece-img hidden" alt="Profile photo">
+                <div id="avatar-initials" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 900; font-size: 26px; color: var(--text-secondary);">
+                  <span id="avatar-letter"></span>
+                </div>
+                <div class="avatar-overlay">UPLOAD</div>
+              </div>
+              <!-- Hidden file input — clicking avatar triggers this -->
+              <input id="avatar-input" type="file" accept="image/png,image/jpeg,image/webp" class="hidden">
+              <!-- Red corner pip (design spec) -->
+              <div class="avatar-pip"></div>
+            </div>
+
+            <!-- Rank badge (36×36 box) -->
+            <div id="rank-badge-box">
+              <span id="rank-num">01</span>
+            </div>
+
+            <!-- Identity: username + rank name -->
+            <div class="hero-identity">
+              <input
+                id="username-input"
+                type="text"
+                placeholder="Your name"
+                maxlength="40"
+                autocomplete="off"
+                spellcheck="false"
+              >
+              <div class="rank-name-row">
+                <span id="rank-en">INITIATE</span>
+                <span id="rank-jp">入門</span>
+              </div>
+            </div>
+
+          </div><!-- end hero-top -->
+
+          <!-- XP bar (3px, full width, red fill) -->
+          <div class="xp-track">
+            <div id="xp-fill" style="width: 20%;"></div>
+          </div>
+
+          <!-- Stats row (4 columns) -->
+          <div class="stats-row">
+            <div class="stat-col">
+              <span id="stat-pieces" class="stat-value" style="color: var(--accent);">—</span>
+              <span class="stat-label">Pieces</span>
+            </div>
+            <div class="stat-col">
+              <span id="stat-rank" class="stat-value">01</span>
+              <span class="stat-label">Rank</span>
+            </div>
+            <div class="stat-col">
+              <span id="stat-since" class="stat-value">—</span>
+              <span class="stat-label">Since</span>
+            </div>
+            <div class="stat-col">
+              <span id="stat-wallet" class="stat-value">—</span>
+              <span class="stat-label">Wallet</span>
+            </div>
+          </div>
+
+        </section><!-- end hero -->
+
+        <!-- Misogi lore block (Courier italic, 3px left red stripe) -->
+        <div class="lore-block">
+          <textarea
+            id="misogi-input"
+            placeholder="Declare your misogi."
+            maxlength="200"
+            rows="2"
+          ></textarea>
+        </div>
+
+        <!-- Social row: @handles + LINKS+ button -->
+        <div class="social-row">
+          <a id="x-icon-btn" href="#" class="social-handle-link" style="display: none;">
+            X · <span id="x-handle-text"></span>
+          </a>
+          <a id="ig-icon-btn" href="#" class="social-handle-link" style="display: none;">
+            IG · <span id="ig-handle-text"></span>
+          </a>
+          <button id="edit-links-btn">ADD LINKS</button>
+        </div>
+
+        <!-- Wallet section -->
+        <div class="wallet-section">
+          <!-- Disconnected state -->
+          <div id="wallet-disconnected">
+            <button id="connect-wallet-btn" class="connect-btn">Connect Wallet →</button>
+            <p id="wallet-error" class="hidden" style="font-size: 9px; color: var(--accent); margin-top: 6px;"></p>
+          </div>
+
+          <!-- Connected state (hidden until wallet linked) -->
+          <div id="wallet-connected" class="hidden">
+            <div class="wallet-meta">
+              <span id="wallet-address" style="font-family: 'Courier New', Courier, monospace; font-size: 9px; color: var(--text-secondary);"></span>
+              <button id="reverify-btn" class="reverify-btn">Re-verify</button>
+            </div>
+            <p id="wallet-status" style="font-size: 9px; color: var(--text-tertiary); margin-top: 4px;"></p>
+          </div>
+        </div>
+
+      </div><!-- end left-col -->
+
+      <!-- ══ RIGHT COLUMN: tabbed content ═════════════════════ -->
+      <div class="right-col">
+
+        <!-- Tab bar: WARDROBE | RANKS | PERKS -->
+        <div class="tab-bar">
+          <button class="tab active" data-tab="wardrobe">Wardrobe</button>
+          <button class="tab"        data-tab="ranks">Ranks</button>
+          <button class="tab"        data-tab="perks">Perks</button>
+        </div>
+
+        <!-- WARDROBE tab -->
+        <div id="tab-wardrobe" class="tab-content active">
+          <div class="wardrobe-grid">
+
+            <!-- Cell 1: Matsuri Happi Coat — unlocks when wallet verified + owns_happi -->
+            <div id="wardrobe-cell-1" class="wardrobe-cell locked">
+              <div class="drop-tag">SZN I</div>
+              <span class="piece-watermark">1</span>
+              <div class="piece-name-block">
+                <span class="piece-name">Matsuri Happi</span>
+                <!-- red bar shown only when owned — added by JS -->
+              </div>
+            </div>
+
+            <!-- Cells 2–6: Locked placeholders -->
+            <div class="wardrobe-cell locked">
+              <span class="piece-watermark">2</span>
+              <div class="piece-name-block">
+                <span class="piece-name" style="opacity: 0.4;">???</span>
+              </div>
+            </div>
+            <div class="wardrobe-cell locked">
+              <span class="piece-watermark">3</span>
+              <div class="piece-name-block">
+                <span class="piece-name" style="opacity: 0.4;">???</span>
+              </div>
+            </div>
+            <div class="wardrobe-cell locked">
+              <span class="piece-watermark">4</span>
+              <div class="piece-name-block">
+                <span class="piece-name" style="opacity: 0.4;">???</span>
+              </div>
+            </div>
+            <div class="wardrobe-cell locked">
+              <span class="piece-watermark">5</span>
+              <div class="piece-name-block">
+                <span class="piece-name" style="opacity: 0.4;">???</span>
+              </div>
+            </div>
+            <div class="wardrobe-cell locked">
+              <span class="piece-watermark">6</span>
+              <div class="piece-name-block">
+                <span class="piece-name" style="opacity: 0.4;">???</span>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- end tab-wardrobe -->
+
+        <!-- RANKS tab — rows injected by JS in renderRankTab() -->
+        <div id="tab-ranks" class="tab-content"></div>
+
+        <!-- PERKS tab — rows injected by JS in renderPerksTab() -->
+        <div id="tab-perks" class="tab-content"></div>
+
+      </div><!-- end right-col -->
+
+    </div><!-- end page-wrap -->
+  </div><!-- end #profile-content -->
+
+  <!-- ================================================================
+       SOCIAL BUBBLE MODAL — floating card for X / IG inputs
+       ================================================================ -->
+  <div id="social-bubble" class="social-bubble">
+    <div class="social-bubble-card">
+
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <span style="font-size: 9px; font-weight: 900; letter-spacing: 0.32em; color: var(--text-tertiary); text-transform: uppercase;">Links</span>
+        <button id="bubble-close-btn" class="bubble-close-btn">×</button>
+      </div>
+
+      <!-- X handle -->
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+        <span style="font-size: 9px; font-weight: 700; letter-spacing: 0.2em; color: var(--text-tertiary); text-transform: uppercase; flex-shrink: 0; width: 16px;">X</span>
+        <input id="x-handle-input" class="inline-edit" placeholder="@handle" type="text" maxlength="50">
+      </div>
+
+      <!-- Instagram handle -->
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="font-size: 9px; font-weight: 700; letter-spacing: 0.2em; color: var(--text-tertiary); text-transform: uppercase; flex-shrink: 0; width: 16px;">IG</span>
+        <input id="ig-handle-input" class="inline-edit" placeholder="@handle" type="text" maxlength="50">
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SCRIPTS — auth.js → wallet.js → page logic
+       ================================================================ -->
+  <script src="js/auth.js"></script>
+  <script src="js/wallet.js"></script>
+
+  <script>
+    (function() {
+
+      // ================================================================
+      // DOM REFS
+      // ================================================================
+      const profileContent     = document.getElementById('profile-content');
+
+      // Avatar
+      const avatarRing         = document.getElementById('avatar-ring');
+      const avatarImg          = document.getElementById('avatar-img');
+      const avatarInitials     = document.getElementById('avatar-initials');
+      const avatarLetter       = document.getElementById('avatar-letter');
+      const avatarInput        = document.getElementById('avatar-input');
+
+      // Editable fields
+      const usernameInput      = document.getElementById('username-input');
+      const misogiInput        = document.getElementById('misogi-input');
+      const xHandleInput       = document.getElementById('x-handle-input');
+      const igHandleInput      = document.getElementById('ig-handle-input');
+
+      // Social row
+      const xIconBtn           = document.getElementById('x-icon-btn');
+      const igIconBtn          = document.getElementById('ig-icon-btn');
+      const xHandleText        = document.getElementById('x-handle-text');
+      const igHandleText       = document.getElementById('ig-handle-text');
+      const editLinksBtn       = document.getElementById('edit-links-btn');
+
+      // Social bubble modal
+      const socialBubble       = document.getElementById('social-bubble');
+      const bubbleCloseBtn     = document.getElementById('bubble-close-btn');
+
+      // Wallet
+      const walletDisconnected = document.getElementById('wallet-disconnected');
+      const walletConnected    = document.getElementById('wallet-connected');
+      const walletAddressEl    = document.getElementById('wallet-address');
+      const walletStatusEl     = document.getElementById('wallet-status');
+      const walletErrorEl      = document.getElementById('wallet-error');
+      const connectBtn         = document.getElementById('connect-wallet-btn');
+      const reverifyBtn        = document.getElementById('reverify-btn');
+
+      // State
+      let currentUser    = null;
+      let currentProfile = null;
+
+      // ================================================================
+      // RANK DATA — lookup table (same as admin.html)
+      // ================================================================
+      const RANKS = {
+        '01': { num: '01', en: 'INITIATE',          jp: '入門' },
+        '02': { num: '02', en: 'RONIN',              jp: '浪人' },
+        '03': { num: '03', en: 'KENSHI',             jp: '剣士' },
+        '04': { num: '04', en: 'GUILD MASTER',       jp: 'ギルドマスター' },
+        '05': { num: '05', en: 'GRAND GUILD MASTER', jp: '大ギルドマスター' },
+      };
+
+      // Rank icon images (from brand_assets/5ranks_icons/)
+      const RANK_ICONS = {
+        '01': 'brand_assets/5ranks_icons/rbg_rank_recruit.png',
+        '02': 'brand_assets/5ranks_icons/rbg_rank_ronin.png',
+        '03': 'brand_assets/5ranks_icons/rbg_rank_kenshi.png',
+        '04': 'brand_assets/5ranks_icons/rbg_rank_guildmaster.png',
+        '05': 'brand_assets/5ranks_icons/rbg_rank_grandguildmaster.png',
+      };
+
+      // Perks per rank (minimum rank needed to unlock each)
+      const PERKS = [
+        { minRank: 1, text: 'Early access email notifications' },
+        { minRank: 2, text: 'Early drop access' },
+        { minRank: 3, text: 'Private Discord access' },
+        { minRank: 4, text: 'Limited run priority + physical membership card' },
+        { minRank: 5, text: 'Co-creation rights' },
+      ];
+
+      // ================================================================
+      // THEME TOGGLE
+      // ================================================================
+      const themeToggle = document.getElementById('theme-toggle');
+      const iconSun     = document.getElementById('icon-sun');
+      const iconMoon    = document.getElementById('icon-moon');
+
+      function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('rbg-theme', theme);
+        iconSun.style.display  = theme === 'dark' ? '' : 'none';
+        iconMoon.style.display = theme === 'dark' ? 'none' : '';
+      }
+
+      applyTheme(localStorage.getItem('rbg-theme') || 'dark');
+
+      themeToggle.addEventListener('click', () => {
+        const cur = document.documentElement.getAttribute('data-theme');
+        applyTheme(cur === 'dark' ? 'light' : 'dark');
+      });
+
+      // ================================================================
+      // TABS — click to switch right-column content panels
+      // ================================================================
+      document.querySelectorAll('.tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          btn.classList.add('active');
+          const target = btn.dataset.tab;
+          ['wardrobe', 'ranks', 'perks'].forEach(id => {
+            document.getElementById('tab-' + id).classList.toggle('active', id === target);
+          });
+        });
+      });
+
+      // ================================================================
+      // INIT — check auth, load profile, render everything
+      // ================================================================
+      async function init() {
+        currentUser = await requireAuth();
+        if (!currentUser) return;
+
+        try {
+          currentProfile = await getProfile(currentUser.id);
+        } catch (err) {
+          console.error('Could not load profile:', err.message);
+        }
+
+        renderProfile();
+        setupAvatarUpload();
+        setupInlineEdits();
+
+        profileContent.classList.remove('hidden');
+      }
+
+      // ================================================================
+      // RENDER PROFILE — populate all fields from DB data
+      // ================================================================
+      function renderProfile() {
+        const rankCode = currentProfile?.rank || '01';
+        const rank     = RANKS[rankCode] || RANKS['01'];
+        const rankNum  = parseInt(rankCode, 10);
+
+        // --- Rank badge box ---
+        document.getElementById('rank-num').textContent = rank.num;
+        document.getElementById('rank-en').textContent  = rank.en;
+        document.getElementById('rank-jp').textContent  = rank.jp;
+
+        // --- XP bar: (rankNum / 5) × 100 ---
+        document.getElementById('xp-fill').style.width = ((rankNum / 5) * 100) + '%';
+
+        // --- Stats row ---
+        // Pieces: happi_token_count or dash
+        const pieces = currentProfile?.happi_token_count ?? '—';
+        document.getElementById('stat-pieces').textContent = pieces;
+
+        // Rank code
+        document.getElementById('stat-rank').textContent = rankCode;
+
+        // Member since (short: "Mar 26")
+        const joinDate = currentProfile?.joined_at
+          ? new Date(currentProfile.joined_at)
+          : new Date(currentUser.created_at);
+        document.getElementById('stat-since').textContent = joinDate.toLocaleDateString('en-US', {
+          month: 'short', year: '2-digit'
+        });
+
+        // Wallet (short address or dash)
+        const walletAddr = currentProfile?.wallet_address;
+        document.getElementById('stat-wallet').textContent = walletAddr
+          ? truncateAddress(walletAddr)
+          : '—';
+
+        // --- Username ---
+        usernameInput.value = currentProfile?.display_name || '';
+
+        // --- Avatar ---
+        renderAvatar(currentProfile?.avatar_url, currentUser.email);
+
+        // --- Misogi ---
+        if (currentProfile?.misogi) {
+          misogiInput.value = currentProfile.misogi;
+          misogiInput.style.height = 'auto';
+          misogiInput.style.height = misogiInput.scrollHeight + 'px';
+        }
+
+        // --- Social handles ---
+        if (currentProfile?.x_handle) xHandleInput.value = currentProfile.x_handle;
+        if (currentProfile?.ig_handle) igHandleInput.value = currentProfile.ig_handle;
+        refreshSocialRow();
+        refreshLinksBtn();
+
+        // --- Wallet connected state ---
+        if (currentProfile?.wallet_address) {
+          showWalletConnected(
+            currentProfile.wallet_address,
+            currentProfile.owns_happi,
+            currentProfile.happi_token_count
+          );
+        }
+
+        // --- Render tabs ---
+        renderRankTab(rankNum);
+        renderPerksTab(rankNum);
+      }
+
+      // ================================================================
+      // RENDER AVATAR
+      // ================================================================
+      function renderAvatar(url, email) {
+        if (url) {
+          avatarImg.src = url;
+          avatarImg.classList.remove('hidden');
+          avatarInitials.classList.add('hidden');
+        } else {
+          const name = currentProfile?.display_name || email || '?';
+          avatarLetter.textContent = name.charAt(0).toUpperCase();
+          avatarImg.classList.add('hidden');
+          avatarInitials.classList.remove('hidden');
+        }
+      }
+
+      // ================================================================
+      // RENDER RANK TAB — 5 rows with active/achieved/locked states
+      // ================================================================
+      function renderRankTab(currentRankNum) {
+        const container = document.getElementById('tab-ranks');
+        container.innerHTML = '';
+
+        Object.values(RANKS).forEach(r => {
+          const rNum  = parseInt(r.num, 10);
+          const state = rNum < currentRankNum  ? 'achieved'
+                      : rNum === currentRankNum ? 'active'
+                      : 'locked';
+
+          const row = document.createElement('div');
+          row.className = 'rank-row' + (state === 'active' ? ' active' : '') + (state === 'locked' ? ' locked-row' : '');
+
+          // Status mark: ✦ if active/achieved, ◌ if locked
+          const statusMark = state === 'locked' ? '◌' : '✦';
+          const statusClass = state === 'locked' ? 'locked' : 'achieved';
+
+          // "● ACTIVE" badge — only on active row
+          const activeBadge = state === 'active'
+            ? '<span class="active-badge">● Active</span>'
+            : '';
+
+          row.innerHTML = `
+            <img class="rank-icon${state === 'locked' ? ' locked-icon' : ''}"
+                 src="${RANK_ICONS[r.num]}" alt="${r.en}">
+            <div class="rank-numeral state-${state}">${r.num}</div>
+            <div class="rank-info">
+              <span class="rank-en-name">${r.en}${activeBadge}</span>
+              <span class="rank-jp-name">${r.jp}</span>
+            </div>
+            <span class="rank-status ${statusClass}">${statusMark}</span>
+          `;
+
+          container.appendChild(row);
+        });
+      }
+
+      // ================================================================
+      // RENDER PERKS TAB — list with unlock status
+      // ================================================================
+      function renderPerksTab(currentRankNum) {
+        const container = document.getElementById('tab-perks');
+        container.innerHTML = '';
+
+        PERKS.forEach(perk => {
+          const isUnlocked = currentRankNum >= perk.minRank;
+          const row = document.createElement('div');
+          row.className = 'perk-row' + (isUnlocked ? '' : ' locked');
+
+          row.innerHTML = `
+            <span class="perk-dash">—</span>
+            <span class="perk-text">${perk.text}</span>
+            <span class="perk-status ${isUnlocked ? 'unlocked' : 'locked'}">${isUnlocked ? '✓' : '✗'}</span>
+          `;
+
+          container.appendChild(row);
+        });
+      }
+
+      // ================================================================
+      // SOCIAL ROW — show @handles as links when set, hide otherwise
+      // ================================================================
+      function refreshSocialRow() {
+        const xHandle  = currentProfile?.x_handle;
+        const igHandle = currentProfile?.ig_handle;
+
+        if (xHandle) {
+          xHandleText.textContent = '@' + xHandle;
+          xIconBtn.href = 'https://x.com/' + xHandle;
+          xIconBtn.target = '_blank';
+          xIconBtn.style.display = '';
+          xIconBtn.classList.add('active');
+        } else {
+          xIconBtn.style.display = 'none';
+        }
+
+        if (igHandle) {
+          igHandleText.textContent = '@' + igHandle;
+          igIconBtn.href = 'https://instagram.com/' + igHandle;
+          igIconBtn.target = '_blank';
+          igIconBtn.style.display = '';
+          igIconBtn.classList.add('active');
+        } else {
+          igIconBtn.style.display = 'none';
+        }
+      }
+
+      function refreshLinksBtn() {
+        const hasX  = !!currentProfile?.x_handle;
+        const hasIG = !!currentProfile?.ig_handle;
+        editLinksBtn.textContent = (hasX && hasIG) ? 'EDIT' : 'ADD LINKS';
+      }
+
+      // ================================================================
+      // SOCIAL BUBBLE OPEN / CLOSE
+      // ================================================================
+      function openBubble()  { socialBubble.classList.add('open');    }
+      function closeBubble() { socialBubble.classList.remove('open'); }
+
+      // ================================================================
+      // AVATAR UPLOAD
+      // ================================================================
+      function setupAvatarUpload() {
+        // Click on avatar → trigger file input
+        avatarRing.addEventListener('click', () => avatarInput.click());
+
+        avatarInput.addEventListener('change', async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          // Immediate local preview
+          const localUrl = URL.createObjectURL(file);
+          avatarImg.src = localUrl;
+          avatarImg.classList.remove('hidden');
+          avatarInitials.classList.add('hidden');
+
+          try {
+            const ext  = file.name.split('.').pop();
+            const path = currentUser.id + '/avatar.' + ext;
+
+            const { error: uploadError } = await sbClient.storage
+              .from('avatars')
+              .upload(path, file, { upsert: true });
+
+            if (uploadError) throw uploadError;
+
+            const { data: urlData } = sbClient.storage
+              .from('avatars')
+              .getPublicUrl(path);
+
+            await updateProfile(currentUser.id, { avatar_url: urlData.publicUrl });
+            currentProfile = { ...currentProfile, avatar_url: urlData.publicUrl };
+
+          } catch (err) {
+            console.error('Avatar upload failed:', err.message);
+            renderAvatar(currentProfile?.avatar_url, currentUser.email);
+          }
+        });
+      }
+
+      // ================================================================
+      // INLINE EDITS — blur to save to Supabase
+      // ================================================================
+      function setupInlineEdits() {
+
+        // Username — saves on blur, refreshes avatar initial
+        usernameInput.addEventListener('blur', async () => {
+          const val = usernameInput.value.trim();
+          if (val !== (currentProfile?.display_name || '')) {
+            await updateProfile(currentUser.id, { display_name: val || null });
+            currentProfile = { ...currentProfile, display_name: val };
+            renderAvatar(currentProfile?.avatar_url, currentUser.email);
+          }
+        });
+
+        // Misogi — auto-resize + save on blur
+        misogiInput.addEventListener('input', () => {
+          misogiInput.style.height = 'auto';
+          misogiInput.style.height = misogiInput.scrollHeight + 'px';
+        });
+
+        misogiInput.addEventListener('blur', async () => {
+          const val = misogiInput.value.trim();
+          if (val !== (currentProfile?.misogi || '')) {
+            await updateProfile(currentUser.id, { misogi: val || null });
+            currentProfile = { ...currentProfile, misogi: val };
+          }
+        });
+
+        // X handle — strip @, save, refresh social row
+        xHandleInput.addEventListener('blur', async () => {
+          const val = xHandleInput.value.trim().replace(/^@/, '');
+          xHandleInput.value = val;
+          if (val !== (currentProfile?.x_handle || '')) {
+            await updateProfile(currentUser.id, { x_handle: val || null });
+            currentProfile = { ...currentProfile, x_handle: val };
+            refreshSocialRow();
+            refreshLinksBtn();
+          }
+        });
+
+        // Instagram handle — same pattern
+        igHandleInput.addEventListener('blur', async () => {
+          const val = igHandleInput.value.trim().replace(/^@/, '');
+          igHandleInput.value = val;
+          if (val !== (currentProfile?.ig_handle || '')) {
+            await updateProfile(currentUser.id, { ig_handle: val || null });
+            currentProfile = { ...currentProfile, ig_handle: val };
+            refreshSocialRow();
+            refreshLinksBtn();
+          }
+        });
+
+        // ── SOCIAL BUBBLE HANDLERS ──
+        editLinksBtn.addEventListener('click', () => {
+          openBubble();
+          xHandleInput.focus();
+        });
+
+        bubbleCloseBtn.addEventListener('click', closeBubble);
+
+        socialBubble.addEventListener('click', (e) => {
+          if (e.target === socialBubble) closeBubble();
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') closeBubble();
+        });
+
+        // If no handle set, clicking icon link opens bubble instead
+        xIconBtn.addEventListener('click', (e) => {
+          if (!currentProfile?.x_handle) { e.preventDefault(); openBubble(); xHandleInput.focus(); }
+        });
+        igIconBtn.addEventListener('click', (e) => {
+          if (!currentProfile?.ig_handle) { e.preventDefault(); openBubble(); igHandleInput.focus(); }
+        });
+      }
+
+      // ================================================================
+      // WALLET CONNECTED STATE
+      // Updates stat row wallet column + wardrobe cell unlock
+      // ================================================================
+      function showWalletConnected(address, ownsHappi, count) {
+        walletDisconnected.classList.add('hidden');
+        walletConnected.classList.remove('hidden');
+        walletAddressEl.textContent = truncateAddress(address);
+
+        // Update stat row wallet column
+        document.getElementById('stat-wallet').textContent = truncateAddress(address);
+
+        if (ownsHappi) {
+          walletStatusEl.innerHTML = '&#10003; Happi token verified · ' + count + (count === 1 ? ' token' : ' tokens');
+
+          // Update stat pieces count
+          document.getElementById('stat-pieces').textContent = count;
+
+          // Unlock wardrobe cell 1 (Matsuri Happi)
+          const cell = document.getElementById('wardrobe-cell-1');
+          if (cell) {
+            cell.classList.remove('locked');
+            cell.classList.add('owned');
+
+            // Add the product image
+            const existingImg = cell.querySelector('.piece-img');
+            if (!existingImg) {
+              const img = document.createElement('img');
+              img.className = 'piece-img';
+              img.src = 'brand_assets/RBG-MATSURI-RED-Preview.png';
+              img.alt = 'RBG Matsuri Happi Coat';
+              cell.insertBefore(img, cell.firstChild);
+            }
+
+            // Add the red bar under the piece name
+            const nameBlock = cell.querySelector('.piece-name-block');
+            if (nameBlock && !nameBlock.querySelector('.piece-bar')) {
+              const bar = document.createElement('div');
+              bar.className = 'piece-bar';
+              nameBlock.appendChild(bar);
+            }
+          }
+        } else {
+          walletStatusEl.textContent = 'No RBG Happi tokens found';
+        }
+      }
+
+      // ================================================================
+      // CONNECT WALLET BUTTON
+      // ================================================================
+      connectBtn.addEventListener('click', async () => {
+        walletErrorEl.classList.add('hidden');
+        connectBtn.textContent = 'CONNECTING...';
+        connectBtn.disabled = true;
+
+        try {
+          const result = await connectAndVerify(currentUser.id);
+          showWalletConnected(result.address, result.owns, result.count);
+          currentProfile = await getProfile(currentUser.id);
+        } catch (error) {
+          walletErrorEl.textContent = error.message;
+          walletErrorEl.classList.remove('hidden');
+          connectBtn.textContent = 'Connect Wallet →';
+          connectBtn.disabled = false;
+        }
+      });
+
+      // ================================================================
+      // RE-VERIFY BUTTON
+      // ================================================================
+      reverifyBtn.addEventListener('click', async () => {
+        reverifyBtn.textContent = 'Verifying...';
+        reverifyBtn.disabled = true;
+
+        try {
+          const address    = currentProfile.wallet_address;
+          const { owns, count } = await checkHappiOwnership(address);
+          await updateProfile(currentUser.id, {
+            owns_happi: owns,
+            happi_token_count: count,
+            wallet_verified_at: new Date().toISOString()
+          });
+          showWalletConnected(address, owns, count);
+          currentProfile = await getProfile(currentUser.id);
+        } catch (error) {
+          console.error('Re-verify failed:', error.message);
+        }
+
+        reverifyBtn.textContent = 'Re-verify';
+        reverifyBtn.disabled = false;
+      });
+
+      // ================================================================
+      // SIGN OUT
+      // ================================================================
+      document.getElementById('signout-btn').addEventListener('click', async () => {
+        await signOut();
+        window.location.href = 'login.html';
+      });
+
+      // ================================================================
+      // START
+      // ================================================================
+      init();
+
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+# Local dev server + screenshot tools (not needed on Vercel)
+serve.mjs
+screenshot.mjs
+package.json
+package-lock.json
+node_modules/
+
+# Database schema — no reason to serve these publicly
+*.sql
+
+# Internal project documentation
+CLAUDE.md
+soul.md
+RBG_GP_DESIGN_SYSTEM.md
+RBG_GP_README.md
+
+# Dev artifacts
+temporary screenshots/
