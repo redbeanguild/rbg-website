@@ -276,6 +276,43 @@
     .delay-3 { animation-delay: 0.45s; }
     .delay-4 { animation-delay: 0.60s; }
 
+    /* === DROPS AUTO-SCROLL MARQUEE === */
+    @keyframes scroll-drops {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes progress-slide {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .drops-marquee {
+      display: flex;
+      gap: 16px;
+      width: max-content;
+      animation: scroll-drops 45s linear infinite;
+    }
+    .drops-marquee:hover {
+      animation-play-state: paused;
+    }
+    .drops-track {
+      position: relative;
+      height: 2px;
+      background: var(--accent-border);
+      margin-top: 20px;
+      overflow: hidden;
+      border-radius: 1px;
+    }
+    .drops-track-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 30%;
+      height: 100%;
+      background: var(--accent, #E31A20);
+      border-radius: 1px;
+      animation: progress-slide 4s ease-in-out infinite;
+    }
+
     /* === CARD HOVER — brutalist: abrupt, no softness ===
        Faster transitions, no image zoom, red-tinted borders. */
     .card-hover {
@@ -721,14 +758,13 @@
       </p>
     </div>
 
-    <!-- Horizontal scroll strip — 7 drops, scroll-snap for smooth swipe -->
-    <div style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
-                gap: 12px; padding-bottom: 16px;
-                scrollbar-width: none; -ms-overflow-style: none;">
+    <!-- Auto-scrolling marquee strip — 7 drops, duplicated for seamless loop -->
+    <div style="overflow: hidden; padding-bottom: 0;">
+      <div class="drops-marquee">
 
       <!-- === CARD 1: REDEMPTION === -->
       <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
-               style="width: 280px; aspect-ratio: 2/3; scroll-snap-align: start; background: var(--bg-elevated);">
+               style="width: 360px; aspect-ratio: 2/3; background: var(--bg-elevated);">
         <div class="absolute inset-0">
           <img src="brand_assets/2025_drops/RBG-AD-POSTCARD1-02.png" alt="REDEMPTION drop"
                class="card-img w-full h-full object-cover">
@@ -748,7 +784,7 @@
 
       <!-- === CARD 2: RETALIATION === -->
       <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
-               style="width: 280px; aspect-ratio: 2/3; scroll-snap-align: start; background: var(--bg-elevated);">
+               style="width: 360px; aspect-ratio: 2/3; background: var(--bg-elevated);">
         <div class="absolute inset-0">
           <img src="brand_assets/2025_drops/D2-Yume-Poster.png" alt="RETALIATION drop"
                class="card-img w-full h-full object-cover">
@@ -768,7 +804,7 @@
 
       <!-- === CARD 3: SUMMER MADNESS === -->
       <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
-               style="width: 280px; aspect-ratio: 2/3; scroll-snap-align: start; background: var(--bg-elevated);">
+               style="width: 360px; aspect-ratio: 2/3; background: var(--bg-elevated);">
         <div class="absolute inset-0">
           <img src="brand_assets/2025_drops/X-THRD.png" alt="SUMMER MADNESS drop"
                class="card-img w-full h-full object-cover">
@@ -788,7 +824,7 @@
 
       <!-- === CARD 4: IKZ TRAINING CLUB === -->
       <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
-               style="width: 280px; aspect-ratio: 2/3; scroll-snap-align: start; background: var(--bg-elevated);">
+               style="width: 360px; aspect-ratio: 2/3; background: var(--bg-elevated);">
         <div class="absolute inset-0">
           <img src="brand_assets/2025_drops/RUN-TGT-BW.png" alt="IKZ TRAINING CLUB drop"
                class="card-img w-full h-full object-cover">
@@ -808,7 +844,7 @@
 
       <!-- === CARD 5: THUNDER ARMOR === -->
       <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
-               style="width: 280px; aspect-ratio: 2/3; scroll-snap-align: start; background: var(--bg-elevated);">
+               style="width: 360px; aspect-ratio: 2/3; background: var(--bg-elevated);">
         <div class="absolute inset-0">
           <img src="brand_assets/2025_drops/TTGTA-V2.png" alt="THUNDER ARMOR drop"
                class="card-img w-full h-full object-cover">
@@ -828,7 +864,7 @@
 
       <!-- === CARD 6: REIGNITED === -->
       <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
-               style="width: 280px; aspect-ratio: 2/3; scroll-snap-align: start; background: var(--bg-elevated);">
+               style="width: 360px; aspect-ratio: 2/3; background: var(--bg-elevated);">
         <div class="absolute inset-0">
           <img src="brand_assets/2025_drops/RBG_FW_GROUPSHOT.png" alt="REIGNITED drop"
                class="card-img w-full h-full object-cover">
@@ -848,7 +884,7 @@
 
       <!-- === CARD 7: THE LAST FINAL RECKONING === -->
       <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
-               style="width: 280px; aspect-ratio: 2/3; scroll-snap-align: start; background: var(--bg-elevated);">
+               style="width: 360px; aspect-ratio: 2/3; background: var(--bg-elevated);">
         <div class="absolute inset-0">
           <img src="brand_assets/2025_drops/FINAL-R.png" alt="THE LAST FINAL RECKONING drop"
                class="card-img w-full h-full object-cover">
@@ -866,7 +902,156 @@
         <div class="card-border absolute inset-0 border border-transparent z-10"></div>
       </article>
 
-    </div><!-- /horizontal scroll -->
+        <!-- === DUPLICATE SET (for seamless loop) === -->
+
+        <!-- === CARD 1 DUP === -->
+        <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
+                 style="width: 360px; aspect-ratio: 2/3; background: var(--bg-elevated);">
+          <div class="absolute inset-0">
+            <img src="brand_assets/2025_drops/RBG-AD-POSTCARD1-02.png" alt="REDEMPTION drop"
+                 class="card-img w-full h-full object-cover">
+            <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+            <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+          </div>
+          <div class="absolute top-3 left-3 z-10">
+            <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+            <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1" style="font-size: 20px;">リデンプション</p>
+            <p class="font-sans font-black text-rbg-white uppercase leading-tight" style="font-size: 15px; letter-spacing: -0.02em;">REDEMPTION</p>
+            <p class="text-rbg-white/35 mt-2 uppercase" style="font-size: 8px; letter-spacing: 0.18em;">DROP 01</p>
+          </div>
+          <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+        </article>
+
+        <!-- === CARD 2 DUP === -->
+        <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
+                 style="width: 360px; aspect-ratio: 2/3; background: var(--bg-elevated);">
+          <div class="absolute inset-0">
+            <img src="brand_assets/2025_drops/D2-Yume-Poster.png" alt="RETALIATION drop"
+                 class="card-img w-full h-full object-cover">
+            <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+            <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+          </div>
+          <div class="absolute top-3 left-3 z-10">
+            <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+            <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1" style="font-size: 20px;">報復</p>
+            <p class="font-sans font-black text-rbg-white uppercase leading-tight" style="font-size: 15px; letter-spacing: -0.02em;">RETALIATION</p>
+            <p class="text-rbg-white/35 mt-2 uppercase" style="font-size: 8px; letter-spacing: 0.18em;">DROP 02</p>
+          </div>
+          <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+        </article>
+
+        <!-- === CARD 3 DUP === -->
+        <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
+                 style="width: 360px; aspect-ratio: 2/3; background: var(--bg-elevated);">
+          <div class="absolute inset-0">
+            <img src="brand_assets/2025_drops/X-THRD.png" alt="SUMMER MADNESS drop"
+                 class="card-img w-full h-full object-cover">
+            <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+            <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+          </div>
+          <div class="absolute top-3 left-3 z-10">
+            <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+            <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1" style="font-size: 20px;">サマーマッドネス</p>
+            <p class="font-sans font-black text-rbg-white uppercase leading-tight" style="font-size: 15px; letter-spacing: -0.02em;">SUMMER MADNESS</p>
+            <p class="text-rbg-white/35 mt-2 uppercase" style="font-size: 8px; letter-spacing: 0.18em;">DROP 03</p>
+          </div>
+          <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+        </article>
+
+        <!-- === CARD 4 DUP === -->
+        <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
+                 style="width: 360px; aspect-ratio: 2/3; background: var(--bg-elevated);">
+          <div class="absolute inset-0">
+            <img src="brand_assets/2025_drops/RUN-TGT-BW.png" alt="IKZ TRAINING CLUB drop"
+                 class="card-img w-full h-full object-cover">
+            <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+            <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+          </div>
+          <div class="absolute top-3 left-3 z-10">
+            <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+            <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1" style="font-size: 20px;">IKZトレーニングクラブ</p>
+            <p class="font-sans font-black text-rbg-white uppercase leading-tight" style="font-size: 15px; letter-spacing: -0.02em;">IKZ TRAINING CLUB</p>
+            <p class="text-rbg-white/35 mt-2 uppercase" style="font-size: 8px; letter-spacing: 0.18em;">DROP 04</p>
+          </div>
+          <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+        </article>
+
+        <!-- === CARD 5 DUP === -->
+        <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
+                 style="width: 360px; aspect-ratio: 2/3; background: var(--bg-elevated);">
+          <div class="absolute inset-0">
+            <img src="brand_assets/2025_drops/TTGTA-V2.png" alt="THUNDER ARMOR drop"
+                 class="card-img w-full h-full object-cover">
+            <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+            <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+          </div>
+          <div class="absolute top-3 left-3 z-10">
+            <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+            <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1" style="font-size: 20px;">雷鎧</p>
+            <p class="font-sans font-black text-rbg-white uppercase leading-tight" style="font-size: 15px; letter-spacing: -0.02em;">THUNDER ARMOR</p>
+            <p class="text-rbg-white/35 mt-2 uppercase" style="font-size: 8px; letter-spacing: 0.18em;">DROP 05</p>
+          </div>
+          <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+        </article>
+
+        <!-- === CARD 6 DUP === -->
+        <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
+                 style="width: 360px; aspect-ratio: 2/3; background: var(--bg-elevated);">
+          <div class="absolute inset-0">
+            <img src="brand_assets/2025_drops/RBG_FW_GROUPSHOT.png" alt="REIGNITED drop"
+                 class="card-img w-full h-full object-cover">
+            <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+            <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+          </div>
+          <div class="absolute top-3 left-3 z-10">
+            <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+            <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1" style="font-size: 20px;">再点火</p>
+            <p class="font-sans font-black text-rbg-white uppercase leading-tight" style="font-size: 15px; letter-spacing: -0.02em;">REIGNITED</p>
+            <p class="text-rbg-white/35 mt-2 uppercase" style="font-size: 8px; letter-spacing: 0.18em;">DROP 06</p>
+          </div>
+          <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+        </article>
+
+        <!-- === CARD 7 DUP === -->
+        <article class="card-hover relative overflow-hidden cursor-pointer group flex-shrink-0"
+                 style="width: 360px; aspect-ratio: 2/3; background: var(--bg-elevated);">
+          <div class="absolute inset-0">
+            <img src="brand_assets/2025_drops/FINAL-R.png" alt="THE LAST FINAL RECKONING drop"
+                 class="card-img w-full h-full object-cover">
+            <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(10,0,0,0.92) 0%, rgba(10,0,0,0.3) 45%, transparent 100%);"></div>
+            <div class="absolute inset-0 bg-rbg-red/8" style="mix-blend-mode: multiply;"></div>
+          </div>
+          <div class="absolute top-3 left-3 z-10">
+            <span class="text-rbg-red/80" style="font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;">REDBEANGUILD</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 z-10">
+            <p class="font-jp font-black text-rbg-white/95 leading-tight mb-1" style="font-size: 20px;">最後の審判</p>
+            <p class="font-sans font-black text-rbg-white uppercase leading-tight" style="font-size: 13px; letter-spacing: -0.02em;">THE LAST FINAL RECKONING</p>
+            <p class="text-rbg-white/35 mt-2 uppercase" style="font-size: 8px; letter-spacing: 0.18em;">DROP 07</p>
+          </div>
+          <div class="card-border absolute inset-0 border border-transparent z-10"></div>
+        </article>
+
+      </div><!-- /drops-marquee -->
+    </div><!-- /overflow wrapper -->
+
+    <!-- Progress track line -->
+    <div class="drops-track">
+      <div class="drops-track-bar"></div>
+    </div>
+
   </section>
 
   <!-- ================================================================
