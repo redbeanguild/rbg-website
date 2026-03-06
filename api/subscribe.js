@@ -33,7 +33,7 @@ export default async function handler(req, res) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + process.env.CONVERTKIT_API_KEY,
+      'X-Kit-Api-Key': process.env.CONVERTKIT_API_KEY,
     },
     body: JSON.stringify({ email_address: email }),
   });
