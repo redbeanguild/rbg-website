@@ -350,6 +350,19 @@
       color: var(--accent);
     }
 
+    /* === WORLD MAP NODES ===
+       Location cards on the SVG world map — hover reveals emphasis */
+    .world-node rect:first-of-type {
+      transition: stroke 0.25s ease, fill-opacity 0.25s ease;
+    }
+    .world-node:hover rect:first-of-type {
+      stroke: var(--accent-border-hover);
+    }
+    .world-node:focus-visible rect:first-of-type {
+      stroke: var(--accent);
+      outline: none;
+    }
+
     /* IKZ button interactive states */
     .ikz-btn {
       transition: background-color 0.2s ease, color 0.2s ease;
@@ -470,6 +483,8 @@
          style="font-size: 10px; letter-spacing: 0.18em; color: var(--text-tertiary);">DROPS</a>
       <a href="#ranks" class="nav-link uppercase"
          style="font-size: 10px; letter-spacing: 0.18em; color: var(--text-tertiary);">RANKS</a>
+      <a href="#world" class="nav-link uppercase"
+         style="font-size: 10px; letter-spacing: 0.18em; color: var(--text-tertiary);">WORLD</a>
       <!-- Auth CTA — red brutalist button -->
       <a id="auth-link" href="wip.html"
          class="uppercase"
@@ -506,6 +521,8 @@
        style="font-size: 11px; letter-spacing: 0.2em; color: var(--text-secondary);">DROPS</a>
     <a href="#ranks" class="nav-link uppercase"
        style="font-size: 11px; letter-spacing: 0.2em; color: var(--text-secondary);">RANKS</a>
+    <a href="#world" class="nav-link uppercase"
+       style="font-size: 11px; letter-spacing: 0.2em; color: var(--text-secondary);">WORLD</a>
     <!-- Mobile auth CTA — red brutalist button -->
     <a id="auth-link-mobile" href="wip.html"
        class="self-start uppercase"
@@ -1069,6 +1086,253 @@
       </div>
 
     </div><!-- /rank rows -->
+  </section>
+
+  <!-- ================================================================
+       WORLD — Guild territory map
+       ================================================================ -->
+  <section id="world"
+           class="relative py-32 md:py-40 px-6 md:px-12 overflow-hidden"
+           style="background-color: var(--bg-primary); border-top: 1px solid var(--accent-border);">
+
+    <!-- Center glow -->
+    <div class="absolute inset-0 pointer-events-none" style="
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, var(--accent-subtle) 0%, transparent 70%);
+    "></div>
+
+    <!-- Section header -->
+    <div class="reveal flex items-center gap-4 mb-5">
+      <div class="w-8 h-px bg-rbg-red"></div>
+      <!-- 世界 = "World" -->
+      <span class="font-jp text-rbg-red"
+            style="font-size: 9px; letter-spacing: 0.3em;">世界</span>
+      <span class="text-rbg-white/25 uppercase"
+            style="font-size: 8px; letter-spacing: 0.2em;">GUILD WORLD</span>
+    </div>
+
+    <!-- Intro text -->
+    <div class="reveal reveal-delay-1 max-w-5xl mx-auto mb-16">
+      <h2 class="font-sans font-black text-rbg-white mb-4"
+          style="font-size: clamp(28px, 4.5vw, 52px); letter-spacing: -0.04em; line-height: 1.05;">
+        THE GUILD WORLD.
+      </h2>
+      <!-- 領域を知れ、道を歩め = "Know the territory, walk the path." -->
+      <p class="font-jp text-rbg-white/30"
+         style="font-size: 12px; letter-spacing: 0.05em;">
+        領域を知れ、道を歩め。
+      </p>
+    </div>
+
+    <!-- SVG WORLD MAP -->
+    <div class="reveal reveal-delay-2 max-w-5xl mx-auto relative">
+
+      <svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg"
+           class="w-full h-auto" style="max-height: 560px;"
+           role="img" aria-label="Guild world map showing Mountain Dojo, Shadow Alley, and Crimson Temple">
+
+        <defs>
+          <!-- Grid pattern -->
+          <pattern id="world-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke="var(--text-muted)" stroke-width="0.3" opacity="0.4"/>
+          </pattern>
+          <!-- Glow filter for active nodes -->
+          <filter id="node-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- Background grid -->
+        <rect width="900" height="560" fill="url(#world-grid)" opacity="0.5"/>
+
+        <!-- Coordinate markers (top-left, top-right, bottom-left, bottom-right) -->
+        <text x="12" y="18" fill="var(--text-muted)" font-family="'Courier New', monospace" font-size="7" letter-spacing="0.1em">34°N 135°E</text>
+        <text x="820" y="18" fill="var(--text-muted)" font-family="'Courier New', monospace" font-size="7" letter-spacing="0.1em">SECTOR-RBG</text>
+        <text x="12" y="550" fill="var(--text-muted)" font-family="'Courier New', monospace" font-size="7" letter-spacing="0.1em">MAP.V2.1</text>
+
+        <!-- ═══════════════════════════════════════════
+             CONNECTING PATHS — dashed trails between locations
+             ═══════════════════════════════════════════ -->
+
+        <!-- Mountain Dojo → Shadow Alley (top-left to bottom-center) -->
+        <path d="M 210 195 C 210 320, 350 380, 450 400"
+              fill="none" stroke="var(--accent-border)" stroke-width="1" stroke-dasharray="6 4" opacity="0.6"/>
+
+        <!-- Shadow Alley → Crimson Temple (bottom-center to top-right) -->
+        <path d="M 490 400 C 580 380, 640 320, 710 195"
+              fill="none" stroke="var(--accent-border)" stroke-width="1" stroke-dasharray="6 4" opacity="0.6"/>
+
+        <!-- Mountain Dojo → Crimson Temple (top-left to top-right, arched) -->
+        <path d="M 245 155 C 380 80, 560 80, 680 155"
+              fill="none" stroke="var(--accent-border)" stroke-width="1" stroke-dasharray="6 4" opacity="0.35"/>
+
+        <!-- Small direction arrows on paths -->
+        <polygon points="350,330 354,324 346,324" fill="var(--accent-border)" opacity="0.5"/>
+        <polygon points="590,330 594,324 586,324" fill="var(--accent-border)" opacity="0.5"/>
+        <polygon points="460,100 464,94 456,94" fill="var(--accent-border)" opacity="0.3"/>
+
+
+        <!-- ═══════════════════════════════════════════
+             LOCATION 01: MOUNTAIN DOJO — 山道場
+             Position: top-left quadrant
+             ═══════════════════════════════════════════ -->
+        <g class="world-node" style="cursor: pointer;" data-location="mountain-dojo">
+
+          <!-- Node border box -->
+          <rect x="100" y="120" width="220" height="140" fill="var(--bg-elevated)" stroke="var(--accent-border)" stroke-width="1" opacity="0.9"/>
+
+          <!-- Thin red top accent line -->
+          <line x1="100" y1="120" x2="160" y2="120" stroke="var(--accent)" stroke-width="2" opacity="0.6"/>
+
+          <!-- Mountain icon (stylized peaks) -->
+          <g transform="translate(120, 140)">
+            <polyline points="0,40 20,8 40,40" fill="none" stroke="var(--text-primary)" stroke-width="1.5" opacity="0.7"/>
+            <polyline points="25,40 40,16 55,40" fill="none" stroke="var(--text-primary)" stroke-width="1" opacity="0.4"/>
+            <!-- Snow cap -->
+            <polyline points="14,18 20,8 26,18" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.5"/>
+          </g>
+
+          <!-- Location number -->
+          <text x="280" y="145" fill="var(--text-ghost)" font-family="'Helvetica Neue', sans-serif" font-size="48" font-weight="900" text-anchor="end" opacity="0.5">01</text>
+
+          <!-- Japanese name -->
+          <text x="190" y="160" fill="var(--text-primary)" font-family="'Noto Serif JP', serif" font-size="22" font-weight="900" opacity="0.85">山道場</text>
+
+          <!-- English name -->
+          <text x="190" y="178" fill="var(--text-secondary)" font-family="'Helvetica Neue', sans-serif" font-size="11" font-weight="900" letter-spacing="0.15em">MOUNTAIN DOJO</text>
+
+          <!-- Description -->
+          <text x="115" y="210" fill="var(--text-tertiary)" font-family="'Courier New', monospace" font-size="8" letter-spacing="0.08em">WHERE DISCIPLINE IS FORGED.</text>
+          <text x="115" y="222" fill="var(--text-tertiary)" font-family="'Courier New', monospace" font-size="8" letter-spacing="0.08em">TRAINING GROUNDS — HIGH ALTITUDE.</text>
+
+          <!-- Status indicator -->
+          <rect x="115" y="236" width="4" height="4" fill="var(--accent)" opacity="0.7"/>
+          <text x="125" y="240" fill="var(--accent)" font-family="'Courier New', monospace" font-size="7" letter-spacing="0.15em" opacity="0.6">ACTIVE</text>
+        </g>
+
+
+        <!-- ═══════════════════════════════════════════
+             LOCATION 02: SHADOW ALLEY — 影路地
+             Position: bottom-center
+             ═══════════════════════════════════════════ -->
+        <g class="world-node" style="cursor: pointer;" data-location="shadow-alley">
+
+          <!-- Node border box -->
+          <rect x="340" y="360" width="220" height="140" fill="var(--bg-elevated)" stroke="var(--accent-border)" stroke-width="1" opacity="0.9"/>
+
+          <!-- Thin red top accent line -->
+          <line x1="340" y1="360" x2="400" y2="360" stroke="var(--accent)" stroke-width="2" opacity="0.6"/>
+
+          <!-- Torii gate icon -->
+          <g transform="translate(360, 380)">
+            <!-- Pillars -->
+            <line x1="5" y1="10" x2="5" y2="40" stroke="var(--text-primary)" stroke-width="1.5" opacity="0.7"/>
+            <line x1="45" y1="10" x2="45" y2="40" stroke="var(--text-primary)" stroke-width="1.5" opacity="0.7"/>
+            <!-- Top beam (kasagi) -->
+            <line x1="0" y1="10" x2="50" y2="10" stroke="var(--text-primary)" stroke-width="2" opacity="0.7"/>
+            <!-- Lower beam (nuki) -->
+            <line x1="5" y1="18" x2="45" y2="18" stroke="var(--text-primary)" stroke-width="1" opacity="0.4"/>
+            <!-- Red accent on top -->
+            <line x1="0" y1="8" x2="50" y2="8" stroke="var(--accent)" stroke-width="1" opacity="0.4"/>
+          </g>
+
+          <!-- Location number -->
+          <text x="520" y="385" fill="var(--text-ghost)" font-family="'Helvetica Neue', sans-serif" font-size="48" font-weight="900" text-anchor="end" opacity="0.5">02</text>
+
+          <!-- Japanese name -->
+          <text x="430" y="400" fill="var(--text-primary)" font-family="'Noto Serif JP', serif" font-size="22" font-weight="900" opacity="0.85">影路地</text>
+
+          <!-- English name -->
+          <text x="430" y="418" fill="var(--text-secondary)" font-family="'Helvetica Neue', sans-serif" font-size="11" font-weight="900" letter-spacing="0.15em">SHADOW ALLEY</text>
+
+          <!-- Description -->
+          <text x="355" y="450" fill="var(--text-tertiary)" font-family="'Courier New', monospace" font-size="8" letter-spacing="0.08em">THE UNSEEN MARKET. STEALTH ZONE.</text>
+          <text x="355" y="462" fill="var(--text-tertiary)" font-family="'Courier New', monospace" font-size="8" letter-spacing="0.08em">UNDERGROUND — LOW VISIBILITY.</text>
+
+          <!-- Status indicator -->
+          <rect x="355" y="476" width="4" height="4" fill="var(--accent)" opacity="0.7"/>
+          <text x="365" y="480" fill="var(--accent)" font-family="'Courier New', monospace" font-size="7" letter-spacing="0.15em" opacity="0.6">ACTIVE</text>
+        </g>
+
+
+        <!-- ═══════════════════════════════════════════
+             LOCATION 03: CRIMSON TEMPLE — 紅寺院
+             Position: top-right quadrant
+             ═══════════════════════════════════════════ -->
+        <g class="world-node" style="cursor: pointer;" data-location="crimson-temple">
+
+          <!-- Node border box -->
+          <rect x="580" y="120" width="220" height="140" fill="var(--bg-elevated)" stroke="var(--accent-border)" stroke-width="1" opacity="0.9"/>
+
+          <!-- Thin red top accent line -->
+          <line x1="580" y1="120" x2="640" y2="120" stroke="var(--accent)" stroke-width="2" opacity="0.6"/>
+
+          <!-- Pagoda icon -->
+          <g transform="translate(600, 138)">
+            <!-- Roof tiers -->
+            <polyline points="10,30 25,22 40,30" fill="none" stroke="var(--text-primary)" stroke-width="1" opacity="0.4"/>
+            <polyline points="7,24 25,14 43,24" fill="none" stroke="var(--text-primary)" stroke-width="1.2" opacity="0.55"/>
+            <polyline points="4,16 25,4 46,16" fill="none" stroke="var(--text-primary)" stroke-width="1.5" opacity="0.7"/>
+            <!-- Spire -->
+            <line x1="25" y1="4" x2="25" y2="0" stroke="var(--accent)" stroke-width="1.5" opacity="0.6"/>
+            <!-- Base pillar -->
+            <line x1="25" y1="30" x2="25" y2="40" stroke="var(--text-primary)" stroke-width="1" opacity="0.4"/>
+          </g>
+
+          <!-- Location number -->
+          <text x="760" y="145" fill="var(--text-ghost)" font-family="'Helvetica Neue', sans-serif" font-size="48" font-weight="900" text-anchor="end" opacity="0.5">03</text>
+
+          <!-- Japanese name -->
+          <text x="665" y="160" fill="var(--text-primary)" font-family="'Noto Serif JP', serif" font-size="22" font-weight="900" opacity="0.85">紅寺院</text>
+
+          <!-- English name -->
+          <text x="665" y="178" fill="var(--text-secondary)" font-family="'Helvetica Neue', sans-serif" font-size="11" font-weight="900" letter-spacing="0.15em">CRIMSON TEMPLE</text>
+
+          <!-- Description -->
+          <text x="595" y="210" fill="var(--text-tertiary)" font-family="'Courier New', monospace" font-size="8" letter-spacing="0.08em">THE INNER SANCTUM. SACRED GROUND.</text>
+          <text x="595" y="222" fill="var(--text-tertiary)" font-family="'Courier New', monospace" font-size="8" letter-spacing="0.08em">ELITE ACCESS — INVITATION REQUIRED.</text>
+
+          <!-- Status indicator -->
+          <rect x="595" y="236" width="4" height="4" fill="var(--accent)" opacity="0.7"/>
+          <text x="605" y="240" fill="var(--accent)" font-family="'Courier New', monospace" font-size="7" letter-spacing="0.15em" opacity="0.6">ACTIVE</text>
+        </g>
+
+
+        <!-- ═══════════════════════════════════════════
+             COMPASS / LEGEND
+             ═══════════════════════════════════════════ -->
+        <g transform="translate(810, 480)">
+          <!-- Compass lines -->
+          <line x1="30" y1="10" x2="30" y2="50" stroke="var(--text-muted)" stroke-width="0.8"/>
+          <line x1="10" y1="30" x2="50" y2="30" stroke="var(--text-muted)" stroke-width="0.8"/>
+          <!-- N marker (red) -->
+          <text x="30" y="8" fill="var(--accent)" font-family="'Courier New', monospace" font-size="8" font-weight="bold" text-anchor="middle" opacity="0.6">N</text>
+          <!-- Other cardinal points -->
+          <text x="55" y="33" fill="var(--text-muted)" font-family="'Courier New', monospace" font-size="6" text-anchor="start">E</text>
+          <text x="30" y="62" fill="var(--text-muted)" font-family="'Courier New', monospace" font-size="6" text-anchor="middle">S</text>
+          <text x="5" y="33" fill="var(--text-muted)" font-family="'Courier New', monospace" font-size="6" text-anchor="end">W</text>
+          <!-- Center dot -->
+          <rect x="28" y="28" width="4" height="4" fill="var(--accent)" opacity="0.4"/>
+        </g>
+
+        <!-- Legend -->
+        <g transform="translate(810, 420)">
+          <text x="0" y="0" fill="var(--text-muted)" font-family="'Courier New', monospace" font-size="7" letter-spacing="0.12em">LEGEND</text>
+          <line x1="0" y1="10" x2="20" y2="10" stroke="var(--accent-border)" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="25" y="13" fill="var(--text-muted)" font-family="'Courier New', monospace" font-size="6">PATH</text>
+          <rect x="0" y="22" width="6" height="6" fill="var(--bg-elevated)" stroke="var(--accent-border)" stroke-width="0.5"/>
+          <text x="12" y="28" fill="var(--text-muted)" font-family="'Courier New', monospace" font-size="6">ZONE</text>
+          <rect x="0" y="36" width="4" height="4" fill="var(--accent)" opacity="0.7"/>
+          <text x="12" y="40" fill="var(--text-muted)" font-family="'Courier New', monospace" font-size="6">ACTIVE</text>
+        </g>
+
+      </svg>
+
+    </div><!-- /SVG world map -->
+
   </section>
 
   <!-- ================================================================
