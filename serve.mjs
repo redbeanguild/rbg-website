@@ -54,6 +54,15 @@ const server = http.createServer((req, res) => {
   });
 });
 
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n  Port ${PORT} is already in use.`);
+    console.error(`  Kill the other process: lsof -ti:${PORT} | xargs kill -9\n`);
+    process.exit(1);
+  }
+  throw err;
+});
+
 server.listen(PORT, () => {
   console.log(`\n  RBG server running → http://localhost:${PORT}\n`);
 });
