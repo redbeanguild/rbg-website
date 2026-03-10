@@ -43,7 +43,15 @@ Add these variables (all environments: Production, Preview, Development):
 The Supabase service role key is found at:
 **Supabase Dashboard** > **Settings** > **API** > **Service role key** (the `secret` one, not the `anon` one)
 
-## 4. Run the Database Migration
+## 4. Install Dependencies
+
+```bash
+npm install
+```
+
+This installs `@supabase/supabase-js` which the webhook and backfill serverless functions need. Vercel also runs this automatically on deploy, but run it locally to verify everything resolves.
+
+## 5. Run the Database Migration
 
 1. Go to **Supabase Dashboard** > **SQL Editor** > **New Query**
 2. Paste the contents of `shopify-migration.sql`
@@ -51,7 +59,7 @@ The Supabase service role key is found at:
 4. Verify: run `SELECT * FROM public.profiles LIMIT 1;` — you should see the new columns
 5. Verify: run `SELECT * FROM public.wardrobe_items LIMIT 0;` — table should exist
 
-## 5. Deploy to Vercel
+## 6. Deploy to Vercel
 
 ```bash
 vercel --prod
@@ -59,7 +67,7 @@ vercel --prod
 
 Or push to your connected Git branch — Vercel will auto-deploy.
 
-## 6. Test the Webhook
+## 7. Test the Webhook
 
 1. In Shopify Admin > Settings > Notifications > Webhooks
 2. Find your `Order payment` webhook
@@ -67,7 +75,7 @@ Or push to your connected Git branch — Vercel will auto-deploy.
 4. Check Vercel function logs for the response
 5. If a matching profile exists, check Supabase `wardrobe_items` table for new entries
 
-## 7. Configure Shopify MCP (for Claude dev sessions)
+## 8. Configure Shopify MCP (for Claude dev sessions)
 
 The `.mcp.json` file is already in the project root. To activate it:
 
