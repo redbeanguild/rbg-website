@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RedBean Guild — Hall of Fame</title>
+
+  <!-- Google Fonts: Noto Serif JP for Japanese typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <!-- Flash prevention: apply saved theme before any CSS renders -->
+  <script>
+    (function() {
+      var t = localStorage.getItem('rbg-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind custom config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'rbg-black': '#0d0202',
+            'rbg-red':   '#E31A20',
+            'rbg-white': '#F5F5F0',
+            'rbg-pure':  '#0a0a0a',
+          },
+          fontFamily: {
+            'sans': ['"Helvetica Neue"', 'Helvetica', 'Arial', 'system-ui', 'sans-serif'],
+            'jp':   ['"Noto Serif JP"', 'serif'],
+            'mono': ['"Courier New"', 'Courier', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* === TAILWIND COLOR OVERRIDES === */
+    .text-rbg-white   { color: var(--text-primary) !important; }
+    .text-rbg-red     { color: var(--accent) !important; }
+    .text-rbg-black   { color: var(--bg-primary) !important; }
+    .text-rbg-white\/95 { color: var(--text-primary) !important; opacity: 0.95; }
+    .text-rbg-white\/80 { color: var(--text-primary) !important; opacity: 0.80; }
+    .text-rbg-white\/70 { color: var(--text-secondary) !important; }
+    .text-rbg-white\/65 { color: var(--text-secondary) !important; }
+    .text-rbg-white\/55 { color: var(--text-secondary) !important; }
+    .text-rbg-white\/40 { color: var(--text-tertiary) !important; }
+    .text-rbg-white\/35 { color: var(--text-tertiary) !important; }
+    .text-rbg-white\/30 { color: var(--text-muted) !important; }
+    .text-rbg-white\/25 { color: var(--text-muted) !important; }
+    .text-rbg-white\/20 { color: var(--text-muted) !important; }
+    .text-rbg-red\/80 { color: var(--accent) !important; opacity: 0.8; }
+    .text-rbg-red\/60 { color: var(--accent) !important; opacity: 0.6; }
+    .text-rbg-red\/50 { color: var(--accent) !important; opacity: 0.5; }
+    .text-rbg-white\/6 { color: var(--text-ghost) !important; }
+    .bg-rbg-black  { background-color: var(--bg-primary) !important; }
+    .bg-rbg-red    { background-color: var(--accent) !important; }
+    .bg-rbg-white  { background-color: var(--text-primary) !important; }
+    .bg-rbg-pure   { background-color: var(--bg-footer) !important; }
+    .bg-rbg-red\/8  { background-color: var(--accent-subtle) !important; }
+    .bg-rbg-red\/20 { background-color: var(--accent-border) !important; }
+    .border-rbg-white\/5  { border-color: var(--border-subtle) !important; }
+    .border-rbg-white\/10 { border-color: var(--border-medium) !important; }
+    .border-rbg-red       { border-color: var(--accent) !important; }
+    .border-rbg-red\/30   { border-color: var(--accent-border) !important; }
+
+    /* === SCROLL REVEAL === */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    .reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s !important; }
+    .reveal-delay-2 { transition-delay: 0.2s !important; }
+    .reveal-delay-3 { transition-delay: 0.3s !important; }
+    .reveal-delay-4 { transition-delay: 0.4s !important; }
+
+    /* === COLOR SYSTEM === */
+    :root,
+    [data-theme="dark"] {
+      --bg-primary:       #0a0a0a;
+      --bg-elevated:      #111111;
+      --bg-floating:      #161616;
+      --bg-footer:        #0a0a0a;
+      --text-primary:     #F5F5F0;
+      --text-secondary:   rgba(245, 245, 240, 0.65);
+      --text-tertiary:    rgba(245, 245, 240, 0.40);
+      --text-ghost:       rgba(245, 245, 240, 0.06);
+      --text-muted:       rgba(245, 245, 240, 0.25);
+      --accent:           #E31A20;
+      --accent-hover:     #FF2227;
+      --accent-pressed:   #CC1518;
+      --accent-glow:      rgba(227, 26, 32, 0.10);
+      --accent-subtle:    rgba(227, 26, 32, 0.04);
+      --accent-border:    rgba(227, 26, 32, 0.18);
+      --accent-border-hover: rgba(227, 26, 32, 0.50);
+      --border-subtle:    rgba(245, 245, 240, 0.05);
+      --border-medium:    rgba(245, 245, 240, 0.10);
+      --scrollbar-track:  #0a0a0a;
+      --scrollbar-thumb:  rgba(245, 245, 240, 0.3);
+      --grain-opacity:    0.035;
+      --nav-bg:           rgba(10, 10, 10, 0.97);
+      --nav-bg-end:       rgba(10, 10, 10, 0.0);
+      --logo-invert:      invert(1);
+    }
+
+    [data-theme="light"] {
+      --bg-primary:       #F5F5F0;
+      --bg-elevated:      #EDEDEA;
+      --bg-floating:      #FFFFFF;
+      --bg-footer:        #E8E8E3;
+      --text-primary:     #0a0a0a;
+      --text-secondary:   rgba(10, 10, 10, 0.70);
+      --text-tertiary:    rgba(10, 10, 10, 0.45);
+      --text-ghost:       rgba(10, 10, 10, 0.06);
+      --text-muted:       rgba(10, 10, 10, 0.30);
+      --accent:           #CC1518;
+      --accent-hover:     #DD1A1E;
+      --accent-pressed:   #AA1215;
+      --accent-glow:      rgba(204, 21, 24, 0.08);
+      --accent-subtle:    rgba(204, 21, 24, 0.04);
+      --accent-border:    rgba(204, 21, 24, 0.20);
+      --accent-border-hover: rgba(204, 21, 24, 0.55);
+      --border-subtle:    rgba(10, 10, 10, 0.06);
+      --border-medium:    rgba(10, 10, 10, 0.12);
+      --scrollbar-track:  #F5F5F0;
+      --scrollbar-thumb:  rgba(10, 10, 10, 0.3);
+      --grain-opacity:    0.02;
+      --nav-bg:           rgba(245, 245, 240, 0.97);
+      --nav-bg-end:       rgba(245, 245, 240, 0.0);
+      --logo-invert:      invert(0);
+    }
+
+    html.theme-transitioning,
+    html.theme-transitioning * {
+      transition: background-color 0.4s ease, color 0.3s ease, border-color 0.3s ease !important;
+    }
+
+    /* === GRAIN OVERLAY === */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: var(--grain-opacity);
+      filter: url(#grain);
+      background: transparent;
+    }
+
+    /* === ENTRANCE ANIMATION === */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .logo-mark {
+      animation: spin 8s linear infinite;
+    }
+
+    .animate-fade-up {
+      animation: fadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .delay-1 { animation-delay: 0.15s; }
+    .delay-2 { animation-delay: 0.30s; }
+    .delay-3 { animation-delay: 0.45s; }
+
+    /* Ticker marquee */
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    .ticker {
+      position: fixed;
+      top: 56px;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      height: 22px;
+      background-color: var(--accent);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    .ticker-track {
+      display: flex;
+      white-space: nowrap;
+      animation: marquee 18s linear infinite;
+    }
+
+    .ticker-text {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: #F5F5F0;
+      text-transform: uppercase;
+      padding-right: 40px;
+    }
+
+    /* Nav link hover */
+    .nav-link {
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+    .nav-link:hover {
+      color: var(--text-primary) !important;
+    }
+
+    /* Text selection */
+    ::selection {
+      background: var(--text-primary);
+      color: var(--bg-primary);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
+
+    /* Theme toggle */
+    .theme-toggle {
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+    .theme-toggle:hover {
+      color: var(--accent);
+      transform: scale(1.1);
+    }
+
+    /* Mobile menu */
+    .mobile-menu {
+      transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .mobile-menu.hidden {
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events: none;
+    }
+    .mobile-menu.open {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Footer social links */
+    .footer-link {
+      transition: color 0.2s ease;
+    }
+    .footer-link:hover { color: var(--accent); }
+    .footer-link:focus-visible {
+      outline: 1px solid var(--accent);
+      outline-offset: 3px;
+      color: var(--accent);
+    }
+
+    /* === HALL OF FAME CARD STYLES === */
+    .hall-card {
+      transition: border-color 0.25s ease;
+    }
+    .hall-card:hover {
+      border-color: var(--accent-border-hover);
+    }
+
+    /* Grand Guildmaster elevated treatment */
+    .hall-card-grand {
+      border-left: 2px solid var(--accent-border-hover);
+      background: linear-gradient(to right, var(--accent-subtle) 0%, transparent 50%);
+    }
+
+    /* Blink animation for section accent dots */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .blink {
+      animation: blink 1.5s step-end infinite;
+    }
+
+    /* Loading skeleton pulse */
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+    .skeleton {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+  </style>
+</head>
+
+<body class="font-mono overflow-x-hidden" style="background-color: var(--bg-primary); color: var(--text-primary);">
+
+  <!-- SVG GRAIN FILTER -->
+  <svg class="hidden" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <filter id="grain">
+        <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+        <feColorMatrix type="saturate" values="0"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- ================================================================
+       NAV — Fixed top bar (identical to index.html)
+       ================================================================ -->
+  <nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 md:px-14"
+       style="background: linear-gradient(to bottom, var(--nav-bg) 0%, var(--nav-bg-end) 100%);
+              backdrop-filter: blur(2px);">
+
+    <div class="flex items-center gap-3">
+      <a href="index.html" aria-label="RedBean Guild home">
+        <img src="brand_assets/RBG_MAIN.png" alt="RBG" class="logo-mark object-contain"
+             style="width: 24px; height: 24px; opacity: 1; pointer-events: auto;">
+      </a>
+      <button id="theme-toggle" class="theme-toggle flex items-center justify-center w-8 h-8"
+              aria-label="Toggle dark/light mode"
+              style="color: var(--text-tertiary);">
+        <svg id="icon-sun" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg id="icon-moon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- RIGHT DESKTOP -->
+    <div class="hidden md:flex items-center gap-10">
+      <a href="index.html#about" class="nav-link uppercase"
+         style="font-size: 10px; letter-spacing: 0.18em; color: var(--text-tertiary);">MANIFESTO</a>
+      <a href="index.html#drops" class="nav-link uppercase"
+         style="font-size: 10px; letter-spacing: 0.18em; color: var(--text-tertiary);">DROPS</a>
+      <a href="index.html#ranks" class="nav-link uppercase"
+         style="font-size: 10px; letter-spacing: 0.18em; color: var(--text-tertiary);">RANKS</a>
+      <a href="index.html#world" class="nav-link uppercase"
+         style="font-size: 10px; letter-spacing: 0.18em; color: var(--text-tertiary);">WORLD</a>
+      <a href="hall.html" class="nav-link uppercase"
+         style="font-size: 10px; letter-spacing: 0.18em; color: var(--text-primary);">HALL</a>
+      <a id="auth-link" href="wip.html"
+         class="uppercase"
+         style="font-size: 8px; letter-spacing: 0.28em;
+                background-color: var(--accent); color: #F5F5F0;
+                padding: 7px 16px; display: inline-block;
+                transition: opacity 0.2s ease;">
+        SIGN IN
+      </a>
+    </div>
+
+    <!-- MOBILE: Hamburger -->
+    <button id="menu-btn" class="md:hidden flex flex-col gap-1.5 p-2"
+            aria-label="Open navigation menu" aria-expanded="false">
+      <span class="block w-6 h-px" style="background-color: var(--text-primary);"></span>
+      <span class="block w-6 h-px" style="background-color: var(--text-primary);"></span>
+      <span class="block w-4 h-px" style="background-color: var(--text-primary);"></span>
+    </button>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div id="mobile-menu"
+       class="mobile-menu hidden fixed top-16 left-0 right-0 z-40 px-6 py-6 flex flex-col gap-5"
+       style="background-color: var(--bg-primary); opacity: 0.98; border-bottom: 1px solid var(--accent-border);">
+    <a href="index.html#about" class="nav-link uppercase"
+       style="font-size: 11px; letter-spacing: 0.2em; color: var(--text-secondary);">MANIFESTO</a>
+    <a href="index.html#drops" class="nav-link uppercase"
+       style="font-size: 11px; letter-spacing: 0.2em; color: var(--text-secondary);">DROPS</a>
+    <a href="index.html#ranks" class="nav-link uppercase"
+       style="font-size: 11px; letter-spacing: 0.2em; color: var(--text-secondary);">RANKS</a>
+    <a href="index.html#world" class="nav-link uppercase"
+       style="font-size: 11px; letter-spacing: 0.2em; color: var(--text-secondary);">WORLD</a>
+    <a href="hall.html" class="nav-link uppercase"
+       style="font-size: 11px; letter-spacing: 0.2em; color: var(--text-primary);">HALL</a>
+    <a id="auth-link-mobile" href="wip.html"
+       class="self-start uppercase"
+       style="font-size: 9px; letter-spacing: 0.28em;
+              background-color: var(--accent); color: #F5F5F0;
+              padding: 10px 22px; display: inline-block;
+              transition: opacity 0.2s ease;">
+      SIGN IN
+    </a>
+  </div>
+
+  <!-- TICKER TAPE -->
+  <div class="ticker">
+    <div class="ticker-track">
+      <span class="ticker-text">RBG GUILD REGISTRY ——— PRODUCTS ARE ARMOR FOR YOUR ARC ——— </span>
+      <span class="ticker-text">RBG GUILD REGISTRY ——— PRODUCTS ARE ARMOR FOR YOUR ARC ——— </span>
+      <span class="ticker-text">RBG GUILD REGISTRY ——— PRODUCTS ARE ARMOR FOR YOUR ARC ——— </span>
+      <span class="ticker-text">RBG GUILD REGISTRY ——— PRODUCTS ARE ARMOR FOR YOUR ARC ——— </span>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       HERO — Hall of Fame header
+       ================================================================ -->
+  <section class="relative pt-40 pb-24 md:pt-48 md:pb-32 px-6 md:px-12 overflow-hidden"
+           style="background-color: var(--bg-primary);">
+
+    <!-- Subtle background glow -->
+    <div class="absolute inset-0 pointer-events-none" style="
+      background: radial-gradient(ellipse 50% 60% at 50% 30%, var(--accent-glow) 0%, transparent 70%);
+    "></div>
+
+    <!-- Large ghost kanji watermark -->
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true">
+      <span class="font-jp font-black" style="font-size: min(40vw, 320px); color: var(--text-ghost); line-height: 1;">
+        殿堂
+      </span>
+    </div>
+
+    <div class="relative z-10 max-w-5xl mx-auto">
+      <!-- Section label -->
+      <div class="reveal flex items-center gap-3 mb-8">
+        <span class="font-jp text-rbg-red"
+              style="font-size: 9px; letter-spacing: 0.3em;">殿堂</span>
+        <span class="text-rbg-white/25 uppercase"
+              style="font-size: 8px; letter-spacing: 0.2em;">GUILD HALL OF FAME</span>
+      </div>
+
+      <!-- Heading -->
+      <h1 class="reveal reveal-delay-1 font-sans font-black text-rbg-white mb-4"
+          style="font-size: clamp(32px, 5vw, 60px); letter-spacing: -0.04em; line-height: 1.05;">
+        THE HALL OF FAME.
+      </h1>
+
+      <!-- Japanese subtitle -->
+      <p class="reveal reveal-delay-2 font-jp text-rbg-white/30"
+         style="font-size: clamp(11px, 1.5vw, 14px); letter-spacing: 0.08em;">
+        名を刻む者たち ——— Those who carve their names.
+      </p>
+
+      <!-- Description -->
+      <p class="reveal reveal-delay-3 mt-6 text-rbg-white/55 max-w-xl"
+         style="font-size: 13px; line-height: 1.7; letter-spacing: 0.02em;">
+        This page honors the guild's highest-ranking members. Rank is not given — it is built.
+        These collectors have earned their place through dedication, loyalty, and commitment to the guild.
+      </p>
+
+      <!-- Divider -->
+      <div class="reveal reveal-delay-4 mt-10" style="height: 1px; background: var(--border-medium);"></div>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       GRAND GUILD MASTERS — Rank 05 (most prominent)
+       ================================================================ -->
+  <section id="grand-guildmasters"
+           class="relative py-20 md:py-28 px-6 md:px-12 overflow-hidden"
+           style="background-color: var(--bg-primary);">
+
+    <div class="max-w-5xl mx-auto">
+      <!-- Section label -->
+      <div class="reveal flex items-center gap-3 mb-3">
+        <img src="brand_assets/5ranks_icons/rbg_rank_grandguildmaster.png" alt="" aria-hidden="true"
+             style="width: 20px; height: 20px; object-fit: contain;">
+        <span class="font-jp text-rbg-red"
+              style="font-size: 9px; letter-spacing: 0.3em;">大ギルドマスター</span>
+        <span class="text-rbg-white/25 uppercase"
+              style="font-size: 8px; letter-spacing: 0.2em;">GRAND GUILD MASTERS</span>
+        <span class="text-rbg-red blink" style="font-size: 6px;">●</span>
+      </div>
+
+      <!-- Subtext -->
+      <p class="reveal reveal-delay-1 text-rbg-white/35 mb-10"
+         style="font-size: 11px; letter-spacing: 0.05em; line-height: 1.6;">
+        Invite only — the founding pillars. 大ギルドマスターは招待のみ。
+      </p>
+
+      <!-- Cards grid -->
+      <div id="grand-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Loading skeleton -->
+        <div class="skeleton-grand flex items-center gap-5 p-6"
+             style="background: var(--bg-elevated); border: 1px solid var(--border-subtle);">
+          <div class="skeleton" style="width: 64px; height: 64px; background: var(--border-medium);"></div>
+          <div class="flex-1">
+            <div class="skeleton mb-2" style="width: 160px; height: 14px; background: var(--border-medium);"></div>
+            <div class="skeleton" style="width: 100px; height: 10px; background: var(--border-subtle);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state (hidden by default) -->
+      <p id="grand-empty" class="hidden text-rbg-white/25 font-mono mt-4"
+         style="font-size: 11px; letter-spacing: 0.1em;">
+        None yet — the path awaits. まだ誰もいない。
+      </p>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="max-w-5xl mx-auto px-6 md:px-12">
+    <div style="height: 1px; background: var(--border-medium);"></div>
+  </div>
+
+  <!-- ================================================================
+       GUILD MASTERS — Rank 04
+       ================================================================ -->
+  <section id="guildmasters"
+           class="relative py-20 md:py-28 px-6 md:px-12 overflow-hidden"
+           style="background-color: var(--bg-primary);">
+
+    <div class="max-w-5xl mx-auto">
+      <!-- Section label -->
+      <div class="reveal flex items-center gap-3 mb-3">
+        <img src="brand_assets/5ranks_icons/rbg_rank_guildmaster.png" alt="" aria-hidden="true"
+             style="width: 20px; height: 20px; object-fit: contain;">
+        <span class="font-jp text-rbg-red"
+              style="font-size: 9px; letter-spacing: 0.3em;">ギルドマスター</span>
+        <span class="text-rbg-white/25 uppercase"
+              style="font-size: 8px; letter-spacing: 0.2em;">GUILD MASTERS</span>
+      </div>
+
+      <!-- Subtext -->
+      <p class="reveal reveal-delay-1 text-rbg-white/35 mb-10"
+         style="font-size: 11px; letter-spacing: 0.05em; line-height: 1.6;">
+        20+ orders — leaders of the inner circle. 指導者たち。
+      </p>
+
+      <!-- Cards grid -->
+      <div id="master-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <!-- Loading skeleton -->
+        <div class="skeleton-master flex items-center gap-4 p-5"
+             style="background: var(--bg-elevated); border: 1px solid var(--border-subtle);">
+          <div class="skeleton" style="width: 48px; height: 48px; background: var(--border-medium);"></div>
+          <div class="flex-1">
+            <div class="skeleton mb-2" style="width: 120px; height: 12px; background: var(--border-medium);"></div>
+            <div class="skeleton" style="width: 80px; height: 9px; background: var(--border-subtle);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state (hidden by default) -->
+      <p id="master-empty" class="hidden text-rbg-white/25 font-mono mt-4"
+         style="font-size: 11px; letter-spacing: 0.1em;">
+        None yet — the path awaits. まだ誰もいない。
+      </p>
+    </div>
+  </section>
+
+  <!-- ================================================================
+       FOOTER
+       ================================================================ -->
+  <footer id="footer"
+          class="relative overflow-hidden py-24 px-6 md:px-12"
+          style="background-color: var(--bg-footer); border-top: 1px solid var(--accent-border);">
+
+    <div class="absolute inset-0 pointer-events-none" style="
+      background: radial-gradient(ellipse 60% 40% at 50% 80%, var(--accent-subtle) 0%, transparent 70%);
+    "></div>
+
+    <div class="reveal relative z-10 flex flex-col items-center text-center mb-12">
+      <img src="brand_assets/IKZ-Red@2x.png" alt="IKZ" class="object-contain mb-6"
+           style="width: min(120px, 28vw);
+                  filter: grayscale(1) brightness(3) drop-shadow(0 0 16px rgba(245,245,240,0.15));">
+      <p class="font-jp text-rbg-white/20"
+         style="font-size: 10px; letter-spacing: 0.12em;">
+        無限に前へ
+      </p>
+    </div>
+
+    <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-5 pt-6"
+         style="border-top: 1px solid var(--border-subtle);">
+      <p class="font-jp text-rbg-white/20"
+         style="font-size: 10px; letter-spacing: 0.05em;">
+        © 2026 レッドビーングルード — RedBean Guild. All rights reserved.
+      </p>
+      <div class="flex items-center gap-6">
+        <a href="https://www.instagram.com/redbeanguild/" target="_blank" rel="noopener"
+           class="footer-link text-rbg-white/30 uppercase"
+           style="font-size: 9px; letter-spacing: 0.2em;">INSTAGRAM</a>
+        <a href="https://twitter.com/RedBeanGuild" target="_blank" rel="noopener"
+           class="footer-link text-rbg-white/30 uppercase"
+           style="font-size: 9px; letter-spacing: 0.2em;">X</a>
+        <a href="tos.html"
+           class="footer-link text-rbg-white/30 uppercase"
+           style="font-size: 9px; letter-spacing: 0.2em;">TERMS</a>
+      </div>
+    </div>
+
+    <p class="relative z-10 text-center mt-6 uppercase"
+       style="font-size: 9px; letter-spacing: 0.2em; opacity: 0.2; color: var(--text-secondary);">
+      REV 2.1.1
+    </p>
+  </footer>
+
+  <!-- ================================================================
+       MOBILE MENU JS
+       ================================================================ -->
+  <script>
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuBtn.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.contains('open');
+      if (isOpen) {
+        mobileMenu.classList.remove('open');
+        mobileMenu.classList.add('hidden');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      } else {
+        mobileMenu.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            mobileMenu.classList.add('open');
+          });
+        });
+        menuBtn.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        mobileMenu.classList.add('hidden');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+  </script>
+
+  <!-- ================================================================
+       THEME TOGGLE
+       ================================================================ -->
+  <script>
+    (function() {
+      const toggle  = document.getElementById('theme-toggle');
+      const sunIcon = document.getElementById('icon-sun');
+      const moonIcon = document.getElementById('icon-moon');
+      const html    = document.documentElement;
+
+      function updateIcons(theme) {
+        if (theme === 'dark') {
+          sunIcon.classList.remove('hidden');
+          moonIcon.classList.add('hidden');
+        } else {
+          sunIcon.classList.add('hidden');
+          moonIcon.classList.remove('hidden');
+        }
+      }
+
+      updateIcons(html.getAttribute('data-theme') || 'dark');
+
+      toggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.classList.add('theme-transitioning');
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('rbg-theme', next);
+        updateIcons(next);
+        setTimeout(() => html.classList.remove('theme-transitioning'), 500);
+      });
+    })();
+  </script>
+
+  <!-- ================================================================
+       SCROLL REVEAL
+       ================================================================ -->
+  <script>
+    (function() {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('revealed');
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+      );
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    })();
+  </script>
+
+  <!-- ================================================================
+       HALL OF FAME DATA — Fetch from Supabase RPC
+       ================================================================ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    (function() {
+
+      // --- Auth nav update ---
+      getCurrentUser().then(function(user) {
+        var links = [
+          document.getElementById('auth-link'),
+          document.getElementById('auth-link-mobile')
+        ].filter(Boolean);
+
+        links.forEach(function(link) {
+          if (user) {
+            link.textContent = 'PROFILE';
+            link.href = 'profile.html';
+          } else {
+            link.textContent = 'SIGN IN';
+            link.href = 'wip.html';
+          }
+        });
+      });
+
+      // --- Fetch Hall of Fame members ---
+      (async function() {
+        var grandGrid  = document.getElementById('grand-grid');
+        var masterGrid = document.getElementById('master-grid');
+        var grandEmpty = document.getElementById('grand-empty');
+        var masterEmpty = document.getElementById('master-empty');
+
+        try {
+          var result = await sbClient.rpc('get_hall_of_fame');
+          var members = result.data || [];
+
+          var grandMembers  = members.filter(function(m) { return m.rank === '05'; });
+          var masterMembers = members.filter(function(m) { return m.rank === '04'; });
+
+          // Render Grand Guild Masters
+          grandGrid.innerHTML = '';
+          if (grandMembers.length === 0) {
+            grandEmpty.classList.remove('hidden');
+          } else {
+            grandMembers.forEach(function(m, i) {
+              grandGrid.appendChild(createGrandCard(m, i));
+            });
+          }
+
+          // Render Guild Masters
+          masterGrid.innerHTML = '';
+          if (masterMembers.length === 0) {
+            masterEmpty.classList.remove('hidden');
+          } else {
+            masterMembers.forEach(function(m, i) {
+              masterGrid.appendChild(createMasterCard(m, i));
+            });
+          }
+
+          // Trigger reveal on newly added cards
+          var observer = new IntersectionObserver(
+            function(entries) {
+              entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('revealed');
+                  observer.unobserve(entry.target);
+                }
+              });
+            },
+            { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+          );
+          document.querySelectorAll('.hall-card').forEach(function(el) {
+            observer.observe(el);
+          });
+
+        } catch (err) {
+          // If RPC not set up yet, show empty states gracefully
+          grandGrid.innerHTML = '';
+          masterGrid.innerHTML = '';
+          grandEmpty.classList.remove('hidden');
+          masterEmpty.classList.remove('hidden');
+        }
+      })();
+
+      // --- Card builders ---
+
+      function getInitials(name) {
+        if (!name) return '??';
+        return name.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().slice(0, 2);
+      }
+
+      function formatDate(dateStr) {
+        if (!dateStr) return '———';
+        var d = new Date(dateStr);
+        return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }).toUpperCase();
+      }
+
+      function createGrandCard(member, index) {
+        var card = document.createElement('div');
+        card.className = 'hall-card hall-card-grand reveal';
+        card.style.cssText = 'background: var(--bg-elevated); border: 1px solid var(--border-medium); padding: 24px; position: relative; overflow: hidden; transition-delay: ' + (index * 0.1) + 's;';
+
+        var avatarHtml;
+        if (member.avatar_url) {
+          avatarHtml = '<img src="' + member.avatar_url + '" alt="" style="width: 64px; height: 64px; object-fit: cover; border: 1px solid var(--border-medium);">';
+        } else {
+          avatarHtml = '<div style="width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; background: var(--bg-floating); border: 1px solid var(--border-medium);"><span class="font-sans font-black" style="font-size: 18px; color: var(--text-tertiary);">' + getInitials(member.display_name) + '</span></div>';
+        }
+
+        card.innerHTML =
+          // Ghost watermark
+          '<div style="position: absolute; bottom: -10px; right: 8px; font-size: 80px; font-weight: 900; color: var(--text-ghost); pointer-events: none; line-height: 1; user-select: none;" aria-hidden="true">05</div>' +
+          // Content
+          '<div style="display: flex; align-items: center; gap: 20px; position: relative; z-index: 1;">' +
+            avatarHtml +
+            '<div style="flex: 1; min-width: 0;">' +
+              '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">' +
+                '<span class="font-sans font-black text-rbg-white" style="font-size: 18px; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + (member.display_name || 'Unknown Collector') + '</span>' +
+                '<img src="brand_assets/5ranks_icons/rbg_rank_grandguildmaster.png" alt="Grand Guild Master" style="width: 18px; height: 18px; object-fit: contain; flex-shrink: 0;">' +
+              '</div>' +
+              '<div style="display: flex; align-items: center; gap: 12px;">' +
+                '<span class="font-mono text-rbg-red" style="font-size: 9px; letter-spacing: 0.2em;">RANK 05</span>' +
+                '<span class="font-mono text-rbg-white/25" style="font-size: 8px; letter-spacing: 0.15em;">SINCE ' + formatDate(member.joined_at) + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+
+        return card;
+      }
+
+      function createMasterCard(member, index) {
+        var card = document.createElement('div');
+        card.className = 'hall-card reveal';
+        card.style.cssText = 'background: var(--bg-elevated); border: 1px solid var(--border-subtle); padding: 20px; position: relative; overflow: hidden; transition-delay: ' + (index * 0.08) + 's;';
+
+        var avatarHtml;
+        if (member.avatar_url) {
+          avatarHtml = '<img src="' + member.avatar_url + '" alt="" style="width: 48px; height: 48px; object-fit: cover; border: 1px solid var(--border-subtle);">';
+        } else {
+          avatarHtml = '<div style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: var(--bg-floating); border: 1px solid var(--border-subtle);"><span class="font-sans font-black" style="font-size: 14px; color: var(--text-tertiary);">' + getInitials(member.display_name) + '</span></div>';
+        }
+
+        card.innerHTML =
+          // Ghost watermark
+          '<div style="position: absolute; bottom: -8px; right: 6px; font-size: 56px; font-weight: 900; color: var(--text-ghost); pointer-events: none; line-height: 1; user-select: none;" aria-hidden="true">04</div>' +
+          // Content
+          '<div style="display: flex; align-items: center; gap: 16px; position: relative; z-index: 1;">' +
+            avatarHtml +
+            '<div style="flex: 1; min-width: 0;">' +
+              '<div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">' +
+                '<span class="font-sans font-black text-rbg-white" style="font-size: 14px; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + (member.display_name || 'Unknown Collector') + '</span>' +
+                '<img src="brand_assets/5ranks_icons/rbg_rank_guildmaster.png" alt="Guild Master" style="width: 14px; height: 14px; object-fit: contain; flex-shrink: 0;">' +
+              '</div>' +
+              '<div style="display: flex; align-items: center; gap: 10px;">' +
+                '<span class="font-mono text-rbg-white/40" style="font-size: 8px; letter-spacing: 0.18em;">RANK 04</span>' +
+                '<span class="font-mono text-rbg-white/20" style="font-size: 8px; letter-spacing: 0.15em;">SINCE ' + formatDate(member.joined_at) + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+
+        return card;
+      }
+
+    })();
+  </script>
+
+</body>
+</html>
