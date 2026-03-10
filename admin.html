@@ -500,7 +500,10 @@
             <th>Member</th>
             <th>Email</th>
             <th>Joined</th>
+            <th>Pieces</th>
+            <th>Spend</th>
             <th>Rank</th>
+            <th style="width: 60px;">Sync</th>
           </tr>
         </thead>
         <tbody id="member-tbody"></tbody>
@@ -763,7 +766,17 @@
           <span class="member-joined">${joinedText}</span>
         </td>
 
-        <!-- Column 5: Rank dropdown + save indicator -->
+        <!-- Column 5: Pieces -->
+        <td>
+          <span class="member-joined">${profile.piece_count || 0}</span>
+        </td>
+
+        <!-- Column 6: Spend -->
+        <td>
+          <span class="member-joined">$${Number(profile.total_spend || 0).toLocaleString()}</span>
+        </td>
+
+        <!-- Column 7: Rank dropdown + save indicator -->
         <td>
           <div style="display: flex; align-items: center;">
             <select class="rank-select" data-user-id="${profile.id}">
@@ -773,9 +786,22 @@
               <option value="04" ${rankCode === '04' ? 'selected' : ''}>04 — GUILD MASTER ギルドマスター</option>
               <option value="05" ${rankCode === '05' ? 'selected' : ''}>05 — GRAND GUILD MASTER 大ギルドマスター</option>
             </select>
-            <!-- This "✓ SAVED" text fades in briefly after a successful rank update -->
             <span class="save-indicator">✓ SAVED</span>
           </div>
+        </td>
+
+        <!-- Column 8: Sync (Shopify backfill) -->
+        <td>
+          <button class="backfill-btn"
+                  data-user-id="${profile.id}"
+                  style="font-size: 8px; letter-spacing: 0.15em; color: var(--text-tertiary);
+                         background: none; border: 1px solid var(--border-medium);
+                         cursor: pointer; padding: 4px 8px; text-transform: uppercase;
+                         font-family: inherit; transition: color 0.15s, border-color 0.15s;"
+                  onmouseover="this.style.color='var(--text-primary)'; this.style.borderColor='var(--text-tertiary)';"
+                  onmouseout="this.style.color='var(--text-tertiary)'; this.style.borderColor='var(--border-medium)';">
+            Sync
+          </button>
         </td>
       `;
 
@@ -787,6 +813,35 @@
       select.addEventListener('change', async () => {
         await saveRank(profile.id, select.value, saveIndicator);
       });
+
+      // ── Wire up the Sync (backfill) button ──
+      const backfillBtn = tr.querySelector('.backfill-btn');
+      if (backfillBtn) {
+        backfillBtn.addEventListener('click', async () => {
+          backfillBtn.textContent = '...';
+          backfillBtn.disabled = true;
+          try {
+            const { data: { session } } = await sbClient.auth.getSession();
+            const res = await fetch('/api/shopify/backfill?userId=' + profile.id, {
+              method: 'POST',
+              headers: { 'Authorization': 'Bearer ' + session.access_token },
+            });
+            backfillBtn.textContent = res.ok ? 'Done' : 'Error';
+            if (res.ok) {
+              // Refresh the table after a brief delay to show updated data
+              setTimeout(async () => {
+                backfillBtn.textContent = 'Sync';
+                backfillBtn.disabled = false;
+                await loadMembers();
+              }, 1500);
+            }
+          } catch (err) {
+            console.error('Backfill failed:', err.message);
+            backfillBtn.textContent = 'Error';
+            setTimeout(() => { backfillBtn.textContent = 'Sync'; backfillBtn.disabled = false; }, 2000);
+          }
+        });
+      }
 
       return tr;
     }
