@@ -92,3 +92,4 @@ The `.mcp.json` file is already in the project root. To activate it:
 - **No wardrobe items appearing**: Verify the customer's email in Shopify matches their RBG profile email
 - **Backfill returns empty**: Check that `SHOPIFY_ADMIN_API_TOKEN` has `read_orders` scope
 - **Images not loading**: Verify `SHOPIFY_ADMIN_API_TOKEN` has `read_products` scope
+- **Magic links redirect to localhost**: In **Supabase Dashboard** > **Authentication** > **URL Configuration**, set **Site URL** to `https://redbeanguild.com` and add `https://redbeanguild.com/**` to the **Redirect URLs** allow-list

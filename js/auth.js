@@ -18,6 +18,9 @@ async function signUp(email, password) {
   const { data, error } = await sbClient.auth.signUp({
     email: email,
     password: password,
+    options: {
+      emailRedirectTo: 'https://redbeanguild.com/profile.html',
+    },
   });
 
   if (error) throw error;
@@ -107,8 +110,10 @@ async function isLoggedIn() {
 // ---- RESET PASSWORD ----
 // Sends a password-reset email via Supabase.
 // The user receives a magic link; clicking it lets them set a new password.
-// Supabase handles the redirect automatically — no redirectTo URL needed here.
+// redirectTo ensures the magic link points to the production domain, not localhost.
 async function resetPassword(email) {
-  const { error } = await sbClient.auth.resetPasswordForEmail(email);
+  const { error } = await sbClient.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://redbeanguild.com/login.html',
+  });
   if (error) throw error;
 }
