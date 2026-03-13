@@ -431,16 +431,20 @@
         <div id="login-error" class="hidden text-center mb-4"
              style="font-size: 10px; letter-spacing: 0.05em; color: var(--accent);"></div>
 
-        <!-- Sign in form -->
+        <!-- Sign in form (magic link — no password) -->
         <form id="admin-login-form" style="display: flex; flex-direction: column; gap: 10px;">
           <input type="email" id="admin-email" class="admin-input"
                  placeholder="Email" required autocomplete="email">
-          <input type="password" id="admin-password" class="admin-input"
-                 placeholder="Password" required autocomplete="current-password">
           <button type="submit" class="admin-login-btn" style="margin-top: 6px;">
-            Sign In
+            Send Magic Link
           </button>
         </form>
+
+        <!-- Magic link sent confirmation (hidden by default) -->
+        <div id="admin-magic-sent" class="hidden text-center mt-4"
+             style="font-size: 11px; color: var(--text-secondary); letter-spacing: 0.04em; line-height: 1.7;">
+          Magic link sent — check your email and click the link to sign in.
+        </div>
 
         <!-- Back to main site -->
         <div class="text-center mt-6">
@@ -626,17 +630,22 @@
       e.preventDefault();
       const errorEl  = document.getElementById('login-error');
       const email    = document.getElementById('admin-email').value;
-      const password = document.getElementById('admin-password').value;
 
       errorEl.classList.add('hidden');
 
       try {
-        await signIn(email, password);
-        await runAuthCheck(); // re-check after successful login
+        await signInWithMagicLink(email);
+        // Show confirmation message
+        document.getElementById('admin-magic-sent').classList.remove('hidden');
       } catch (err) {
         errorEl.textContent = err.message;
         errorEl.classList.remove('hidden');
       }
+    });
+
+    // Re-check auth when user returns from magic link (tab becomes visible)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) runAuthCheck();
     });
 
 
