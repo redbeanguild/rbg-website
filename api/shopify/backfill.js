@@ -15,7 +15,7 @@
 //   SUPABASE_URL             — Supabase project URL
 //   SUPABASE_SERVICE_ROLE_KEY — service role key (bypasses RLS)
 
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
 // Fetch product image URL from Shopify Admin API
 async function fetchProductImage(productId) {
@@ -69,7 +69,7 @@ async function fetchAllOrders(email) {
   return allOrders;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }

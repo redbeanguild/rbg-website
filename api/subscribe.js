@@ -10,7 +10,7 @@
 //   CONVERTKIT_API_KEY — set this in Vercel Dashboard > Project > Settings > Environment Variables
 //   Never put the real key in this file.
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
