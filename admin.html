@@ -826,19 +826,26 @@
               method: 'POST',
               headers: { 'Authorization': 'Bearer ' + session.access_token },
             });
-            backfillBtn.textContent = res.ok ? 'Done' : 'Error';
+            const result = await res.json().catch(() => ({}));
             if (res.ok) {
-              // Refresh the table after a brief delay to show updated data
+              backfillBtn.textContent = 'Done';
+              console.log('Backfill result:', result);
               setTimeout(async () => {
                 backfillBtn.textContent = 'Sync';
                 backfillBtn.disabled = false;
                 await loadMembers();
               }, 1500);
+            } else {
+              console.error('Backfill error:', res.status, result);
+              backfillBtn.textContent = 'Error';
+              backfillBtn.title = result.detail || result.error || 'Unknown error';
+              setTimeout(() => { backfillBtn.textContent = 'Sync'; backfillBtn.disabled = false; backfillBtn.title = ''; }, 4000);
             }
           } catch (err) {
             console.error('Backfill failed:', err.message);
             backfillBtn.textContent = 'Error';
-            setTimeout(() => { backfillBtn.textContent = 'Sync'; backfillBtn.disabled = false; }, 2000);
+            backfillBtn.title = err.message;
+            setTimeout(() => { backfillBtn.textContent = 'Sync'; backfillBtn.disabled = false; backfillBtn.title = ''; }, 4000);
           }
         });
       }
