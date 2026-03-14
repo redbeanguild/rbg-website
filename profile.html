@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RedBean Guild — Profile</title>
 
+  <!-- Instrument Serif — display/heading font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
   <!-- Flash prevention: apply saved theme before paint (prevents white flash) -->
   <script>
     (function() {
@@ -27,6 +32,7 @@
           },
           fontFamily: {
             'sans': ['"Helvetica Neue"', 'Helvetica', 'Arial', 'system-ui', 'sans-serif'],
+            'serif': ['"Instrument Serif"', 'Georgia', 'serif'],
             'mono': ['"Courier New"', 'Courier', 'monospace'],
           },
         }
@@ -230,11 +236,34 @@
       .page-wrap {
         grid-template-columns: 1fr;
         gap: 24px;
-        padding: 78px 16px 48px;
+        padding: 78px 20px 48px;
         max-width: 100%;
       }
       .right-col {
         position: static;
+      }
+
+      /* Nav — tighten padding on mobile */
+      nav { padding: 0 16px; }
+
+      /* Hero — scale username down for narrow screens */
+      #username-input { font-size: 18px; }
+
+      /* Stats — tighter on mobile */
+      .stats-row { gap: 0; }
+      .stat-value { font-size: 12px; }
+      .stat-label { font-size: 7px; }
+
+      /* Tabs — bigger touch targets */
+      .tab { padding: 14px 0; }
+
+      /* Rank rows — comfortable tap size */
+      .rank-row { padding: 14px 0; }
+
+      /* Social modal — full width on mobile */
+      .social-card {
+        max-width: calc(100vw - 32px);
+        margin: 0 16px;
       }
     }
 
@@ -296,8 +325,8 @@
     }
 
     #avatar-initials {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-weight: 900;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
       font-size: 26px;
       color: var(--text-secondary);
     }
@@ -325,8 +354,8 @@
     }
 
     #rank-num {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-weight: 900;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
       font-size: 14px;
       color: var(--accent);
       letter-spacing: 0;
@@ -339,8 +368,8 @@
     }
 
     #username-input {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-weight: 900;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
       font-size: 22px;
       letter-spacing: 0.06em;
       color: var(--text-primary);
@@ -416,8 +445,8 @@
     .stat-col:last-child  { border-right: none; }
 
     .stat-value {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-weight: 900;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
       font-size: 13px;
       color: var(--text-primary);
       display: block;
@@ -628,8 +657,8 @@
       position: absolute;
       bottom: 2px;
       right: 4px;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-weight: 900;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
       font-size: 52px;
       color: rgba(200, 16, 46, 0.08);
       line-height: 1;
@@ -657,8 +686,8 @@
     }
 
     .piece-name {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-weight: 700;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
       font-size: 9px;
       letter-spacing: 0.05em;
       text-transform: uppercase;
@@ -706,8 +735,8 @@
     .rank-numeral {
       width: 64px;
       text-align: center;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-weight: 900;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
       font-size: 24px;
       letter-spacing: 0;
       flex-shrink: 0;
@@ -724,8 +753,8 @@
     }
 
     .rank-en-name {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-weight: 900;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-weight: 400;
       font-size: 11px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -991,7 +1020,7 @@
             <div class="avatar-wrap">
               <div id="avatar-ring">
                 <img id="avatar-img" class="piece-img hidden" alt="Profile photo">
-                <div id="avatar-initials" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 900; font-size: 26px; color: var(--text-secondary);">
+                <div id="avatar-initials" style="font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 26px; color: var(--text-secondary);">
                   <span id="avatar-letter"></span>
                 </div>
                 <div class="avatar-overlay">UPLOAD</div>
