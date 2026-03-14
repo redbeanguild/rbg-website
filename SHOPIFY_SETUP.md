@@ -1,19 +1,22 @@
 # Shopify Integration Setup — RBG Rev 2.2.1
 
-## 1. Create a Custom App in Shopify
+## 1. Create an App in Shopify Dev Dashboard
 
-1. Go to **Shopify Admin** > **Settings** > **Apps and sales channels**
-2. Click **Develop apps** (top right)
-3. Click **Create an app** → name it `RBG Collector Profile`
-4. Go to **Configuration** tab > **Admin API integration**
-5. Select these scopes:
+> **Note:** As of Jan 2026, Shopify no longer provides static Admin API tokens.
+> This project uses the **client credentials grant** (OAuth 2.0) to obtain
+> short-lived access tokens automatically. No manual token copying required.
+
+1. Go to [**Shopify Dev Dashboard**](https://partners.shopify.com) > **Apps** > **Create app**
+2. Name it `RBG Collector Profile`
+3. Under **Configuration** > **Admin API scopes**, select:
    - `read_orders`
    - `read_products`
    - `read_customers`
-6. Click **Save**
-7. Go to **API credentials** tab
-8. Click **Install app** and confirm
-9. Copy the **Admin API access token** (starts with `shpat_`) — you'll need this
+4. Click **Save**
+5. Go to **Settings** (or **Client credentials**) and copy:
+   - **Client ID** — a public identifier for the app
+   - **Client Secret** — starts with `shpss_`
+6. **Install the app** on your store (`fa80c3.myshopify.com` or your domain)
 
 ## 2. Register the Webhook
 
@@ -34,14 +37,19 @@ Add these variables (all environments: Production, Preview, Development):
 
 | Variable | Value | Example |
 |----------|-------|---------|
-| `SHOPIFY_STORE_DOMAIN` | Your `.myshopify.com` domain | `redbeanguild.myshopify.com` |
-| `SHOPIFY_ADMIN_API_TOKEN` | Admin API access token from Step 1 | `shpat_xxxxxxxxxxxxxxxx` |
+| `SHOPIFY_STORE_DOMAIN` | Your `.myshopify.com` domain | `fa80c3.myshopify.com` |
+| `SHOPIFY_CLIENT_ID` | App Client ID from Step 1 | `abcdef1234567890` |
+| `SHOPIFY_CLIENT_SECRET` | App Client Secret from Step 1 | `shpss_xxxxxxxxxxxxxxxx` |
 | `SHOPIFY_WEBHOOK_SECRET` | Webhook signing secret from Step 2 | `whsec_xxxxxxxxxxxxxxxx` |
 | `SUPABASE_URL` | Your Supabase project URL | `https://xxxxx.supabase.co` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role key from Supabase dashboard | `eyJhbGciOi...` |
 
 The Supabase service role key is found at:
 **Supabase Dashboard** > **Settings** > **API** > **Service role key** (the `secret` one, not the `anon` one)
+
+> **How tokens work:** The app exchanges `SHOPIFY_CLIENT_ID` + `SHOPIFY_CLIENT_SECRET`
+> for a short-lived Admin API access token (24 h) via OAuth client credentials grant.
+> This happens automatically — no manual token management needed.
 
 ## 4. Install Dependencies
 
@@ -80,7 +88,7 @@ Or push to your connected Git branch — Vercel will auto-deploy.
 The `.mcp.json` file is already in the project root. To activate it:
 
 1. Edit `.mcp.json` and replace:
-   - `<your-shopify-admin-api-token>` with your actual `shpat_` token
+   - `<your-shopify-access-token>` with your `shpss_` client secret
    - `<your-store>.myshopify.com` with your actual store domain
 2. Restart your Claude Code session
 3. The `shopify-dev` server (official Shopify) provides docs and API schema search
@@ -90,6 +98,7 @@ The `.mcp.json` file is already in the project root. To activate it:
 
 - **Webhook returns 401**: Check that `SHOPIFY_WEBHOOK_SECRET` matches the signing secret in Shopify admin
 - **No wardrobe items appearing**: Verify the customer's email in Shopify matches their RBG profile email
-- **Backfill returns empty**: Check that `SHOPIFY_ADMIN_API_TOKEN` has `read_orders` scope
-- **Images not loading**: Verify `SHOPIFY_ADMIN_API_TOKEN` has `read_products` scope
+- **Shopify token exchange failed (401)**: Verify `SHOPIFY_CLIENT_ID` and `SHOPIFY_CLIENT_SECRET` are correct and the app is installed on the store
+- **Backfill returns empty**: Check that the app has `read_orders` scope
+- **Images not loading**: Verify the app has `read_products` scope
 - **Magic links redirect to localhost**: In **Supabase Dashboard** > **Authentication** > **URL Configuration**, set **Site URL** to `https://redbeanguild.com` and add `https://redbeanguild.com/**` to the **Redirect URLs** allow-list

@@ -10,21 +10,23 @@
 //   Admins can backfill any user via ?userId=xxx query param.
 //
 // Environment variables required (set in Vercel Dashboard):
-//   SHOPIFY_ADMIN_API_TOKEN  — Admin API access token (read_orders, read_products)
+//   SHOPIFY_CLIENT_ID        — App Client ID (from Shopify Dev Dashboard)
+//   SHOPIFY_CLIENT_SECRET    — App Client Secret (starts with shpss_)
 //   SHOPIFY_STORE_DOMAIN     — e.g. your-store.myshopify.com
 //   SUPABASE_URL             — Supabase project URL
 //   SUPABASE_SERVICE_ROLE_KEY — service role key (bypasses RLS)
 
 const { createClient } = require('@supabase/supabase-js');
+const { getAdminToken } = require('./token');
 
 // Fetch product image URL from Shopify Admin API
 async function fetchProductImage(productId) {
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
-  const token = process.env.SHOPIFY_ADMIN_API_TOKEN;
 
-  if (!domain || !token || !productId) return null;
+  if (!domain || !productId) return null;
 
   try {
+    const token = await getAdminToken();
     const res = await fetch(
       `https://${domain}/admin/api/2024-01/products/${productId}.json?fields=image`,
       { headers: { 'X-Shopify-Access-Token': token } }
@@ -40,7 +42,7 @@ async function fetchProductImage(productId) {
 // Fetch all orders for an email from Shopify Admin API (handles pagination)
 async function fetchAllOrders(email) {
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
-  const token = process.env.SHOPIFY_ADMIN_API_TOKEN;
+  const token = await getAdminToken();
   const allOrders = [];
   let url = `https://${domain}/admin/api/2024-01/orders.json?email=${encodeURIComponent(email)}&status=any&limit=250`;
 
@@ -75,7 +77,7 @@ module.exports = async function handler(req, res) {
   }
 
   // --- Check required env vars ---
-  const missingVars = ['SHOPIFY_ADMIN_API_TOKEN', 'SHOPIFY_STORE_DOMAIN', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']
+  const missingVars = ['SHOPIFY_CLIENT_ID', 'SHOPIFY_CLIENT_SECRET', 'SHOPIFY_STORE_DOMAIN', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']
     .filter((v) => !process.env[v]);
   if (missingVars.length) {
     console.error('Missing env vars:', missingVars);

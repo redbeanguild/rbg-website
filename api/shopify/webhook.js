@@ -10,13 +10,15 @@
 //
 // Environment variables required (set in Vercel Dashboard):
 //   SHOPIFY_WEBHOOK_SECRET   — webhook signing secret from Shopify
-//   SHOPIFY_ADMIN_API_TOKEN  — Admin API access token (read_products scope)
+//   SHOPIFY_CLIENT_ID        — App Client ID (from Shopify Dev Dashboard)
+//   SHOPIFY_CLIENT_SECRET    — App Client Secret (starts with shpss_)
 //   SHOPIFY_STORE_DOMAIN     — e.g. your-store.myshopify.com
 //   SUPABASE_URL             — Supabase project URL
 //   SUPABASE_SERVICE_ROLE_KEY — service role key (bypasses RLS)
 
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
+const { getAdminToken } = require('./token');
 
 // Disable Vercel's automatic body parsing so we can read the raw body
 // for HMAC verification.
@@ -54,11 +56,11 @@ function verifyHmac(rawBody, hmacHeader, secret) {
 // Fetch product image URL from Shopify Admin API
 async function fetchProductImage(productId) {
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
-  const token = process.env.SHOPIFY_ADMIN_API_TOKEN;
 
-  if (!domain || !token || !productId) return null;
+  if (!domain || !productId) return null;
 
   try {
+    const token = await getAdminToken();
     const res = await fetch(
       `https://${domain}/admin/api/2024-01/products/${productId}.json?fields=image`,
       {
