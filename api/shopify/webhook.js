@@ -15,14 +15,15 @@
 //   SUPABASE_URL             — Supabase project URL
 //   SUPABASE_SERVICE_ROLE_KEY — service role key (bypasses RLS)
 
-import crypto from 'crypto';
-import { createClient } from '@supabase/supabase-js';
+const crypto = require('crypto');
+const { createClient } = require('@supabase/supabase-js');
 
 // Disable Vercel's automatic body parsing so we can read the raw body
 // for HMAC verification.
-export const config = {
+const config = {
   api: { bodyParser: false },
 };
+module.exports.config = config;
 
 // Read the raw body from the request stream
 function getRawBody(req) {
@@ -72,7 +73,7 @@ async function fetchProductImage(productId) {
   }
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
