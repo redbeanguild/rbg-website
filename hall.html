@@ -8,7 +8,7 @@
   <!-- Google Fonts: Noto Serif JP for Japanese typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
 
   <!-- Flash prevention: apply saved theme before any CSS renders -->
   <script>
@@ -34,6 +34,7 @@
           },
           fontFamily: {
             'sans': ['"Helvetica Neue"', 'Helvetica', 'Arial', 'system-ui', 'sans-serif'],
+            'heading': ['"Instrument Serif"', 'Georgia', 'serif'],
             'jp':   ['"Noto Serif JP"', 'serif'],
             'mono': ['"Courier New"', 'Courier', 'monospace'],
           },
@@ -123,19 +124,19 @@
       --bg-floating:      #FFFFFF;
       --bg-footer:        #E8E8E3;
       --text-primary:     #0a0a0a;
-      --text-secondary:   rgba(10, 10, 10, 0.70);
-      --text-tertiary:    rgba(10, 10, 10, 0.45);
-      --text-ghost:       rgba(10, 10, 10, 0.06);
-      --text-muted:       rgba(10, 10, 10, 0.30);
-      --accent:           #CC1518;
-      --accent-hover:     #DD1A1E;
-      --accent-pressed:   #AA1215;
-      --accent-glow:      rgba(204, 21, 24, 0.08);
-      --accent-subtle:    rgba(204, 21, 24, 0.04);
-      --accent-border:    rgba(204, 21, 24, 0.20);
-      --accent-border-hover: rgba(204, 21, 24, 0.55);
-      --border-subtle:    rgba(10, 10, 10, 0.06);
-      --border-medium:    rgba(10, 10, 10, 0.12);
+      --text-secondary:   rgba(10, 10, 10, 0.82);
+      --text-tertiary:    rgba(10, 10, 10, 0.58);
+      --text-ghost:       rgba(10, 10, 10, 0.08);
+      --text-muted:       rgba(10, 10, 10, 0.44);
+      --accent:           #B81215;
+      --accent-hover:     #CC1518;
+      --accent-pressed:   #9A0F12;
+      --accent-glow:      rgba(184, 18, 21, 0.10);
+      --accent-subtle:    rgba(184, 18, 21, 0.06);
+      --accent-border:    rgba(184, 18, 21, 0.25);
+      --accent-border-hover: rgba(184, 18, 21, 0.60);
+      --border-subtle:    rgba(10, 10, 10, 0.10);
+      --border-medium:    rgba(10, 10, 10, 0.18);
       --scrollbar-track:  #F5F5F0;
       --scrollbar-thumb:  rgba(10, 10, 10, 0.3);
       --grain-opacity:    0.02;
@@ -437,7 +438,7 @@
       </div>
 
       <!-- Heading -->
-      <h1 class="reveal reveal-delay-1 font-sans font-black text-rbg-white mb-4"
+      <h1 class="reveal reveal-delay-1 font-heading font-black text-rbg-white mb-4"
           style="font-size: clamp(32px, 5vw, 60px); letter-spacing: -0.04em; line-height: 1.05;">
         THE HALL OF FAME.
       </h1>

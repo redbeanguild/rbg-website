@@ -8,7 +8,7 @@
   <!-- Google Fonts: same as main site -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
 
   <!-- Flash prevention: apply saved theme before paint -->
   <script>
@@ -33,6 +33,7 @@
           },
           fontFamily: {
             'sans': ['"Helvetica Neue"', 'Helvetica', 'Arial', 'system-ui', 'sans-serif'],
+            'heading': ['"Instrument Serif"', 'Georgia', 'serif'],
             'jp':   ['"Noto Serif JP"', 'serif'],
             'mono': ['"Courier New"', 'Courier', 'monospace'],
           },
@@ -65,13 +66,13 @@
       --bg-primary:       #F5F5F0;
       --bg-elevated:      #EDEDEA;
       --text-primary:     #0a0a0a;
-      --text-secondary:   rgba(10, 10, 10, 0.70);
-      --text-tertiary:    rgba(10, 10, 10, 0.45);
-      --accent:           #CC1518;
-      --accent-hover:     #DD1A1E;
-      --accent-border:    rgba(204, 21, 24, 0.20);
-      --border-subtle:    rgba(10, 10, 10, 0.06);
-      --border-medium:    rgba(10, 10, 10, 0.12);
+      --text-secondary:   rgba(10, 10, 10, 0.82);
+      --text-tertiary:    rgba(10, 10, 10, 0.58);
+      --accent:           #B81215;
+      --accent-hover:     #CC1518;
+      --accent-border:    rgba(184, 18, 21, 0.25);
+      --border-subtle:    rgba(10, 10, 10, 0.10);
+      --border-medium:    rgba(10, 10, 10, 0.18);
       --grain-opacity:    0.02;
     }
 
@@ -174,7 +175,7 @@
     </div>
 
     <!-- Bold heading -->
-    <h1 class="font-sans font-black uppercase mb-3"
+    <h1 class="font-heading font-black uppercase mb-3"
         style="font-size: 22px; letter-spacing: 0.08em; color: var(--text-primary);">
       Check Your Email
     </h1>
@@ -225,7 +226,7 @@
     </div>
 
     <!-- Heading -->
-    <h1 class="text-center font-sans font-black uppercase mb-2"
+    <h1 class="text-center font-heading font-black uppercase mb-2"
         style="font-size: 13px; letter-spacing: 0.25em; color: var(--text-primary);">
       Welcome to the Guild
     </h1>
