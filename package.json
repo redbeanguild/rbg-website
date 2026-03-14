@@ -1,6 +1,8 @@
 {
+  "name": "rbg-website",
+  "private": true,
   "dependencies": {
-    "@supabase/supabase-js": "^2"
+    "@supabase/supabase-js": "^2.49.4"
   },
   "devDependencies": {
     "puppeteer": "^24.38.0"
