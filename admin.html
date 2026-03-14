@@ -836,16 +836,18 @@
                 await loadMembers();
               }, 1500);
             } else {
+              const errMsg = result.detail || result.error || res.status;
               console.error('Backfill error:', res.status, result);
-              backfillBtn.textContent = 'Error';
-              backfillBtn.title = result.detail || result.error || 'Unknown error';
-              setTimeout(() => { backfillBtn.textContent = 'Sync'; backfillBtn.disabled = false; backfillBtn.title = ''; }, 4000);
+              backfillBtn.textContent = 'ERR:' + res.status;
+              backfillBtn.title = errMsg;
+              alert('Sync failed (' + res.status + '): ' + errMsg);
+              setTimeout(() => { backfillBtn.textContent = 'Sync'; backfillBtn.disabled = false; backfillBtn.title = ''; }, 8000);
             }
           } catch (err) {
             console.error('Backfill failed:', err.message);
-            backfillBtn.textContent = 'Error';
-            backfillBtn.title = err.message;
-            setTimeout(() => { backfillBtn.textContent = 'Sync'; backfillBtn.disabled = false; backfillBtn.title = ''; }, 4000);
+            backfillBtn.textContent = 'ERR';
+            alert('Sync failed: ' + err.message);
+            setTimeout(() => { backfillBtn.textContent = 'Sync'; backfillBtn.disabled = false; }, 8000);
           }
         });
       }
