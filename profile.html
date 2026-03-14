@@ -68,19 +68,19 @@
       --bg-elevated:    #EDEDEA;
       --bg-floating:    #FFFFFF;
       --text-primary:   #0a0a0a;
-      --text-secondary: rgba(10, 10, 10, 0.70);
-      --text-tertiary:  rgba(10, 10, 10, 0.45);
-      --text-muted:     rgba(10, 10, 10, 0.30);
-      --text-ghost:     rgba(10, 10, 10, 0.12);
+      --text-secondary: rgba(10, 10, 10, 0.78);
+      --text-tertiary:  rgba(10, 10, 10, 0.55);
+      --text-muted:     rgba(10, 10, 10, 0.42);
+      --text-ghost:     rgba(10, 10, 10, 0.20);
       --accent:         #CC1518;
       --accent-hover:   #DD1A1E;
       --accent-border:  rgba(204, 21, 24, 0.20);
-      --accent-dim:     rgba(204, 21, 24, 0.06);
-      --border-subtle:  rgba(10, 10, 10, 0.06);
-      --border-std:     rgba(10, 10, 10, 0.08);
-      --border-medium:  rgba(10, 10, 10, 0.12);
-      --border-strong:  rgba(10, 10, 10, 0.16);
-      --grain-opacity:  0.02;
+      --accent-dim:     rgba(204, 21, 24, 0.10);
+      --border-subtle:  rgba(10, 10, 10, 0.10);
+      --border-std:     rgba(10, 10, 10, 0.13);
+      --border-medium:  rgba(10, 10, 10, 0.18);
+      --border-strong:  rgba(10, 10, 10, 0.24);
+      --grain-opacity:  0.03;
     }
 
     /* ================================================================
@@ -221,6 +221,21 @@
     .right-col {
       position: sticky;
       top: 86px;
+    }
+
+    /* ================================================================
+       MOBILE RESPONSIVE — stack layout on small screens
+       ================================================================ */
+    @media (max-width: 768px) {
+      .page-wrap {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding: 78px 16px 48px;
+        max-width: 100%;
+      }
+      .right-col {
+        position: static;
+      }
     }
 
     /* ================================================================
@@ -425,6 +440,25 @@
       border-left: 3px solid rgba(200, 16, 46, 0.44);
       padding-left: 12px;
       margin-bottom: 14px;
+    }
+
+    .lore-label {
+      display: block;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 900;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-tertiary);
+      margin-bottom: 4px;
+    }
+
+    .lore-desc {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 9px;
+      line-height: 1.5;
+      color: var(--text-muted);
+      margin: 0 0 8px 0;
     }
 
     #misogi-input {
@@ -1020,6 +1054,8 @@
 
         <!-- Misogi lore block (Courier italic, 3px left red stripe) -->
         <div class="lore-block">
+          <span class="lore-label">MISOGI — 禊</span>
+          <p class="lore-desc">Your declaration of purpose. One challenge. One year. No retreat.</p>
           <textarea
             id="misogi-input"
             placeholder="Declare your misogi."
