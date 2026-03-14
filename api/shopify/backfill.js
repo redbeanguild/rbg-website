@@ -74,130 +74,152 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // --- Authenticate via Supabase JWT ---
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Missing authorization token' });
+  // --- Check required env vars ---
+  const missingVars = ['SHOPIFY_ADMIN_API_TOKEN', 'SHOPIFY_STORE_DOMAIN', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']
+    .filter((v) => !process.env[v]);
+  if (missingVars.length) {
+    console.error('Missing env vars:', missingVars);
+    return res.status(500).json({ error: 'Server config error', detail: 'Missing env: ' + missingVars.join(', ') });
   }
 
-  const token = authHeader.replace('Bearer ', '');
+  try {
+    // --- Authenticate via Supabase JWT ---
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Missing authorization token' });
+    }
 
-  const supabaseAdmin = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
+    const token = authHeader.replace('Bearer ', '');
 
-  const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
+    const supabaseAdmin = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    );
 
-  if (authError || !user) {
-    return res.status(401).json({ error: 'Invalid token' });
-  }
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
 
-  // --- Determine Target User ---
-  let targetUserId = user.id;
-  const requestedUserId = req.query?.userId;
+    if (authError || !user) {
+      console.error('Auth failed:', authError?.message);
+      return res.status(401).json({ error: 'Invalid token', detail: authError?.message });
+    }
 
-  if (requestedUserId && requestedUserId !== user.id) {
-    // Verify caller is admin
-    const { data: callerProfile } = await supabaseAdmin
+    // --- Determine Target User ---
+    let targetUserId = user.id;
+    const requestedUserId = req.query?.userId;
+
+    if (requestedUserId && requestedUserId !== user.id) {
+      // Verify caller is admin
+      const { data: callerProfile } = await supabaseAdmin
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+
+      if (!callerProfile?.is_admin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      targetUserId = requestedUserId;
+    }
+
+    // --- Get Target User's Email ---
+    const { data: targetProfile, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .select('is_admin')
-      .eq('id', user.id)
+      .select('email')
+      .eq('id', targetUserId)
       .single();
 
-    if (!callerProfile?.is_admin) {
-      return res.status(403).json({ error: 'Admin access required' });
+    if (profileError || !targetProfile?.email) {
+      console.error('Profile lookup failed:', profileError?.message, 'userId:', targetUserId);
+      return res.status(404).json({ error: 'Profile not found', detail: profileError?.message });
     }
 
-    targetUserId = requestedUserId;
-  }
+    console.log('Backfill started for:', targetProfile.email);
 
-  // --- Get Target User's Email ---
-  const { data: targetProfile, error: profileError } = await supabaseAdmin
-    .from('profiles')
-    .select('email')
-    .eq('id', targetUserId)
-    .single();
+    // --- Fetch Orders from Shopify ---
+    const orders = await fetchAllOrders(targetProfile.email);
+    console.log('Orders fetched:', orders.length, 'for', targetProfile.email);
 
-  if (profileError || !targetProfile?.email) {
-    return res.status(404).json({ error: 'Profile not found' });
-  }
-
-  // --- Fetch Orders from Shopify ---
-  const orders = await fetchAllOrders(targetProfile.email);
-
-  if (!orders.length) {
-    return res.status(200).json({ status: 'ok', items_processed: 0, message: 'No orders found' });
-  }
-
-  // --- Collect Unique Product IDs and Fetch Images ---
-  const allProductIds = new Set();
-  for (const order of orders) {
-    for (const item of order.line_items || []) {
-      if (item.product_id) allProductIds.add(item.product_id);
+    if (!orders.length) {
+      return res.status(200).json({ status: 'ok', items_processed: 0, message: 'No orders found for ' + targetProfile.email });
     }
-  }
 
-  const imageMap = {};
-  // Batch image fetches with a small delay to respect rate limits
-  for (const pid of allProductIds) {
-    imageMap[pid] = await fetchProductImage(pid);
-    // Small delay between API calls to respect Shopify rate limits
-    await new Promise((r) => setTimeout(r, 250));
-  }
-
-  // --- Upsert Wardrobe Items ---
-  let itemsProcessed = 0;
-
-  for (const order of orders) {
-    for (const item of order.line_items || []) {
-      const { error: insertError } = await supabaseAdmin
-        .from('wardrobe_items')
-        .upsert(
-          {
-            collector_id: targetUserId,
-            shopify_order_id: String(order.id),
-            shopify_product_id: String(item.product_id),
-            product_title: item.title,
-            variant_title: item.variant_title || null,
-            product_image_url: imageMap[item.product_id] || null,
-            price: parseFloat(item.price) || 0,
-            purchased_at: order.created_at,
-          },
-          { onConflict: 'collector_id,shopify_order_id,shopify_product_id' }
-        );
-
-      if (insertError) {
-        console.error('Failed to upsert wardrobe item:', insertError.message);
-      } else {
-        itemsProcessed++;
+    // --- Collect Unique Product IDs and Fetch Images ---
+    const allProductIds = new Set();
+    for (const order of orders) {
+      for (const item of order.line_items || []) {
+        if (item.product_id) allProductIds.add(item.product_id);
       }
     }
+
+    const imageMap = {};
+    // Batch image fetches with a small delay to respect rate limits
+    for (const pid of allProductIds) {
+      imageMap[pid] = await fetchProductImage(pid);
+      // Small delay between API calls to respect Shopify rate limits
+      await new Promise((r) => setTimeout(r, 250));
+    }
+
+    // --- Upsert Wardrobe Items ---
+    let itemsProcessed = 0;
+    const upsertErrors = [];
+
+    for (const order of orders) {
+      for (const item of order.line_items || []) {
+        const { error: insertError } = await supabaseAdmin
+          .from('wardrobe_items')
+          .upsert(
+            {
+              collector_id: targetUserId,
+              shopify_order_id: String(order.id),
+              shopify_product_id: String(item.product_id),
+              product_title: item.title,
+              variant_title: item.variant_title || null,
+              product_image_url: imageMap[item.product_id] || null,
+              price: parseFloat(item.price) || 0,
+              purchased_at: order.created_at,
+            },
+            { onConflict: 'collector_id,shopify_order_id,shopify_product_id' }
+          );
+
+        if (insertError) {
+          console.error('Failed to upsert wardrobe item:', insertError.message);
+          upsertErrors.push(insertError.message);
+        } else {
+          itemsProcessed++;
+        }
+      }
+    }
+
+    // --- Update Shopify Customer ID (from first order's customer) ---
+    const firstCustomerId = orders[0]?.customer?.id;
+    if (firstCustomerId) {
+      await supabaseAdmin
+        .from('profiles')
+        .update({ shopify_customer_id: String(firstCustomerId) })
+        .eq('id', targetUserId);
+    }
+
+    // --- Recalculate Rank ---
+    const { data: newRank, error: rankError } = await supabaseAdmin.rpc(
+      'recalculate_rank',
+      { target_user_id: targetUserId }
+    );
+
+    if (rankError) {
+      console.error('Rank recalculation failed:', rankError.message);
+    }
+
+    return res.status(200).json({
+      status: 'ok',
+      orders_found: orders.length,
+      items_processed: itemsProcessed,
+      new_rank: newRank,
+      upsert_errors: upsertErrors.length ? upsertErrors : undefined,
+      rank_error: rankError?.message || undefined,
+    });
+  } catch (err) {
+    console.error('Backfill unhandled error:', err);
+    return res.status(500).json({ error: 'Internal server error', detail: err.message });
   }
-
-  // --- Update Shopify Customer ID (from first order's customer) ---
-  const firstCustomerId = orders[0]?.customer?.id;
-  if (firstCustomerId) {
-    await supabaseAdmin
-      .from('profiles')
-      .update({ shopify_customer_id: String(firstCustomerId) })
-      .eq('id', targetUserId);
-  }
-
-  // --- Recalculate Rank ---
-  const { data: newRank, error: rankError } = await supabaseAdmin.rpc(
-    'recalculate_rank',
-    { target_user_id: targetUserId }
-  );
-
-  if (rankError) {
-    console.error('Rank recalculation failed:', rankError.message);
-  }
-
-  return res.status(200).json({
-    status: 'ok',
-    orders_found: orders.length,
-    items_processed: itemsProcessed,
-    new_rank: newRank,
-  });
 }
