@@ -8,7 +8,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
 
   <!-- Flash prevention: apply saved theme before paint (avoids white flash on load) -->
   <script>
@@ -33,6 +33,7 @@
           },
           fontFamily: {
             'sans': ['"Helvetica Neue"', 'Helvetica', 'Arial', 'system-ui', 'sans-serif'],
+            'heading': ['"Instrument Serif"', 'Georgia', 'serif'],
             'jp':   ['"Noto Serif JP"', 'serif'],
             'mono': ['"Courier New"', 'Courier', 'monospace'],
           },
@@ -74,14 +75,14 @@
       --bg-elevated:    #EDEDEA;
       --bg-floating:    #FFFFFF;
       --text-primary:   #0a0a0a;
-      --text-secondary: rgba(10, 10, 10, 0.70);
-      --text-tertiary:  rgba(10, 10, 10, 0.45);
-      --text-muted:     rgba(10, 10, 10, 0.30);
-      --accent:         #CC1518;
-      --accent-hover:   #DD1A1E;
-      --accent-border:  rgba(204, 21, 24, 0.20);
-      --border-subtle:  rgba(10, 10, 10, 0.06);
-      --border-medium:  rgba(10, 10, 10, 0.12);
+      --text-secondary: rgba(10, 10, 10, 0.82);
+      --text-tertiary:  rgba(10, 10, 10, 0.58);
+      --text-muted:     rgba(10, 10, 10, 0.44);
+      --accent:         #B81215;
+      --accent-hover:   #CC1518;
+      --accent-border:  rgba(184, 18, 21, 0.25);
+      --border-subtle:  rgba(10, 10, 10, 0.10);
+      --border-medium:  rgba(10, 10, 10, 0.18);
       --grain-opacity:  0.02;
     }
 
@@ -418,7 +419,7 @@
         </div>
 
         <!-- Heading -->
-        <h1 class="font-sans font-black uppercase text-center mb-1"
+        <h1 class="font-heading font-black uppercase text-center mb-1"
             style="font-size: 12px; letter-spacing: 0.28em; color: var(--text-primary);">
           Admin Access
         </h1>
@@ -482,7 +483,7 @@
       <!-- Page header -->
       <div class="mb-10">
         <div class="flex items-baseline gap-3 mb-2">
-          <h1 class="font-sans font-black uppercase"
+          <h1 class="font-heading font-black uppercase"
               style="font-size: clamp(28px, 5vw, 48px); letter-spacing: -0.02em; color: var(--text-primary);">
             Admin
           </h1>
