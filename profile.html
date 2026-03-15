@@ -54,16 +54,16 @@
       --bg-elevated:    #111111;
       --bg-floating:    #161616;
       --text-primary:   #F5F5F0;
-      --text-secondary: rgba(245, 245, 240, 0.65);
-      --text-tertiary:  rgba(245, 245, 240, 0.40);
-      --text-muted:     rgba(245, 245, 240, 0.25);
-      --text-ghost:     rgba(245, 245, 240, 0.12);
+      --text-secondary: rgba(245, 245, 240, 0.82);
+      --text-tertiary:  rgba(245, 245, 240, 0.55);
+      --text-muted:     rgba(245, 245, 240, 0.38);
+      --text-ghost:     rgba(245, 245, 240, 0.18);
       --accent:         #C8102E;
       --accent-hover:   #E8132E;
       --accent-border:  rgba(200, 16, 46, 0.18);
       --accent-dim:     rgba(200, 16, 46, 0.06);
-      --border-subtle:  rgba(245, 245, 240, 0.05);
-      --border-std:     rgba(245, 245, 240, 0.08);
+      --border-subtle:  rgba(245, 245, 240, 0.07);
+      --border-std:     rgba(245, 245, 240, 0.10);
       --border-medium:  rgba(245, 245, 240, 0.10);
       --border-strong:  rgba(245, 245, 240, 0.12);
       --grain-opacity:  0.035;
@@ -74,10 +74,10 @@
       --bg-elevated:    #EDEDEA;
       --bg-floating:    #FFFFFF;
       --text-primary:   #0a0a0a;
-      --text-secondary: rgba(10, 10, 10, 0.82);
-      --text-tertiary:  rgba(10, 10, 10, 0.58);
-      --text-muted:     rgba(10, 10, 10, 0.44);
-      --text-ghost:     rgba(10, 10, 10, 0.20);
+      --text-secondary: rgba(10, 10, 10, 0.88);
+      --text-tertiary:  rgba(10, 10, 10, 0.68);
+      --text-muted:     rgba(10, 10, 10, 0.54);
+      --text-ghost:     rgba(10, 10, 10, 0.26);
       --accent:         #B81215;
       --accent-hover:   #CC1518;
       --accent-border:  rgba(184, 18, 21, 0.25);
@@ -214,12 +214,12 @@
        ================================================================ */
     /* Account for fixed nav (56px) + ticker (22px) = 78px top offset */
     .page-wrap {
-      max-width: 920px;
+      max-width: 100%;
       margin: 0 auto;
-      padding: 78px 24px 48px;
+      padding: 78px clamp(24px, 4vw, 80px) 48px;
       display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 48px;
+      grid-template-columns: clamp(280px, 28vw, 440px) 1fr;
+      gap: clamp(32px, 4vw, 80px);
       align-items: start;
     }
 
@@ -509,6 +509,53 @@
     #misogi-input::placeholder {
       color: var(--text-muted);
       font-style: italic;
+    }
+
+    .misogi-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .misogi-status {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 8px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .misogi-status.visible {
+      opacity: 1;
+    }
+
+    .misogi-save-btn {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 900;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #F5F5F0;
+      background-color: var(--accent);
+      border: none;
+      padding: 6px 16px;
+      cursor: pointer;
+    }
+
+    .misogi-save-btn:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .misogi-save-btn:focus-visible {
+      outline: 1px solid var(--accent);
+    }
+
+    .misogi-save-btn:active {
+      opacity: 0.85;
     }
 
     /* ================================================================
@@ -993,7 +1040,7 @@
        TICKER TAPE — red marquee bar (design spec)
        ================================================================ -->
   <div class="ticker">
-    <div class="ticker-track">
+    <div id="ticker-track" class="ticker-track">
       <!-- Duplicate text so the marquee loops seamlessly -->
       <span class="ticker-text">RBG GUILD REGISTRY ——— PRODUCTS ARE ARMOR FOR YOUR ARC ——— </span>
       <span class="ticker-text">RBG GUILD REGISTRY ——— PRODUCTS ARE ARMOR FOR YOUR ARC ——— </span>
@@ -1091,6 +1138,10 @@
             maxlength="200"
             rows="2"
           ></textarea>
+          <div class="misogi-actions">
+            <span id="misogi-status" class="misogi-status"></span>
+            <button id="misogi-save-btn" class="misogi-save-btn">SAVE</button>
+          </div>
         </div>
 
         <!-- Social row: @handles + LINKS+ button -->
@@ -1215,6 +1266,8 @@
       // Editable fields
       const usernameInput      = document.getElementById('username-input');
       const misogiInput        = document.getElementById('misogi-input');
+      const misogiSaveBtn      = document.getElementById('misogi-save-btn');
+      const misogiStatus       = document.getElementById('misogi-status');
       const xHandleInput       = document.getElementById('x-handle-input');
       const igHandleInput      = document.getElementById('ig-handle-input');
 
@@ -1238,9 +1291,28 @@
       const connectBtn         = document.getElementById('connect-wallet-btn');
       const reverifyBtn        = document.getElementById('reverify-btn');
 
+      // Ticker
+      const tickerTrack        = document.getElementById('ticker-track');
+
       // State
       let currentUser    = null;
       let currentProfile = null;
+
+      // ================================================================
+      // TICKER — update from MISOGI declaration
+      // ================================================================
+      const DEFAULT_TICKER = 'RBG GUILD REGISTRY ——— PRODUCTS ARE ARMOR FOR YOUR ARC ——— ';
+
+      function updateTickerContent(misogiText) {
+        const content = misogiText
+          ? 'MY MISOGI: ' + misogiText.toUpperCase() + ' ——— '
+          : DEFAULT_TICKER;
+        const spans = tickerTrack.querySelectorAll('.ticker-text');
+        spans.forEach(span => { span.textContent = content; });
+        // Adjust speed proportionally to text length
+        const duration = Math.max(18, content.length * 0.18);
+        tickerTrack.style.animationDuration = duration + 's';
+      }
 
       // ================================================================
       // RANK DATA — lookup table (same as admin.html)
@@ -1383,6 +1455,7 @@
           misogiInput.value = currentProfile.misogi;
           misogiInput.style.height = 'auto';
           misogiInput.style.height = misogiInput.scrollHeight + 'px';
+          updateTickerContent(currentProfile.misogi);
         }
 
         // --- Social handles ---
@@ -1709,19 +1782,27 @@
           }
         });
 
-        // Misogi — auto-resize + save on blur
+        // Misogi — auto-resize on input
         misogiInput.addEventListener('input', () => {
           misogiInput.style.height = 'auto';
           misogiInput.style.height = misogiInput.scrollHeight + 'px';
         });
 
-        misogiInput.addEventListener('blur', async () => {
+        // Misogi — shared save function
+        async function saveMisogi() {
           const val = misogiInput.value.trim();
           if (val !== (currentProfile?.misogi || '')) {
             await updateProfile(currentUser.id, { misogi: val || null });
             currentProfile = { ...currentProfile, misogi: val };
+            updateTickerContent(val);
+            misogiStatus.textContent = 'SAVED';
+            misogiStatus.classList.add('visible');
+            setTimeout(() => { misogiStatus.classList.remove('visible'); }, 1500);
           }
-        });
+        }
+
+        misogiInput.addEventListener('blur', saveMisogi);
+        misogiSaveBtn.addEventListener('click', saveMisogi);
 
         // X handle — strip @, save, refresh social row
         xHandleInput.addEventListener('blur', async () => {
