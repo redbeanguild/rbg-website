@@ -492,6 +492,7 @@
 
     #misogi-input {
       width: 100%;
+      min-height: 40px;
       font-family: 'Courier New', Courier, monospace;
       font-size: 11px;
       font-style: italic;
@@ -556,6 +557,48 @@
 
     .misogi-save-btn:active {
       opacity: 0.85;
+    }
+
+    .misogi-help-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 8px;
+      font-weight: 700;
+      color: var(--text-muted);
+      border: 1px solid var(--border-std);
+      background: transparent;
+      cursor: pointer;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .misogi-help-btn:hover {
+      color: var(--text-secondary);
+      border-color: var(--border-strong);
+    }
+
+    .misogi-help-btn:focus-visible {
+      outline: 1px solid var(--accent);
+    }
+
+    .misogi-tooltip {
+      display: none;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 9px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-std);
+      background: var(--bg-elevated);
+      padding: 10px 12px;
+      margin-top: 8px;
+    }
+
+    .misogi-tooltip.open {
+      display: block;
     }
 
     /* ================================================================
@@ -1130,7 +1173,10 @@
 
         <!-- Misogi lore block (Courier italic, 3px left red stripe) -->
         <div class="lore-block">
-          <span class="lore-label">MISOGI — 禊</span>
+          <span class="lore-label">MISOGI — 禊 <button class="misogi-help-btn" id="misogi-help-btn">?</button></span>
+          <div id="misogi-tooltip" class="misogi-tooltip">
+            Misogi (禊) is a Japanese Shinto practice of purification under a waterfall. In modern context, it refers to choosing one defining challenge for the year — something so ambitious it has a near-equal chance of failure and success. Declare yours here.
+          </div>
           <p class="lore-desc">Your declaration of purpose. One challenge. One year. No retreat.</p>
           <textarea
             id="misogi-input"
@@ -1268,6 +1314,8 @@
       const misogiInput        = document.getElementById('misogi-input');
       const misogiSaveBtn      = document.getElementById('misogi-save-btn');
       const misogiStatus       = document.getElementById('misogi-status');
+      const misogiHelpBtn      = document.getElementById('misogi-help-btn');
+      const misogiTooltip      = document.getElementById('misogi-tooltip');
       const xHandleInput       = document.getElementById('x-handle-input');
       const igHandleInput      = document.getElementById('ig-handle-input');
 
@@ -1803,6 +1851,11 @@
 
         misogiInput.addEventListener('blur', saveMisogi);
         misogiSaveBtn.addEventListener('click', saveMisogi);
+
+        // Misogi — help tooltip toggle
+        misogiHelpBtn.addEventListener('click', () => {
+          misogiTooltip.classList.toggle('open');
+        });
 
         // X handle — strip @, save, refresh social row
         xHandleInput.addEventListener('blur', async () => {
