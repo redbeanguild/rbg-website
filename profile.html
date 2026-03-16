@@ -135,10 +135,14 @@
       to   { transform: rotate(360deg); }
     }
 
-    /* Blink — for the "● ACTIVE" rank indicator (step-end per design spec) */
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0; }
+    /* Heartbeat — double-pulse for the "● ACTIVE" rank indicator */
+    @keyframes heartbeat {
+      0%   { transform: scale(1); }
+      14%  { transform: scale(1.15); }
+      28%  { transform: scale(1); }
+      42%  { transform: scale(1.12); }
+      56%  { transform: scale(1); }
+      100% { transform: scale(1); }
     }
 
     /* Ticker marquee */
@@ -391,23 +395,23 @@
     /* Rank name display under username */
     .rank-name-row {
       display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 3px;
+      align-items: baseline;
+      gap: 8px;
+      margin-top: 4px;
     }
 
     #rank-en {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 9px;
-      font-weight: 900;
-      letter-spacing: 0.25em;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 0.06em;
       color: var(--accent);
       text-transform: uppercase;
     }
 
     #rank-jp {
       font-family: 'Courier New', Courier, monospace;
-      font-size: 8px;
+      font-size: 9px;
       letter-spacing: 0.1em;
       color: var(--text-muted);
     }
@@ -767,12 +771,14 @@
       text-transform: uppercase;
     }
 
-    /* Piece name block — bottom-left */
+    /* Piece name block — bottom gradient overlay for text contrast */
     .piece-name-block {
       position: absolute;
-      bottom: 8px;
-      left: 8px;
-      right: 8px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 8px;
+      background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
     }
 
     .piece-name {
@@ -799,6 +805,149 @@
       height: 100%;
       object-fit: cover;
       object-position: center top;
+      transition: filter 0.2s ease;
+    }
+
+    /* Hover overlay — centered product name on blurred image */
+    .piece-hover-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 2;
+    }
+
+    .piece-hover-overlay span {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #F5F5F0;
+      text-align: center;
+      padding: 0 12px;
+    }
+
+    .wardrobe-cell.owned:hover .piece-img {
+      filter: blur(3px);
+    }
+
+    .wardrobe-cell.owned:hover .piece-hover-overlay {
+      opacity: 1;
+    }
+
+    /* Hide button — top-right of owned cell, appears on hover */
+    .piece-hide-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-std);
+      cursor: pointer;
+      z-index: 3;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .wardrobe-cell.owned:hover .piece-hide-btn {
+      opacity: 1;
+    }
+
+    .piece-hide-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent-border);
+    }
+
+    .piece-hide-btn:focus-visible {
+      outline: 1px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    .piece-hide-btn:active {
+      color: var(--text-primary);
+    }
+
+    /* Hidden items toggle button */
+    .hidden-toggle-btn {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: none;
+      border: 1px solid var(--border-std);
+      padding: 3px 8px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: color 0.15s ease;
+    }
+
+    .hidden-toggle-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .hidden-toggle-btn:focus-visible {
+      outline: 1px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    .hidden-toggle-btn:active {
+      color: var(--accent);
+    }
+
+    /* Hidden items grid */
+    .wardrobe-hidden-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--accent-border);
+      margin-top: 4px;
+    }
+
+    /* Unhide button on hidden cells */
+    .piece-unhide-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--accent-border);
+      padding: 2px 5px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    .piece-unhide-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .piece-unhide-btn:focus-visible {
+      outline: 1px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    .piece-unhide-btn:active {
+      color: var(--accent-hover);
     }
 
     /* ================================================================
@@ -874,7 +1023,8 @@
       text-transform: uppercase;
       margin-left: 6px;
       display: inline-block;
-      animation: blink 2s step-end infinite;
+      transform-origin: center;
+      animation: heartbeat 1.5s ease-in-out infinite;
     }
 
     /* Status mark — right side */
@@ -1243,12 +1393,15 @@
                 <span class="piece-name">Matsuri Happi</span>
                 <!-- red bar shown only when owned — added by JS -->
               </div>
+              <div class="piece-hover-overlay"><span>Matsuri Happi</span></div>
             </div>
 
             <!-- Cells 2+: dynamically populated from Shopify wardrobe_items -->
             <!-- Locked placeholders are generated by JS to fill the grid -->
 
           </div>
+          <button id="hidden-toggle" class="hidden-toggle-btn" style="display:none;" onclick="toggleHiddenWardrobe()">HIDDEN (0)</button>
+          <div id="wardrobe-hidden-section" class="wardrobe-hidden-grid" style="display:none;"></div>
         </div><!-- end tab-wardrobe -->
 
         <!-- RANKS tab — rows injected by JS in renderRankTab() -->
@@ -1566,60 +1719,131 @@
         }
       }
 
+      // Hidden wardrobe management (localStorage)
+      function getHiddenWardrobe() {
+        try { return JSON.parse(localStorage.getItem('rbg_hidden_wardrobe') || '[]'); }
+        catch { return []; }
+      }
+
+      function setHiddenWardrobe(arr) {
+        localStorage.setItem('rbg_hidden_wardrobe', JSON.stringify(arr));
+      }
+
+      function hideWardrobeItem(productTitle) {
+        const hidden = getHiddenWardrobe();
+        if (!hidden.includes(productTitle)) {
+          hidden.push(productTitle);
+          setHiddenWardrobe(hidden);
+        }
+        if (window._cachedWardrobeItems) renderWardrobeItems(window._cachedWardrobeItems);
+      }
+
+      function unhideWardrobeItem(productTitle) {
+        let hidden = getHiddenWardrobe();
+        hidden = hidden.filter(t => t !== productTitle);
+        setHiddenWardrobe(hidden);
+        if (window._cachedWardrobeItems) renderWardrobeItems(window._cachedWardrobeItems);
+      }
+
+      let hiddenSectionOpen = false;
+
+      function toggleHiddenWardrobe() {
+        hiddenSectionOpen = !hiddenSectionOpen;
+        const section = document.getElementById('wardrobe-hidden-section');
+        section.style.display = hiddenSectionOpen ? 'grid' : 'none';
+      }
+
       function renderWardrobeItems(items) {
+        window._cachedWardrobeItems = items;
+
         const grid = document.querySelector('.wardrobe-grid');
         const nftCell = document.getElementById('wardrobe-cell-1');
+        const hiddenToggle = document.getElementById('hidden-toggle');
+        const hiddenSection = document.getElementById('wardrobe-hidden-section');
 
         // Clear everything after the NFT cell
         while (grid.lastChild && grid.lastChild !== nftCell) {
           grid.removeChild(grid.lastChild);
         }
-        // Also remove the comment nodes after NFT cell
         while (grid.lastChild && grid.lastChild !== nftCell) {
           grid.removeChild(grid.lastChild);
         }
 
-        // Render each Shopify wardrobe item
-        items.forEach((item, idx) => {
+        const hiddenList = getHiddenWardrobe();
+        const visibleItems = items.filter(item => !hiddenList.includes(item.product_title));
+        const hiddenItems = items.filter(item => hiddenList.includes(item.product_title));
+
+        // Render visible items
+        visibleItems.forEach((item, idx) => {
           const cell = document.createElement('div');
           cell.className = 'wardrobe-cell owned';
 
           let innerHTML = '';
 
-          // Drop tag (top-left)
           if (item.drop_name) {
             innerHTML += `<div class="drop-tag">${escapeHtml(item.drop_name)}</div>`;
           }
 
-          // Product image
+          // Hide button (× in top-right, visible on hover)
+          const safeTitle = escapeHtml(item.product_title).replace(/'/g, "\\'");
+          innerHTML += `<button class="piece-hide-btn" onclick="event.stopPropagation(); hideWardrobeItem('${safeTitle}');">&times;</button>`;
+
           if (item.product_image_url) {
             innerHTML += `<img class="piece-img" src="${escapeHtml(item.product_image_url)}" alt="${escapeHtml(item.product_title)}">`;
           }
 
-          // Piece watermark number (offset by 2 since cell 1 is NFT)
           innerHTML += `<span class="piece-watermark">${idx + 2}</span>`;
 
-          // Piece name block
           innerHTML += `
             <div class="piece-name-block">
               <span class="piece-name">${escapeHtml(item.product_title)}</span>
               <div class="piece-bar"></div>
             </div>
+            <div class="piece-hover-overlay"><span>${escapeHtml(item.product_title)}</span></div>
           `;
 
           cell.innerHTML = innerHTML;
           grid.appendChild(cell);
         });
 
-        // Fill remaining slots with locked placeholders (minimum 6 total cells)
-        const totalCells = 1 + items.length; // NFT cell + Shopify items
+        // Fill locked placeholders
+        const totalCells = 1 + visibleItems.length;
         const minCells = 6;
         const neededLocked = Math.max(0, minCells - totalCells);
-        // Also ensure grid fills to a multiple of 3
         const remainder = (totalCells + neededLocked) % 3;
         const extraForGrid = remainder === 0 ? 0 : 3 - remainder;
-
         renderLockedPlaceholders(neededLocked + extraForGrid, totalCells);
+
+        // Hidden section
+        if (hiddenItems.length > 0) {
+          hiddenToggle.style.display = 'block';
+          hiddenToggle.textContent = `HIDDEN (${hiddenItems.length})`;
+          hiddenSection.innerHTML = '';
+
+          hiddenItems.forEach((item) => {
+            const cell = document.createElement('div');
+            cell.className = 'wardrobe-cell owned';
+            cell.style.opacity = '0.5';
+
+            let innerHTML = '';
+            if (item.product_image_url) {
+              innerHTML += `<img class="piece-img" src="${escapeHtml(item.product_image_url)}" alt="${escapeHtml(item.product_title)}">`;
+            }
+            const safeTitle = escapeHtml(item.product_title).replace(/'/g, "\\'");
+            innerHTML += `<button class="piece-unhide-btn" onclick="event.stopPropagation(); unhideWardrobeItem('${safeTitle}');">UNHIDE</button>`;
+            innerHTML += `
+              <div class="piece-name-block">
+                <span class="piece-name">${escapeHtml(item.product_title)}</span>
+              </div>
+            `;
+            cell.innerHTML = innerHTML;
+            hiddenSection.appendChild(cell);
+          });
+        } else {
+          hiddenToggle.style.display = 'none';
+          hiddenSection.style.display = 'none';
+          hiddenSectionOpen = false;
+        }
       }
 
       function renderLockedPlaceholders(count, startIndex) {
