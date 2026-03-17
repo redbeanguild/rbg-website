@@ -250,8 +250,9 @@
       /* Nav — tighten padding on mobile */
       nav { padding: 0 16px; }
 
-      /* Hero — scale username down for narrow screens */
+      /* Hero — scale down for narrow screens */
       #username-input { font-size: 18px; }
+      #avatar-ring { width: 88px; height: 88px; }
 
       /* Stats — tighter on mobile */
       .stats-row { gap: 0; }
@@ -281,8 +282,8 @@
     /* Top row: avatar + rank badge + username */
     .hero-top {
       display: flex;
-      align-items: flex-start;
-      gap: 12px;
+      align-items: center;
+      gap: 16px;
       margin-bottom: 16px;
     }
 
@@ -293,8 +294,8 @@
     }
 
     #avatar-ring {
-      width: 80px;
-      height: 80px;
+      width: 104px;
+      height: 104px;
       overflow: hidden;
       cursor: pointer;
       border: 1px solid var(--border-medium);
@@ -316,7 +317,7 @@
       justify-content: center;
       opacity: 0;
       transition: opacity 0.15s;
-      font-size: 7px;
+      font-size: 8px;
       font-weight: 900;
       letter-spacing: 0.2em;
       color: #F5F5F0;
@@ -331,7 +332,7 @@
     #avatar-initials {
       font-family: 'Instrument Serif', Georgia, serif;
       font-weight: 400;
-      font-size: 26px;
+      font-size: 32px;
       color: var(--text-secondary);
     }
 
@@ -340,16 +341,16 @@
       position: absolute;
       bottom: 0;
       right: 0;
-      width: 8px;
-      height: 8px;
+      width: 10px;
+      height: 10px;
       background-color: var(--accent);
       pointer-events: none;
     }
 
     /* Rank badge — design spec: 36×36px box, 1px red border, numeral centered */
     #rank-badge-box {
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
       border: 1px solid var(--accent);
       display: flex;
       align-items: center;
@@ -360,7 +361,7 @@
     #rank-num {
       font-family: 'Instrument Serif', Georgia, serif;
       font-weight: 400;
-      font-size: 14px;
+      font-size: 15px;
       color: var(--accent);
       letter-spacing: 0;
     }
@@ -397,21 +398,21 @@
       display: flex;
       align-items: baseline;
       gap: 8px;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     #rank-en {
       font-family: 'Instrument Serif', Georgia, serif;
-      font-size: 16px;
+      font-size: 20px;
       font-weight: 400;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       color: var(--accent);
       text-transform: uppercase;
     }
 
     #rank-jp {
       font-family: 'Courier New', Courier, monospace;
-      font-size: 9px;
+      font-size: 10px;
       letter-spacing: 0.1em;
       color: var(--text-muted);
     }
@@ -611,9 +612,15 @@
     .social-row {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       flex-wrap: wrap;
-      margin-top: 6px;
+      margin-top: 8px;
+    }
+
+    .social-icon {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
     }
 
     .social-handle-link {
@@ -623,9 +630,13 @@
       text-decoration: none;
       text-transform: uppercase;
       transition: color 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
     .social-handle-link:hover  { color: var(--text-primary); }
-    .social-handle-link.active { color: var(--text-secondary); }
+    .social-handle-link:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
+    .social-handle-link:active { color: var(--text-secondary); }
 
     #edit-links-btn {
       font-size: 8px;
@@ -1261,7 +1272,7 @@
             <div class="avatar-wrap">
               <div id="avatar-ring">
                 <img id="avatar-img" class="piece-img hidden" alt="Profile photo">
-                <div id="avatar-initials" style="font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 26px; color: var(--text-secondary);">
+                <div id="avatar-initials" style="font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 32px; color: var(--text-secondary);">
                   <span id="avatar-letter"></span>
                 </div>
                 <div class="avatar-overlay">UPLOAD</div>
@@ -1273,10 +1284,12 @@
               <!-- Social links below avatar -->
               <div class="social-row">
                 <a id="x-icon-btn" href="#" class="social-handle-link" style="display: none;">
-                  X · <span id="x-handle-text"></span>
+                  <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  <span id="x-handle-text"></span>
                 </a>
                 <a id="ig-icon-btn" href="#" class="social-handle-link" style="display: none;">
-                  IG · <span id="ig-handle-text"></span>
+                  <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                  <span id="ig-handle-text"></span>
                 </a>
                 <button id="edit-links-btn">ADD LINKS</button>
               </div>
@@ -1994,7 +2007,17 @@
       function refreshLinksBtn() {
         const hasX  = !!currentProfile?.x_handle;
         const hasIG = !!currentProfile?.ig_handle;
-        editLinksBtn.textContent = (hasX && hasIG) ? 'EDIT' : 'ADD LINKS';
+        const hasAny = hasX || hasIG;
+        editLinksBtn.textContent = hasAny ? '+' : 'ADD LINKS';
+        if (hasAny) {
+          editLinksBtn.style.padding = '2px 5px';
+          editLinksBtn.style.fontSize = '11px';
+          editLinksBtn.style.lineHeight = '1';
+        } else {
+          editLinksBtn.style.padding = '3px 7px';
+          editLinksBtn.style.fontSize = '8px';
+          editLinksBtn.style.lineHeight = '';
+        }
       }
 
       // ================================================================
