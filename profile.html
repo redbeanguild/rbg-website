@@ -611,8 +611,9 @@
     .social-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 6px;
       flex-wrap: wrap;
+      margin-top: 6px;
     }
 
     .social-handle-link {
@@ -1269,6 +1270,16 @@
               <input id="avatar-input" type="file" accept="image/png,image/jpeg,image/webp" class="hidden">
               <!-- Red corner pip (design spec) -->
               <div class="avatar-pip"></div>
+              <!-- Social links below avatar -->
+              <div class="social-row">
+                <a id="x-icon-btn" href="#" class="social-handle-link" style="display: none;">
+                  X · <span id="x-handle-text"></span>
+                </a>
+                <a id="ig-icon-btn" href="#" class="social-handle-link" style="display: none;">
+                  IG · <span id="ig-handle-text"></span>
+                </a>
+                <button id="edit-links-btn">ADD LINKS</button>
+              </div>
             </div>
 
             <!-- Rank badge (36×36 box) -->
@@ -1338,17 +1349,6 @@
             <span id="misogi-status" class="misogi-status"></span>
             <button id="misogi-save-btn" class="misogi-save-btn">SAVE</button>
           </div>
-        </div>
-
-        <!-- Social row: @handles + LINKS+ button -->
-        <div class="social-row">
-          <a id="x-icon-btn" href="#" class="social-handle-link" style="display: none;">
-            X · <span id="x-handle-text"></span>
-          </a>
-          <a id="ig-icon-btn" href="#" class="social-handle-link" style="display: none;">
-            IG · <span id="ig-handle-text"></span>
-          </a>
-          <button id="edit-links-btn">ADD LINKS</button>
         </div>
 
         <!-- Wallet section -->
@@ -1752,6 +1752,11 @@
         const section = document.getElementById('wardrobe-hidden-section');
         section.style.display = hiddenSectionOpen ? 'grid' : 'none';
       }
+
+      // Expose to global scope for inline onclick handlers
+      window.hideWardrobeItem = hideWardrobeItem;
+      window.unhideWardrobeItem = unhideWardrobeItem;
+      window.toggleHiddenWardrobe = toggleHiddenWardrobe;
 
       function renderWardrobeItems(items) {
         window._cachedWardrobeItems = items;
