@@ -341,6 +341,172 @@
       color: var(--text-muted);
       text-transform: uppercase;
     }
+
+    /* ---- Delete button ---- */
+    .delete-btn {
+      font-size: 8px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      background: none;
+      border: 1px solid var(--border-medium);
+      cursor: pointer;
+      padding: 4px 8px;
+      text-transform: uppercase;
+      font-family: inherit;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .delete-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent-border);
+    }
+    .delete-btn:active {
+      opacity: 0.65;
+    }
+
+    /* ---- Expand/collapse chevron ---- */
+    .expand-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+      transition: color 0.15s, transform 0.2s;
+      line-height: 1;
+    }
+    .expand-btn:hover { color: var(--text-primary); }
+    .expand-btn.open { transform: rotate(90deg); }
+
+    /* ---- Wardrobe detail row (hidden by default) ---- */
+    .wardrobe-row {
+      display: none;
+    }
+    .wardrobe-row.open {
+      display: table-row;
+    }
+    .wardrobe-row td {
+      padding: 0 12px 20px 0;
+    }
+    .wardrobe-inner {
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      padding: 16px 20px;
+    }
+
+    /* Wardrobe items grid */
+    .wardrobe-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+    }
+    .wardrobe-card {
+      background-color: var(--bg-floating);
+      border: 1px solid var(--border-subtle);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .wardrobe-card img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      background-color: var(--bg-elevated);
+    }
+    .wardrobe-card-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      line-height: 1.3;
+    }
+    .wardrobe-card-meta {
+      font-size: 8px;
+      letter-spacing: 0.05em;
+      color: var(--text-tertiary);
+    }
+
+    /* Sync status badge */
+    .sync-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border: 1px solid var(--border-medium);
+    }
+    .sync-badge.synced {
+      color: #2ecc40;
+      border-color: rgba(46, 204, 64, 0.25);
+    }
+    .sync-badge.not-synced {
+      color: var(--text-muted);
+      border-color: var(--border-medium);
+    }
+
+    /* ---- Delete confirmation modal ---- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-box {
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--accent-border);
+      padding: 32px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+    }
+    .modal-title {
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .modal-desc {
+      font-size: 10px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .modal-btn {
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Courier New', Courier, monospace;
+      transition: opacity 0.15s;
+    }
+    .modal-btn:hover { opacity: 0.82; }
+    .modal-btn:active { opacity: 0.65; }
+    .modal-btn-cancel {
+      background: transparent;
+      border: 1px solid var(--border-medium);
+      color: var(--text-tertiary);
+    }
+    .modal-btn-delete {
+      background-color: var(--accent);
+      color: #F5F5F0;
+    }
   </style>
 </head>
 
@@ -501,6 +667,7 @@
       <table class="admin-table">
         <thead>
           <tr>
+            <th style="width: 28px;"></th>
             <th style="width: 40px;"></th>
             <th>Member</th>
             <th>Email</th>
@@ -509,6 +676,7 @@
             <th>Spend</th>
             <th>Rank</th>
             <th style="width: 60px;">Sync</th>
+            <th style="width: 60px;">Delete</th>
           </tr>
         </thead>
         <tbody id="member-tbody"></tbody>
@@ -522,6 +690,21 @@
 
     </div><!-- end #view-panel -->
 
+    <!-- ── DELETE CONFIRMATION MODAL ──────────────────────────────── -->
+    <div id="delete-modal" class="modal-overlay" style="display: none;">
+      <div class="modal-box">
+        <p class="modal-title">Delete Account</p>
+        <p class="modal-desc">
+          This will permanently delete <strong id="delete-modal-name" style="color: var(--text-primary);"></strong>'s
+          account and all associated wardrobe data. This action cannot be undone.
+        </p>
+        <div class="modal-actions">
+          <button id="delete-modal-cancel" class="modal-btn modal-btn-cancel">Cancel</button>
+          <button id="delete-modal-confirm" class="modal-btn modal-btn-delete">Delete</button>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- ================================================================
@@ -534,7 +717,7 @@
     </p>
     <p class="mt-3 uppercase"
        style="font-size: 9px; letter-spacing: 0.2em; opacity: 0.2; color: var(--text-secondary);">
-      ADMIN PANEL — REV 2.1.1
+      ADMIN PANEL — REV 2.2.0
     </p>
   </footer>
 
@@ -727,13 +910,15 @@
 
     // ----------------------------------------------------------------
     // BUILD MEMBER ROW
-    // Creates a <tr> element for one member with all columns filled
+    // Creates a <tr> element for one member with all columns filled,
+    // plus a hidden wardrobe detail row beneath it
     // ----------------------------------------------------------------
     function buildMemberRow(profile) {
+      const fragment = document.createDocumentFragment();
       const tr = document.createElement('tr');
+      const rowId = 'wardrobe-' + profile.id;
 
       // ── Avatar: first letter of display_name or email ──
-      // We pull the first character and show it in a small circle
       const nameOrEmail   = profile.display_name || profile.email || '?';
       const avatarLetter  = nameOrEmail.charAt(0).toUpperCase();
 
@@ -756,6 +941,16 @@
 
       // Build the HTML for this row
       tr.innerHTML = `
+        <!-- Column 0: Expand chevron -->
+        <td>
+          <button class="expand-btn" data-target="${rowId}" aria-label="Toggle wardrobe">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </td>
+
         <!-- Column 1: Avatar circle -->
         <td>
           <div class="member-avatar">${avatarLetter}</div>
@@ -813,10 +1008,56 @@
             Sync
           </button>
         </td>
+
+        <!-- Column 9: Delete -->
+        <td>
+          <button class="delete-btn" data-user-id="${profile.id}"
+                  data-user-name="${(profile.display_name || profile.email || 'this user').replace(/"/g, '&quot;')}">
+            Delete
+          </button>
+        </td>
       `;
 
+      // ── Build the wardrobe detail row (hidden) ──
+      const wardrobeTr = document.createElement('tr');
+      wardrobeTr.className = 'wardrobe-row';
+      wardrobeTr.id = rowId;
+      wardrobeTr.innerHTML = `
+        <td colspan="10">
+          <div class="wardrobe-inner">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 9px; font-weight: 900; letter-spacing: 0.25em;
+                             text-transform: uppercase; color: var(--text-muted);">
+                  Wardrobe
+                </span>
+                <span class="wardrobe-sync-status" data-user-id="${profile.id}"></span>
+              </div>
+              <span class="wardrobe-count" style="font-size: 8px; letter-spacing: 0.15em;
+                    color: var(--text-muted); text-transform: uppercase;"></span>
+            </div>
+            <div class="wardrobe-content" data-user-id="${profile.id}">
+              <p style="font-size: 9px; letter-spacing: 0.2em; color: var(--text-muted);
+                        text-transform: uppercase;">Loading...</p>
+            </div>
+          </div>
+        </td>
+      `;
+
+      // ── Wire up expand/collapse chevron ──
+      const expandBtn = tr.querySelector('.expand-btn');
+      expandBtn.addEventListener('click', async () => {
+        const isOpen = wardrobeTr.classList.toggle('open');
+        expandBtn.classList.toggle('open', isOpen);
+
+        // Load wardrobe items on first open
+        if (isOpen && !wardrobeTr.dataset.loaded) {
+          wardrobeTr.dataset.loaded = 'true';
+          await loadWardrobeForMember(profile);
+        }
+      });
+
       // ── Wire up the rank dropdown change handler ──
-      // We do this after innerHTML so we can get a reference to the actual elements
       const select        = tr.querySelector('.rank-select');
       const saveIndicator = tr.querySelector('.save-indicator');
 
@@ -843,6 +1084,12 @@
               setTimeout(async () => {
                 backfillBtn.textContent = 'Sync';
                 backfillBtn.disabled = false;
+                // Reload the wardrobe if it was open
+                if (wardrobeTr.classList.contains('open')) {
+                  wardrobeTr.dataset.loaded = '';
+                  await loadWardrobeForMember(profile);
+                  wardrobeTr.dataset.loaded = 'true';
+                }
                 await loadMembers();
               }, 1500);
             } else {
@@ -862,8 +1109,157 @@
         });
       }
 
-      return tr;
+      // ── Wire up the Delete button ──
+      const deleteBtn = tr.querySelector('.delete-btn');
+      deleteBtn.addEventListener('click', () => {
+        openDeleteModal(profile.id, profile.display_name || profile.email || 'this user');
+      });
+
+      fragment.appendChild(tr);
+      fragment.appendChild(wardrobeTr);
+      return fragment;
     }
+
+
+    // ----------------------------------------------------------------
+    // LOAD WARDROBE FOR A MEMBER
+    // Fetches wardrobe_items from Supabase and renders them in the
+    // expandable detail row beneath each member
+    // ----------------------------------------------------------------
+    async function loadWardrobeForMember(profile) {
+      const contentEl = document.querySelector(`.wardrobe-content[data-user-id="${profile.id}"]`);
+      const statusEl  = document.querySelector(`.wardrobe-sync-status[data-user-id="${profile.id}"]`);
+      const countEl   = contentEl.closest('.wardrobe-inner').querySelector('.wardrobe-count');
+
+      try {
+        const { data: items, error } = await sbClient
+          .from('wardrobe_items')
+          .select('*')
+          .eq('collector_id', profile.id)
+          .order('purchased_at', { ascending: false });
+
+        if (error) throw error;
+
+        // Determine sync status
+        const hasPieces   = (profile.piece_count || 0) > 0;
+        const hasItems    = items && items.length > 0;
+        const isSynced    = hasPieces && hasItems;
+
+        // Render sync badge
+        if (isSynced) {
+          statusEl.innerHTML = '<span class="sync-badge synced">● Synced</span>';
+        } else if (hasPieces && !hasItems) {
+          statusEl.innerHTML = '<span class="sync-badge not-synced">○ Not Synced</span>';
+        } else {
+          statusEl.innerHTML = '<span class="sync-badge not-synced">○ No Data</span>';
+        }
+
+        // Render count
+        countEl.textContent = (items ? items.length : 0) + ' items';
+
+        // Render items grid or empty state
+        if (!items || items.length === 0) {
+          contentEl.innerHTML = `
+            <p style="font-size: 9px; letter-spacing: 0.15em; color: var(--text-muted);
+                      text-transform: uppercase; padding: 12px 0;">
+              No wardrobe items found — try syncing from Shopify.
+            </p>`;
+          return;
+        }
+
+        let html = '<div class="wardrobe-grid">';
+        items.forEach(item => {
+          const date = item.purchased_at
+            ? new Date(item.purchased_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            : '—';
+          const imgSrc = item.product_image_url || 'https://placehold.co/140x140/111/333?text=No+Image';
+          html += `
+            <div class="wardrobe-card">
+              <img src="${imgSrc}" alt="${(item.product_title || '').replace(/"/g, '&quot;')}" loading="lazy">
+              <span class="wardrobe-card-title">${item.product_title || 'Untitled'}</span>
+              ${item.variant_title ? `<span class="wardrobe-card-meta">${item.variant_title}</span>` : ''}
+              <span class="wardrobe-card-meta">${date} · $${Number(item.price || 0).toFixed(0)}</span>
+            </div>`;
+        });
+        html += '</div>';
+        contentEl.innerHTML = html;
+
+      } catch (err) {
+        console.error('Failed to load wardrobe for', profile.id, err);
+        contentEl.innerHTML = `
+          <p style="font-size: 9px; color: var(--accent); letter-spacing: 0.1em;">
+            Failed to load wardrobe data.
+          </p>`;
+        statusEl.innerHTML = '<span class="sync-badge not-synced">○ Error</span>';
+      }
+    }
+
+
+    // ----------------------------------------------------------------
+    // DELETE ACCOUNT
+    // Opens a confirmation modal, then deletes the user's profile
+    // (wardrobe_items cascade-deletes automatically)
+    // ----------------------------------------------------------------
+    let pendingDeleteUserId = null;
+    const deleteModal       = document.getElementById('delete-modal');
+    const deleteModalName   = document.getElementById('delete-modal-name');
+    const deleteModalCancel = document.getElementById('delete-modal-cancel');
+    const deleteModalConfirm= document.getElementById('delete-modal-confirm');
+
+    function openDeleteModal(userId, userName) {
+      pendingDeleteUserId = userId;
+      deleteModalName.textContent = userName;
+      deleteModal.style.display = '';
+    }
+
+    function closeDeleteModal() {
+      deleteModal.style.display = 'none';
+      pendingDeleteUserId = null;
+      deleteModalConfirm.textContent = 'Delete';
+      deleteModalConfirm.disabled = false;
+    }
+
+    // Cancel button and overlay click close the modal
+    deleteModalCancel.addEventListener('click', closeDeleteModal);
+    deleteModal.addEventListener('click', (e) => {
+      if (e.target === deleteModal) closeDeleteModal();
+    });
+
+    // Confirm delete
+    deleteModalConfirm.addEventListener('click', async () => {
+      if (!pendingDeleteUserId) return;
+
+      deleteModalConfirm.textContent = '...';
+      deleteModalConfirm.disabled = true;
+
+      try {
+        // Delete wardrobe items first (in case cascade isn't set up via RLS)
+        await sbClient
+          .from('wardrobe_items')
+          .delete()
+          .eq('collector_id', pendingDeleteUserId);
+
+        // Delete the profile
+        const { error } = await sbClient
+          .from('profiles')
+          .delete()
+          .eq('id', pendingDeleteUserId);
+
+        if (error) throw error;
+
+        closeDeleteModal();
+        await loadMembers();
+
+      } catch (err) {
+        console.error('Delete failed:', err);
+        deleteModalConfirm.textContent = 'Error';
+        alert('Delete failed: ' + (err.message || err));
+        setTimeout(() => {
+          deleteModalConfirm.textContent = 'Delete';
+          deleteModalConfirm.disabled = false;
+        }, 2000);
+      }
+    });
 
 
     // ----------------------------------------------------------------
