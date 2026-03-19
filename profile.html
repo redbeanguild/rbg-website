@@ -1675,9 +1675,26 @@
        SHARE CARD — hidden off-screen template for html2canvas
        ================================================================ -->
   <div id="share-card-wrap" style="position: absolute; left: -9999px; top: -9999px;">
-    <div id="share-card" style="width: 400px; height: 640px; background: #0a0a0a; border: 2px solid #C8102E; padding: 16px; font-family: 'Courier New', Courier, monospace; color: #F5F5F0; position: relative; overflow: hidden;">
+    <div id="share-card" style="width: 400px; height: 640px; background: #0a0a0a; border-radius: 3px; padding: 16px; font-family: 'Courier New', Courier, monospace; color: #F5F5F0; position: relative; overflow: hidden;">
+      <!-- Brush stroke border — thick, hand-painted RBG red -->
+      <svg style="position: absolute; inset: -2px; width: calc(100% + 4px); height: calc(100% + 4px); pointer-events: none; z-index: 2;" viewBox="0 0 404 644" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <rect x="2" y="2" width="400" height="640" rx="3" ry="3" stroke="#C8102E" stroke-width="4" fill="none"
+          stroke-dasharray="8 3 20 3 12 3 30 3 6 3 24 3"
+          stroke-linecap="round" stroke-linejoin="round"
+          style="filter: url(#brush-rough);" />
+        <!-- Inner stroke for depth / double-brush feel -->
+        <rect x="5" y="5" width="394" height="634" rx="2" ry="2" stroke="rgba(200,16,46,0.25)" stroke-width="1.5" fill="none"
+          stroke-dasharray="14 4 8 4 22 4 6 4"
+          stroke-linecap="round" />
+        <defs>
+          <filter id="brush-rough" x="-2%" y="-2%" width="104%" height="104%">
+            <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="4" seed="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+      </svg>
       <!-- Subtle grid texture -->
-      <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(245,245,240,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,245,240,0.03) 1px, transparent 1px); background-size: 32px 32px;"></div>
+      <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(245,245,240,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,245,240,0.03) 1px, transparent 1px); background-size: 32px 32px; border-radius: 3px;"></div>
 
       <div style="position: relative; z-index: 1;">
         <!-- TOP BAR: Logo + Rank name + HP (pieces count) -->
