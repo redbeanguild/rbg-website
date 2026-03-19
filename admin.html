@@ -223,6 +223,48 @@
       white-space: nowrap;
     }
 
+    /* ---- Inline-edit hover hints ---- */
+    .editable-field {
+      cursor: pointer;
+    }
+    .editable-field:hover {
+      border-bottom: 1px dashed var(--accent-border);
+    }
+
+    /* ---- Inline text input (name editing) ---- */
+    .inline-edit-input {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: transparent;
+      border: 1px solid var(--accent-border);
+      color: var(--text-primary);
+      padding: 2px 6px;
+      font-family: 'Courier New', Courier, monospace;
+      outline: none;
+      width: 120px;
+    }
+    .inline-edit-input:focus {
+      border-color: var(--accent);
+    }
+
+    /* ---- Inline date input (join date editing) ---- */
+    .inline-date-input {
+      font-size: 9px;
+      letter-spacing: 0.05em;
+      background: transparent;
+      border: 1px solid var(--accent-border);
+      color: var(--text-muted);
+      font-family: 'Courier New', Courier, monospace;
+      padding: 2px 4px;
+      outline: none;
+      color-scheme: dark;
+    }
+    .inline-date-input:focus {
+      border-color: var(--accent);
+    }
+
     /* ---- Rank dropdown ---- */
     /* Styled to look brutalist: no background, red accent text, uppercase */
     .rank-select {
@@ -909,6 +951,76 @@
 
 
     // ----------------------------------------------------------------
+    // INLINE EDITABLE HELPER
+    // Reusable click-to-edit for name and date fields
+    // ----------------------------------------------------------------
+    function makeInlineEditable({ spanEl, indicatorEl, inputType, inputClass, profileObj, fieldName, formatDisplay, parseValue }) {
+      if (!spanEl) return;
+
+      spanEl.addEventListener('click', () => {
+        if (spanEl.querySelector('input')) return; // already editing
+
+        const input = document.createElement('input');
+        input.type = inputType || 'text';
+        input.className = inputClass;
+        input.value = parseValue ? parseValue(profileObj[fieldName]) : (profileObj[fieldName] || '');
+
+        const originalText = spanEl.textContent;
+        spanEl.textContent = '';
+        spanEl.appendChild(input);
+        input.focus();
+        if (inputType === 'text') input.select();
+
+        let done = false;
+
+        async function save() {
+          if (done) return;
+          done = true;
+          const newVal = input.value.trim();
+
+          // Revert to span display
+          spanEl.textContent = newVal ? (formatDisplay ? formatDisplay(newVal) : newVal) : originalText;
+
+          // Check if value actually changed
+          const oldVal = parseValue ? parseValue(profileObj[fieldName]) : (profileObj[fieldName] || '');
+          if (newVal === oldVal) return;
+
+          try {
+            await updateProfile(profileObj.id, { [fieldName]: newVal || null });
+            profileObj[fieldName] = newVal || null;
+            if (formatDisplay && newVal) spanEl.textContent = formatDisplay(newVal);
+            indicatorEl.classList.add('visible');
+            setTimeout(() => indicatorEl.classList.remove('visible'), 1500);
+          } catch (err) {
+            console.error('Failed to save ' + fieldName + ':', err);
+            spanEl.textContent = originalText;
+            indicatorEl.textContent = '✗ ERROR';
+            indicatorEl.classList.add('visible');
+            setTimeout(() => {
+              indicatorEl.classList.remove('visible');
+              indicatorEl.textContent = '✓ SAVED';
+            }, 2000);
+          }
+        }
+
+        function cancel() {
+          if (done) return;
+          done = true;
+          spanEl.textContent = originalText;
+        }
+
+        input.addEventListener('blur', save);
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+          if (e.key === 'Escape') { cancel(); }
+        });
+        if (inputType === 'date') {
+          input.addEventListener('change', () => input.blur());
+        }
+      });
+    }
+
+    // ----------------------------------------------------------------
     // BUILD MEMBER ROW
     // Creates a <tr> element for one member with all columns filled,
     // plus a hidden wardrobe detail row beneath it
@@ -951,14 +1063,24 @@
           </button>
         </td>
 
-        <!-- Column 1: Avatar circle -->
+        <!-- Column 1: Avatar (profile pic or letter fallback) -->
         <td>
-          <div class="member-avatar">${avatarLetter}</div>
+          ${profile.avatar_url
+            ? `<img src="${profile.avatar_url}" alt="${avatarLetter}"
+                   style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;
+                          border: 1px solid var(--accent-border); flex-shrink: 0;"
+                   onerror="this.outerHTML='<div class=\\'member-avatar\\'>${avatarLetter}</div>'">`
+            : `<div class="member-avatar">${avatarLetter}</div>`
+          }
         </td>
 
-        <!-- Column 2: Display name -->
+        <!-- Column 2: Display name (editable) -->
         <td>
-          <span class="member-name ${hasName ? '' : 'no-name'}">${displayName}</span>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <span class="member-name editable-field editable-name ${hasName ? '' : 'no-name'}"
+                  title="Click to edit">${displayName}</span>
+            <span class="save-indicator name-save-indicator">✓ SAVED</span>
+          </div>
         </td>
 
         <!-- Column 3: Email (ghosted) -->
@@ -966,9 +1088,13 @@
           <span class="member-email">${email}</span>
         </td>
 
-        <!-- Column 4: Join date -->
+        <!-- Column 4: Join date (editable) -->
         <td>
-          <span class="member-joined">${joinedText}</span>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <span class="member-joined editable-field editable-date"
+                  title="Click to edit">${joinedText}</span>
+            <span class="save-indicator date-save-indicator">✓ SAVED</span>
+          </div>
         </td>
 
         <!-- Column 5: Pieces -->
@@ -991,7 +1117,7 @@
               <option value="04" ${rankCode === '04' ? 'selected' : ''}>04 — GUILD MASTER ギルドマスター</option>
               <option value="05" ${rankCode === '05' ? 'selected' : ''}>05 — GRAND GUILD MASTER 大ギルドマスター</option>
             </select>
-            <span class="save-indicator">✓ SAVED</span>
+            <span class="save-indicator rank-save-indicator">✓ SAVED</span>
           </div>
         </td>
 
@@ -1059,10 +1185,36 @@
 
       // ── Wire up the rank dropdown change handler ──
       const select        = tr.querySelector('.rank-select');
-      const saveIndicator = tr.querySelector('.save-indicator');
+      const saveIndicator = tr.querySelector('.rank-save-indicator');
 
       select.addEventListener('change', async () => {
         await saveRank(profile.id, select.value, saveIndicator);
+      });
+
+      // ── Wire up inline-editable name ──
+      makeInlineEditable({
+        spanEl: tr.querySelector('.editable-name'),
+        indicatorEl: tr.querySelector('.name-save-indicator'),
+        inputType: 'text',
+        inputClass: 'inline-edit-input',
+        profileObj: profile,
+        fieldName: 'display_name',
+        formatDisplay: (val) => (val || '(no name)').toUpperCase(),
+      });
+
+      // ── Wire up inline-editable join date ──
+      makeInlineEditable({
+        spanEl: tr.querySelector('.editable-date'),
+        indicatorEl: tr.querySelector('.date-save-indicator'),
+        inputType: 'date',
+        inputClass: 'inline-date-input',
+        profileObj: profile,
+        fieldName: 'joined_at',
+        formatDisplay: (val) => {
+          const d = new Date(val);
+          return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase();
+        },
+        parseValue: (val) => val ? val.slice(0, 10) : '',
       });
 
       // ── Wire up the Sync (backfill) button ──
