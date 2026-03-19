@@ -1530,7 +1530,7 @@
             </div>
             <div class="stat-col">
               <span id="stat-spend" class="stat-value">—</span>
-              <span class="stat-label">Spend</span>
+              <span class="stat-label">Acquired</span>
             </div>
           </div>
 
@@ -1675,35 +1675,68 @@
        SHARE CARD — hidden off-screen template for html2canvas
        ================================================================ -->
   <div id="share-card-wrap" style="position: absolute; left: -9999px; top: -9999px;">
-    <div id="share-card" style="width: 400px; height: 560px; background: #0a0a0a; border: 1px solid rgba(245,245,240,0.10); padding: 32px; font-family: 'Courier New', Courier, monospace; color: #F5F5F0; position: relative; overflow: hidden;">
-      <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(245,245,240,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(245,245,240,0.04) 1px, transparent 1px); background-size: 32px 32px;"></div>
+    <div id="share-card" style="width: 400px; height: 560px; background: #0a0a0a; border: 2px solid #C8102E; padding: 16px; font-family: 'Courier New', Courier, monospace; color: #F5F5F0; position: relative; overflow: hidden;">
+      <!-- Subtle grid texture -->
+      <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(245,245,240,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,245,240,0.03) 1px, transparent 1px); background-size: 32px 32px;"></div>
+
       <div style="position: relative; z-index: 1;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-          <img src="brand_assets/RBG_MAIN.png" style="width: 24px; height: 24px;">
-          <div style="border: 1px solid #C8102E; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+        <!-- TOP BAR: Logo + Rank name + HP (pieces count) -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="brand_assets/RBG_MAIN.png" style="width: 20px; height: 20px;">
+            <span id="card-rank-en" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 13px; color: #C8102E; text-transform: uppercase; letter-spacing: 0.08em;">INITIATE</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 4px;">
+            <span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.1em;">HP</span>
+            <span id="card-hp" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 18px; color: #F5F5F0; font-weight: 400;">—</span>
+          </div>
+        </div>
+
+        <!-- HERO IMAGE: Avatar as the main card art -->
+        <div style="width: 100%; height: 240px; border: 1px solid rgba(245,245,240,0.10); overflow: hidden; background: #111; margin-bottom: 8px; position: relative;">
+          <img id="card-avatar" style="width: 100%; height: 100%; object-fit: cover; object-position: center top;" src="">
+          <!-- Gradient overlay at bottom for readability -->
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);"></div>
+          <!-- Rank number badge overlaid bottom-right -->
+          <div style="position: absolute; bottom: 8px; right: 8px; border: 1px solid #C8102E; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(10,10,10,0.8);">
             <span id="card-rank-num" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 14px; color: #C8102E;">01</span>
           </div>
         </div>
-        <div style="width: 80px; height: 80px; border: 1px solid rgba(245,245,240,0.10); overflow: hidden; margin-bottom: 16px; background: #111;">
-          <img id="card-avatar" style="width: 100%; height: 100%; object-fit: cover;" src="">
+
+        <!-- NAME BAR: Username + Japanese rank -->
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; border-bottom: 1px solid rgba(245,245,240,0.10); padding-bottom: 8px;">
+          <span id="card-username" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 18px; color: #F5F5F0; text-transform: uppercase; letter-spacing: 0.06em;"></span>
+          <span id="card-rank-jp" style="font-size: 10px; color: rgba(245,245,240,0.38); letter-spacing: 0.1em;">入門</span>
         </div>
-        <div id="card-rank-en" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 20px; color: #C8102E; text-transform: uppercase; letter-spacing: 0.08em;">INITIATE</div>
-        <div id="card-rank-jp" style="font-size: 9px; color: rgba(245,245,240,0.38); letter-spacing: 0.1em; margin-bottom: 4px;">入門</div>
-        <div id="card-username" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 22px; color: #F5F5F0; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px;"></div>
-        <div style="height: 1px; background: rgba(245,245,240,0.10); margin-bottom: 16px;"></div>
-        <div style="display: flex; gap: 24px; margin-bottom: 16px;">
-          <div><span id="card-pieces" style="font-size: 13px; color: #C8102E; display: block;">—</span><span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.15em; text-transform: uppercase;">Pieces</span></div>
-          <div><span id="card-since" style="font-size: 13px; color: #F5F5F0; display: block;">—</span><span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.15em; text-transform: uppercase;">Since</span></div>
-          <div><span id="card-spend" style="font-size: 13px; color: #F5F5F0; display: block;">—</span><span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.15em; text-transform: uppercase;">Spend</span></div>
+
+        <!-- STATS ROW: Three stat boxes like abilities -->
+        <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+          <div style="flex: 1; border: 1px solid rgba(245,245,240,0.10); padding: 8px; text-align: center;">
+            <span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.15em; text-transform: uppercase; display: block; margin-bottom: 4px;">Pieces</span>
+            <span id="card-pieces" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 16px; color: #C8102E; display: block;">—</span>
+          </div>
+          <div style="flex: 1; border: 1px solid rgba(245,245,240,0.10); padding: 8px; text-align: center;">
+            <span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.15em; text-transform: uppercase; display: block; margin-bottom: 4px;">Since</span>
+            <span id="card-since" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 16px; color: #F5F5F0; display: block;">—</span>
+          </div>
+          <div style="flex: 1; border: 1px solid rgba(245,245,240,0.10); padding: 8px; text-align: center;">
+            <span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.15em; text-transform: uppercase; display: block; margin-bottom: 4px;">Acquired</span>
+            <span id="card-spend" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 16px; color: #F5F5F0; display: block;">—</span>
+          </div>
         </div>
-        <div id="card-misogi-block" style="border-left: 3px solid rgba(200,16,46,0.44); padding-left: 12px; margin-bottom: 16px; display: none;">
-          <span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.2em; text-transform: uppercase; display: block; margin-bottom: 4px;">MISOGI</span>
-          <span id="card-misogi" style="font-size: 10px; color: rgba(245,245,240,0.82); line-height: 1.6;"></span>
+
+        <!-- MISOGI: Flavor text (like Pokédex entry) -->
+        <div id="card-misogi-block" style="margin-bottom: 10px; display: none;">
+          <p id="card-misogi" style="font-size: 9px; font-style: italic; color: rgba(245,245,240,0.55); line-height: 1.6; margin: 0;"></p>
         </div>
-        <div id="card-socials" style="font-size: 9px; color: rgba(245,245,240,0.55); letter-spacing: 0.1em; text-transform: uppercase; display: none;"></div>
-        <div style="position: absolute; bottom: 32px; left: 32px; right: 32px; display: flex; justify-content: space-between; align-items: flex-end;">
-          <span style="font-size: 7px; color: rgba(245,245,240,0.18); letter-spacing: 0.2em; text-transform: uppercase;">redbean.guild</span>
-          <span style="font-size: 7px; color: rgba(245,245,240,0.18); letter-spacing: 0.1em;">2025</span>
+
+        <!-- SOCIALS -->
+        <div id="card-socials" style="font-size: 8px; color: rgba(245,245,240,0.38); letter-spacing: 0.1em; text-transform: uppercase; display: none; margin-bottom: 10px;"></div>
+
+        <!-- FOOTER: Branding + rank icon (like energy type symbol) -->
+        <div style="position: absolute; bottom: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 7px; color: rgba(245,245,240,0.18); letter-spacing: 0.2em; text-transform: uppercase;">redbean.guild — 2025</span>
+          <img id="card-rank-icon" src="brand_assets/5ranks_icons/rbg_rank_recruit.png" style="width: 24px; height: 24px; opacity: 0.35;">
         </div>
       </div>
     </div>
@@ -2576,6 +2609,13 @@
         document.getElementById('card-pieces').textContent = document.getElementById('stat-pieces').textContent;
         document.getElementById('card-since').textContent = document.getElementById('stat-since').textContent;
         document.getElementById('card-spend').textContent = document.getElementById('stat-spend').textContent;
+
+        // HP = pieces count (Pokémon-style)
+        document.getElementById('card-hp').textContent = document.getElementById('stat-pieces').textContent;
+
+        // Rank icon (energy type symbol in footer)
+        const rankIcon = RANK_ICONS[rankCode] || RANK_ICONS['01'];
+        document.getElementById('card-rank-icon').src = rankIcon;
 
         // Avatar
         const avatarImg = document.getElementById('avatar-img');
