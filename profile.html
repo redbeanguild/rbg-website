@@ -43,6 +43,8 @@
   <!-- Supabase SDK + ethers.js for wallet verification -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+  <!-- html2canvas for profile card export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
     /* ================================================================
@@ -383,6 +385,7 @@
       outline: none;
       width: 100%;
       padding: 0;
+      margin-top: 2px;
       text-transform: uppercase;
     }
 
@@ -398,7 +401,6 @@
       display: flex;
       align-items: baseline;
       gap: 8px;
-      margin-top: 2px;
     }
 
     #rank-en {
@@ -498,11 +500,11 @@
     #misogi-input {
       width: 100%;
       min-height: 40px;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 11px;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 20px;
       font-style: italic;
       letter-spacing: 0.01em;
-      line-height: 1.75;
+      line-height: 1.4;
       color: var(--text-secondary);
       background: transparent;
       border: none;
@@ -1155,6 +1157,195 @@
     .inline-edit::placeholder { color: var(--text-muted); font-size: 11px; }
 
     /* ================================================================
+       INTRO POPUP — first-time onboarding modal
+       ================================================================ */
+    .intro-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .intro-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .intro-card {
+      background-color: var(--bg-floating);
+      border: 1px solid var(--border-medium);
+      padding: 28px 32px;
+      width: 100%;
+      max-width: 360px;
+      transform: translateY(8px);
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .intro-overlay.open .intro-card {
+      transform: translateY(0);
+    }
+
+    .intro-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 10px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .intro-step-num {
+      font-weight: 900;
+      color: var(--accent);
+      flex-shrink: 0;
+      letter-spacing: 0.05em;
+    }
+
+    .intro-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 9px;
+      color: var(--text-muted);
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .intro-checkbox input {
+      accent-color: var(--accent);
+    }
+
+    .intro-begin-btn {
+      width: 100%;
+      margin-top: 16px;
+      padding: 10px 0;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #F5F5F0;
+      background: var(--accent);
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .intro-begin-btn:hover {
+      opacity: 0.85;
+    }
+
+    .intro-begin-btn:focus-visible {
+      outline: 1px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .intro-begin-btn:active {
+      opacity: 0.7;
+    }
+
+    .intro-reopen-btn {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: none;
+      border: 1px solid var(--border-std);
+      padding: 3px 8px;
+      cursor: pointer;
+      margin-top: 14px;
+      transition: color 0.15s;
+    }
+
+    .intro-reopen-btn:hover { color: var(--text-primary); }
+    .intro-reopen-btn:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
+    .intro-reopen-btn:active { color: var(--accent); }
+
+    /* ================================================================
+       SHARE MODAL — profile card export
+       ================================================================ */
+    .share-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .share-modal.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .share-modal-card {
+      background-color: var(--bg-floating);
+      border: 1px solid var(--border-medium);
+      padding: 28px 32px;
+      width: 100%;
+      max-width: 520px;
+      transform: translateY(8px);
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .share-modal.open .share-modal-card {
+      transform: translateY(0);
+    }
+
+    .share-action-btn {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      background: transparent;
+      border: 1px solid var(--border-std);
+      padding: 6px 12px;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+      transition: opacity 0.15s;
+    }
+
+    .share-action-btn:hover {
+      background: var(--accent);
+      color: #F5F5F0;
+    }
+
+    .share-action-btn:focus-visible {
+      outline: 1px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    .share-action-btn:active {
+      opacity: 0.7;
+    }
+
+    .share-action-btn.accent {
+      color: #F5F5F0;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .share-action-btn.accent:hover {
+      opacity: 0.85;
+    }
+
+    /* ================================================================
        TAB BAR — right column, 3 tabs
        ================================================================ */
     .tab-bar {
@@ -1302,6 +1493,10 @@
 
             <!-- Identity: username + rank name -->
             <div class="hero-identity">
+              <div class="rank-name-row">
+                <span id="rank-en">INITIATE</span>
+                <span id="rank-jp">入門</span>
+              </div>
               <input
                 id="username-input"
                 type="text"
@@ -1310,10 +1505,6 @@
                 autocomplete="off"
                 spellcheck="false"
               >
-              <div class="rank-name-row">
-                <span id="rank-en">INITIATE</span>
-                <span id="rank-jp">入門</span>
-              </div>
             </div>
 
           </div><!-- end hero-top -->
@@ -1338,10 +1529,12 @@
               <span class="stat-label">Since</span>
             </div>
             <div class="stat-col">
-              <span id="stat-spend" class="stat-value">—</span>
-              <span class="stat-label">Spend</span>
+              <span id="stat-dojo" class="stat-value">—</span>
+              <span class="stat-label">Days in Dojo</span>
             </div>
           </div>
+
+          <button id="share-card-btn" class="connect-btn" style="width: 100%; margin-top: 12px;">SHARE PROFILE →</button>
 
         </section><!-- end hero -->
 
@@ -1451,6 +1644,118 @@
         <input id="ig-handle-input" class="inline-edit" placeholder="@handle" type="text" maxlength="50">
       </div>
 
+    </div>
+  </div>
+
+  <!-- ================================================================
+       INTRO POPUP — first-time onboarding modal
+       ================================================================ -->
+  <div id="intro-overlay" class="intro-overlay">
+    <div class="intro-card">
+      <img src="brand_assets/RBG_MAIN.png" alt="RBG" style="width: 32px; height: 32px; margin-bottom: 16px;">
+      <h2 style="font-family: 'Instrument Serif', Georgia, serif; font-size: 20px; font-weight: 400; letter-spacing: 0.06em; color: var(--text-primary); text-transform: uppercase; margin: 0 0 4px 0;">Welcome to the Guild</h2>
+      <p style="font-size: 9px; color: var(--text-muted); letter-spacing: 0.1em; margin: 0 0 20px 0; text-transform: uppercase;">Set up your profile</p>
+
+      <div class="intro-step"><span class="intro-step-num">01</span> Upload your profile picture</div>
+      <div class="intro-step"><span class="intro-step-num">02</span> Set your display name</div>
+      <div class="intro-step"><span class="intro-step-num">03</span> Link your socials (X, IG)</div>
+      <div class="intro-step"><span class="intro-step-num">04</span> Declare your MISOGI</div>
+
+      <label class="intro-checkbox">
+        <input type="checkbox" id="intro-dismiss-checkbox"> Don't show again
+      </label>
+
+      <button id="intro-begin-btn" class="intro-begin-btn">BEGIN</button>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SHARE CARD — hidden off-screen template for html2canvas
+       ================================================================ -->
+  <div id="share-card-wrap" style="position: absolute; left: -9999px; top: -9999px;">
+    <div id="share-card" style="width: 480px; height: 820px; background: #0a0a0a; border-radius: 11px; border: 15px solid #C8102E; box-shadow: inset 0 0 0 1px rgba(200,16,46,0.25); box-sizing: border-box; padding: 16px; font-family: 'Courier New', Courier, monospace; color: #F5F5F0; position: relative; overflow: hidden;">
+      <!-- Subtle grid texture -->
+      <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(245,245,240,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,245,240,0.03) 1px, transparent 1px); background-size: 32px 32px; border-radius: 0;"></div>
+
+      <div style="position: relative; z-index: 1;">
+        <!-- TOP BAR: Logo + Rank name + HP (pieces count) -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="brand_assets/RBG_MAIN.png" style="width: 20px; height: 20px;">
+            <span id="card-rank-en" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 13px; color: #C8102E; text-transform: uppercase; letter-spacing: 0.08em;">INITIATE</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 4px;">
+            <span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.1em;">HP</span>
+            <span id="card-hp" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 18px; color: #F5F5F0; font-weight: 400;">—</span>
+          </div>
+        </div>
+
+        <!-- HERO IMAGE: Avatar as the main card art (1:1 square) -->
+        <div style="width: 100%; aspect-ratio: 1/1; border: 1px solid rgba(245,245,240,0.10); overflow: hidden; background: #111; margin-bottom: 8px; position: relative;">
+          <img id="card-avatar" style="width: 100%; height: 100%; object-fit: cover; object-position: center center;" src="">
+          <!-- Shadow overlays for depth — top and bottom vignette -->
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, rgba(10,10,10,0.8), transparent);"></div>
+          <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(to bottom, rgba(10,10,10,0.4), transparent);"></div>
+          <!-- Rank number badge overlaid bottom-right -->
+          <div style="position: absolute; bottom: 8px; right: 8px; border: 1px solid #C8102E; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(10,10,10,0.8);">
+            <span id="card-rank-num" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 14px; color: #C8102E;">01</span>
+          </div>
+        </div>
+
+        <!-- NAME BAR: Username + Japanese rank -->
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; border-bottom: 1px solid rgba(245,245,240,0.10); padding-bottom: 8px;">
+          <span id="card-username" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 18px; color: #F5F5F0; text-transform: uppercase; letter-spacing: 0.06em;"></span>
+          <span id="card-rank-jp" style="font-size: 10px; color: rgba(245,245,240,0.38); letter-spacing: 0.1em;">入門</span>
+        </div>
+
+        <!-- STATS ROW: Three stat boxes like abilities -->
+        <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+          <div style="flex: 1; border: 1px solid rgba(245,245,240,0.10); padding: 8px; text-align: center;">
+            <span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.15em; text-transform: uppercase; display: block; margin-bottom: 4px;">Pieces</span>
+            <span id="card-pieces" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 16px; color: #C8102E; display: block;">—</span>
+          </div>
+          <div style="flex: 1; border: 1px solid rgba(245,245,240,0.10); padding: 8px; text-align: center;">
+            <span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.15em; text-transform: uppercase; display: block; margin-bottom: 4px;">Since</span>
+            <span id="card-since" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 16px; color: #F5F5F0; display: block;">—</span>
+          </div>
+          <div style="flex: 1; border: 1px solid rgba(245,245,240,0.10); padding: 8px; text-align: center;">
+            <span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.15em; text-transform: uppercase; display: block; margin-bottom: 4px;">Days in Dojo</span>
+            <span id="card-dojo" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 16px; color: #F5F5F0; display: block;">—</span>
+          </div>
+        </div>
+
+        <!-- MISOGI: Flavor text (like Pokédex entry) -->
+        <div id="card-misogi-block" style="margin-bottom: 10px; display: none;">
+          <p id="card-misogi" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 14px; font-style: italic; color: rgba(245,245,240,0.55); line-height: 1.4; margin: 0;"></p>
+        </div>
+
+        <!-- SOCIALS -->
+        <div id="card-socials" style="font-size: 8px; color: rgba(245,245,240,0.38); letter-spacing: 0.1em; text-transform: uppercase; display: none; margin-bottom: 10px;"></div>
+
+        <!-- FOOTER: Branding + rank icon (like energy type symbol) -->
+        <div style="position: absolute; bottom: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 7px; color: rgba(245,245,240,0.18); letter-spacing: 0.2em; text-transform: uppercase;">redbean.guild — 2026</span>
+          <img id="card-rank-icon" src="brand_assets/5ranks_icons/rbg_rank_recruit.png" style="width: 24px; height: 24px; opacity: 0.35;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SHARE MODAL — rendered card preview + action buttons
+       ================================================================ -->
+  <div id="share-modal" class="share-modal">
+    <div class="share-modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <span style="font-size: 9px; font-weight: 900; letter-spacing: 0.32em; color: var(--text-tertiary); text-transform: uppercase;">Share</span>
+        <button id="share-close-btn" class="bubble-close-btn">&times;</button>
+      </div>
+      <canvas id="share-canvas" style="width: 100%; border: 1px solid var(--border-std);"></canvas>
+      <div style="display: flex; gap: 8px; margin-top: 16px;">
+        <button id="share-copy-btn" class="share-action-btn">COPY</button>
+        <button id="share-download-btn" class="share-action-btn">DOWNLOAD</button>
+        <button id="share-x-btn" class="share-action-btn accent">SHARE ON X</button>
+      </div>
     </div>
   </div>
 
@@ -1611,6 +1916,11 @@
 
         profileContent.classList.remove('hidden');
 
+        // Show intro popup for first-time visitors
+        if (!localStorage.getItem('rbg_intro_seen')) {
+          document.getElementById('intro-overlay').classList.add('open');
+        }
+
         // Load wardrobe items from Supabase and render dynamic grid
         await loadAndRenderWardrobe();
 
@@ -1652,11 +1962,9 @@
           month: 'short', year: '2-digit'
         });
 
-        // Total spend
-        const spend = currentProfile?.total_spend;
-        document.getElementById('stat-spend').textContent = spend
-          ? '$' + Number(spend).toLocaleString()
-          : '—';
+        // Days in Dojo (days since join date)
+        const daysInDojo = Math.floor((Date.now() - joinDate.getTime()) / 86400000);
+        document.getElementById('stat-dojo').textContent = daysInDojo;
 
         // --- Username ---
         usernameInput.value = currentProfile?.display_name || '';
@@ -2021,6 +2329,29 @@
       }
 
       // ================================================================
+      // INTRO POPUP — open / close / dismiss
+      // ================================================================
+      const introOverlay = document.getElementById('intro-overlay');
+      const introBeginBtn = document.getElementById('intro-begin-btn');
+      const introDismissCheckbox = document.getElementById('intro-dismiss-checkbox');
+      const introReopenBtn = document.getElementById('intro-reopen-btn');
+
+      function closeIntro() {
+        introOverlay.classList.remove('open');
+        if (introDismissCheckbox.checked) {
+          localStorage.setItem('rbg_intro_seen', '1');
+        }
+      }
+
+      introBeginBtn.addEventListener('click', closeIntro);
+      introOverlay.addEventListener('click', (e) => {
+        if (e.target === introOverlay) closeIntro();
+      });
+      introReopenBtn.addEventListener('click', () => {
+        introOverlay.classList.add('open');
+      });
+
+      // ================================================================
       // SOCIAL BUBBLE OPEN / CLOSE
       // ================================================================
       function openBubble()  { socialBubble.classList.add('open');    }
@@ -2146,7 +2477,10 @@
         });
 
         document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') closeBubble();
+          if (e.key === 'Escape') {
+            closeBubble();
+            if (introOverlay.classList.contains('open')) closeIntro();
+          }
         });
 
         // If no handle set, clicking icon link opens bubble instead
