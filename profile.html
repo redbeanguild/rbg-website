@@ -1296,7 +1296,7 @@
       border: 1px solid var(--border-medium);
       padding: 28px 32px;
       width: 100%;
-      max-width: 440px;
+      max-width: 520px;
       transform: translateY(8px);
       transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
     }
@@ -1675,26 +1675,9 @@
        SHARE CARD — hidden off-screen template for html2canvas
        ================================================================ -->
   <div id="share-card-wrap" style="position: absolute; left: -9999px; top: -9999px;">
-    <div id="share-card" style="width: 400px; height: 640px; background: #0a0a0a; border-radius: 3px; padding: 16px; font-family: 'Courier New', Courier, monospace; color: #F5F5F0; position: relative; overflow: hidden;">
-      <!-- Brush stroke border — thick, hand-painted RBG red -->
-      <svg style="position: absolute; inset: -2px; width: calc(100% + 4px); height: calc(100% + 4px); pointer-events: none; z-index: 2;" viewBox="0 0 404 644" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-        <rect x="2" y="2" width="400" height="640" rx="3" ry="3" stroke="#C8102E" stroke-width="4" fill="none"
-          stroke-dasharray="8 3 20 3 12 3 30 3 6 3 24 3"
-          stroke-linecap="round" stroke-linejoin="round"
-          style="filter: url(#brush-rough);" />
-        <!-- Inner stroke for depth / double-brush feel -->
-        <rect x="5" y="5" width="394" height="634" rx="2" ry="2" stroke="rgba(200,16,46,0.25)" stroke-width="1.5" fill="none"
-          stroke-dasharray="14 4 8 4 22 4 6 4"
-          stroke-linecap="round" />
-        <defs>
-          <filter id="brush-rough" x="-2%" y="-2%" width="104%" height="104%">
-            <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="4" seed="3" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-      </svg>
+    <div id="share-card" style="width: 480px; height: 820px; background: #0a0a0a; border-radius: 11px; border: 15px solid #C8102E; box-shadow: inset 0 0 0 1px rgba(200,16,46,0.25); box-sizing: border-box; padding: 16px; font-family: 'Courier New', Courier, monospace; color: #F5F5F0; position: relative; overflow: hidden;">
       <!-- Subtle grid texture -->
-      <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(245,245,240,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,245,240,0.03) 1px, transparent 1px); background-size: 32px 32px; border-radius: 3px;"></div>
+      <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(245,245,240,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,245,240,0.03) 1px, transparent 1px); background-size: 32px 32px; border-radius: 0;"></div>
 
       <div style="position: relative; z-index: 1;">
         <!-- TOP BAR: Logo + Rank name + HP (pieces count) -->
@@ -1709,11 +1692,12 @@
           </div>
         </div>
 
-        <!-- HERO IMAGE: Avatar as the main card art -->
+        <!-- HERO IMAGE: Avatar as the main card art (1:1 square) -->
         <div style="width: 100%; aspect-ratio: 1/1; border: 1px solid rgba(245,245,240,0.10); overflow: hidden; background: #111; margin-bottom: 8px; position: relative;">
-          <img id="card-avatar" style="width: 100%; height: 100%; object-fit: cover; object-position: center top;" src="">
-          <!-- Gradient overlay at bottom for readability -->
-          <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);"></div>
+          <img id="card-avatar" style="width: 100%; height: 100%; object-fit: cover; object-position: center center;" src="">
+          <!-- Shadow overlays for depth — top and bottom vignette -->
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, rgba(10,10,10,0.8), transparent);"></div>
+          <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(to bottom, rgba(10,10,10,0.4), transparent);"></div>
           <!-- Rank number badge overlaid bottom-right -->
           <div style="position: absolute; bottom: 8px; right: 8px; border: 1px solid #C8102E; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(10,10,10,0.8);">
             <span id="card-rank-num" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 14px; color: #C8102E;">01</span>
@@ -1744,7 +1728,7 @@
 
         <!-- MISOGI: Flavor text (like Pokédex entry) -->
         <div id="card-misogi-block" style="margin-bottom: 10px; display: none;">
-          <p id="card-misogi" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 16px; font-style: italic; color: rgba(245,245,240,0.55); line-height: 1.4; margin: 0;"></p>
+          <p id="card-misogi" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 14px; font-style: italic; color: rgba(245,245,240,0.55); line-height: 1.4; margin: 0;"></p>
         </div>
 
         <!-- SOCIALS -->
@@ -1752,7 +1736,7 @@
 
         <!-- FOOTER: Branding + rank icon (like energy type symbol) -->
         <div style="position: absolute; bottom: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 7px; color: rgba(245,245,240,0.18); letter-spacing: 0.2em; text-transform: uppercase;">redbean.guild — 2025</span>
+          <span style="font-size: 7px; color: rgba(245,245,240,0.18); letter-spacing: 0.2em; text-transform: uppercase;">redbean.guild — 2026</span>
           <img id="card-rank-icon" src="brand_assets/5ranks_icons/rbg_rank_recruit.png" style="width: 24px; height: 24px; opacity: 0.35;">
         </div>
       </div>
@@ -2671,8 +2655,8 @@
           backgroundColor: '#0a0a0a',
           scale: 2,
           useCORS: true,
-          width: 400,
-          height: 640,
+          width: 480,
+          height: 820,
         });
 
         const modalCanvas = document.getElementById('share-canvas');
@@ -2717,13 +2701,61 @@
         link.click();
       });
 
-      // Share on X
-      document.getElementById('share-x-btn').addEventListener('click', () => {
+      // Share on X — Web Share API with image, fallback to download + tweet intent
+      document.getElementById('share-x-btn').addEventListener('click', async () => {
+        const canvas = document.getElementById('share-canvas');
         const name = currentProfile?.display_name || 'member';
         const rank = (RANKS[currentProfile?.rank] || RANKS['01']).en;
-        const text = encodeURIComponent(rank + ' — ' + name + '\n\nRedBean Guild');
-        window.open('https://x.com/intent/tweet?text=' + text, '_blank');
+        const shareText = rank + ' — ' + name + '\n\nRedBean Guild';
+
+        // Convert canvas to File
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        const file = new File([blob], 'rbg-profile.png', { type: 'image/png' });
+
+        // Try Web Share API with file support (mobile Chrome/Safari/Edge)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ text: shareText, files: [file] });
+            return;
+          } catch (err) {
+            if (err.name === 'AbortError') return;
+          }
+        }
+
+        // Fallback: download image + open tweet intent + toast
+        const link = document.createElement('a');
+        link.download = 'rbg-profile.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        window.open(
+          'https://x.com/intent/tweet?text=' + encodeURIComponent(shareText),
+          '_blank'
+        );
+
+        showShareToast('Image downloaded — attach it to your tweet');
       });
+
+      function showShareToast(message) {
+        const existing = document.getElementById('share-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'share-toast';
+        toast.textContent = message;
+        Object.assign(toast.style, {
+          position: 'fixed', bottom: '24px', left: '50%',
+          transform: 'translateX(-50%)', background: '#C8102E', color: '#F5F5F0',
+          fontFamily: "'Courier New', Courier, monospace", fontSize: '10px',
+          fontWeight: '900', letterSpacing: '0.15em', textTransform: 'uppercase',
+          padding: '10px 20px', zIndex: '300', opacity: '1',
+          transition: 'opacity 0.3s ease',
+        });
+        document.body.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
 
       // ================================================================
       // START
