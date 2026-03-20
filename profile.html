@@ -224,7 +224,7 @@
       margin: 0 auto;
       padding: 78px clamp(24px, 4vw, 80px) 48px;
       display: grid;
-      grid-template-columns: clamp(280px, 28vw, 440px) 1fr;
+      grid-template-columns: clamp(240px, 22vw, 340px) 1fr;
       gap: clamp(32px, 4vw, 80px);
       align-items: start;
     }
@@ -253,8 +253,8 @@
       nav { padding: 0 16px; }
 
       /* Hero — scale down for narrow screens */
-      #username-input { font-size: 18px; }
-      #avatar-ring { width: 88px; height: 88px; }
+      #username-input { font-size: 16px; }
+      #avatar-ring { width: 72px; height: 72px; }
 
       /* Stats — tighter on mobile */
       .stats-row { gap: 0; }
@@ -275,10 +275,105 @@
     }
 
     /* ================================================================
+       PROFILE CARD — bordered container for left column
+       ================================================================ */
+    .profile-card {
+      border: 1px solid var(--accent-border);
+      background: var(--bg-elevated);
+      padding: 20px;
+      position: relative;
+    }
+
+    /* Red accent line at top of card */
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    /* Corner marks — top-left and bottom-right for guild aesthetic */
+    .profile-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 12px;
+      height: 12px;
+      border-right: 2px solid var(--accent);
+      border-bottom: 2px solid var(--accent);
+      pointer-events: none;
+    }
+
+    .card-corner-tl {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 12px;
+      height: 12px;
+      border-left: 2px solid var(--accent);
+      border-top: 2px solid var(--accent);
+      pointer-events: none;
+    }
+
+    /* Card action buttons row */
+    .card-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .card-action-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border-std);
+      padding: 7px 10px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background-color 0.15s;
+    }
+
+    .card-action-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--accent-border);
+      background-color: var(--accent-dim);
+    }
+
+    .card-action-btn:focus-visible {
+      outline: 1px solid var(--accent);
+      outline-offset: -1px;
+    }
+
+    .card-action-btn:active {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .card-action-btn svg {
+      width: 10px;
+      height: 10px;
+      flex-shrink: 0;
+    }
+
+    /* ================================================================
        HERO BLOCK
        ================================================================ */
     .hero {
-      padding: 24px 0 20px;
+      padding: 0 0 0;
     }
 
     /* Top row: avatar + rank badge + username */
@@ -296,8 +391,8 @@
     }
 
     #avatar-ring {
-      width: 104px;
-      height: 104px;
+      width: 80px;
+      height: 80px;
       overflow: hidden;
       cursor: pointer;
       border: 1px solid var(--border-medium);
@@ -334,7 +429,7 @@
     #avatar-initials {
       font-family: 'Instrument Serif', Georgia, serif;
       font-weight: 400;
-      font-size: 32px;
+      font-size: 26px;
       color: var(--text-secondary);
     }
 
@@ -351,8 +446,8 @@
 
     /* Rank badge — design spec: 36×36px box, 1px red border, numeral centered */
     #rank-badge-box {
-      width: 40px;
-      height: 40px;
+      width: 34px;
+      height: 34px;
       border: 1px solid var(--accent);
       display: flex;
       align-items: center;
@@ -363,7 +458,7 @@
     #rank-num {
       font-family: 'Instrument Serif', Georgia, serif;
       font-weight: 400;
-      font-size: 15px;
+      font-size: 13px;
       color: var(--accent);
       letter-spacing: 0;
     }
@@ -377,8 +472,8 @@
     #username-input {
       font-family: 'Instrument Serif', Georgia, serif;
       font-weight: 400;
-      font-size: 22px;
-      letter-spacing: 0.06em;
+      font-size: 18px;
+      letter-spacing: 0.04em;
       color: var(--text-primary);
       background: transparent;
       border: none;
@@ -405,9 +500,9 @@
 
     #rank-en {
       font-family: 'Instrument Serif', Georgia, serif;
-      font-size: 20px;
+      font-size: 16px;
       font-weight: 400;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       color: var(--accent);
       text-transform: uppercase;
     }
@@ -1453,6 +1548,8 @@
 
       <!-- ══ LEFT COLUMN: profile identity ══════════════════════ -->
       <div class="left-col">
+        <div class="profile-card">
+          <div class="card-corner-tl"></div>
 
         <section class="hero">
 
