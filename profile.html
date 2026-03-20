@@ -1675,7 +1675,7 @@
        SHARE CARD — hidden off-screen template for html2canvas
        ================================================================ -->
   <div id="share-card-wrap" style="position: absolute; left: -9999px; top: -9999px;">
-    <div id="share-card" style="width: 480px; height: 672px; background: #0a0a0a; border-radius: 11px; border: 15px solid #C8102E; box-shadow: inset 0 0 0 1px rgba(200,16,46,0.25); box-sizing: border-box; padding: 16px; font-family: 'Courier New', Courier, monospace; color: #F5F5F0; position: relative; overflow: hidden;">
+    <div id="share-card" style="width: 480px; height: 820px; background: #0a0a0a; border-radius: 11px; border: 15px solid #C8102E; box-shadow: inset 0 0 0 1px rgba(200,16,46,0.25); box-sizing: border-box; padding: 16px; font-family: 'Courier New', Courier, monospace; color: #F5F5F0; position: relative; overflow: hidden;">
       <!-- Subtle grid texture -->
       <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(245,245,240,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,245,240,0.03) 1px, transparent 1px); background-size: 32px 32px; border-radius: 0;"></div>
 
@@ -1692,11 +1692,12 @@
           </div>
         </div>
 
-        <!-- HERO IMAGE: Avatar as the main card art -->
-        <div style="width: 100%; aspect-ratio: 4/3; border: 1px solid rgba(245,245,240,0.10); overflow: hidden; background: #111; margin-bottom: 8px; position: relative;">
-          <img id="card-avatar" style="width: 100%; height: 100%; object-fit: cover; object-position: center top;" src="">
-          <!-- Gradient overlay at bottom for readability -->
-          <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);"></div>
+        <!-- HERO IMAGE: Avatar as the main card art (1:1 square) -->
+        <div style="width: 100%; aspect-ratio: 1/1; border: 1px solid rgba(245,245,240,0.10); overflow: hidden; background: #111; margin-bottom: 8px; position: relative;">
+          <img id="card-avatar" style="width: 100%; height: 100%; object-fit: cover; object-position: center center;" src="">
+          <!-- Shadow overlays for depth — top and bottom vignette -->
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, rgba(10,10,10,0.8), transparent);"></div>
+          <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(to bottom, rgba(10,10,10,0.4), transparent);"></div>
           <!-- Rank number badge overlaid bottom-right -->
           <div style="position: absolute; bottom: 8px; right: 8px; border: 1px solid #C8102E; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(10,10,10,0.8);">
             <span id="card-rank-num" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 14px; color: #C8102E;">01</span>
@@ -2655,7 +2656,7 @@
           scale: 2,
           useCORS: true,
           width: 480,
-          height: 672,
+          height: 820,
         });
 
         const modalCanvas = document.getElementById('share-canvas');
