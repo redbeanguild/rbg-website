@@ -43,6 +43,8 @@
   <!-- Supabase SDK + ethers.js for wallet verification -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+  <!-- html2canvas for profile card export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
     /* ================================================================
@@ -478,6 +480,7 @@
       outline: none;
       width: 100%;
       padding: 0;
+      margin-top: 2px;
       text-transform: uppercase;
     }
 
@@ -493,7 +496,6 @@
       display: flex;
       align-items: baseline;
       gap: 8px;
-      margin-top: 2px;
     }
 
     #rank-en {
@@ -593,11 +595,11 @@
     #misogi-input {
       width: 100%;
       min-height: 40px;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 11px;
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 20px;
       font-style: italic;
       letter-spacing: 0.01em;
-      line-height: 1.75;
+      line-height: 1.4;
       color: var(--text-secondary);
       background: transparent;
       border: none;
@@ -1250,6 +1252,195 @@
     .inline-edit::placeholder { color: var(--text-muted); font-size: 11px; }
 
     /* ================================================================
+       INTRO POPUP — first-time onboarding modal
+       ================================================================ */
+    .intro-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .intro-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .intro-card {
+      background-color: var(--bg-floating);
+      border: 1px solid var(--border-medium);
+      padding: 28px 32px;
+      width: 100%;
+      max-width: 360px;
+      transform: translateY(8px);
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .intro-overlay.open .intro-card {
+      transform: translateY(0);
+    }
+
+    .intro-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 10px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .intro-step-num {
+      font-weight: 900;
+      color: var(--accent);
+      flex-shrink: 0;
+      letter-spacing: 0.05em;
+    }
+
+    .intro-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 9px;
+      color: var(--text-muted);
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .intro-checkbox input {
+      accent-color: var(--accent);
+    }
+
+    .intro-begin-btn {
+      width: 100%;
+      margin-top: 16px;
+      padding: 10px 0;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #F5F5F0;
+      background: var(--accent);
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .intro-begin-btn:hover {
+      opacity: 0.85;
+    }
+
+    .intro-begin-btn:focus-visible {
+      outline: 1px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .intro-begin-btn:active {
+      opacity: 0.7;
+    }
+
+    .intro-reopen-btn {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: none;
+      border: 1px solid var(--border-std);
+      padding: 3px 8px;
+      cursor: pointer;
+      margin-top: 14px;
+      transition: color 0.15s;
+    }
+
+    .intro-reopen-btn:hover { color: var(--text-primary); }
+    .intro-reopen-btn:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
+    .intro-reopen-btn:active { color: var(--accent); }
+
+    /* ================================================================
+       SHARE MODAL — profile card export
+       ================================================================ */
+    .share-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .share-modal.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .share-modal-card {
+      background-color: var(--bg-floating);
+      border: 1px solid var(--border-medium);
+      padding: 28px 32px;
+      width: 100%;
+      max-width: 520px;
+      transform: translateY(8px);
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .share-modal.open .share-modal-card {
+      transform: translateY(0);
+    }
+
+    .share-action-btn {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      background: transparent;
+      border: 1px solid var(--border-std);
+      padding: 6px 12px;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+      transition: opacity 0.15s;
+    }
+
+    .share-action-btn:hover {
+      background: var(--accent);
+      color: #F5F5F0;
+    }
+
+    .share-action-btn:focus-visible {
+      outline: 1px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    .share-action-btn:active {
+      opacity: 0.7;
+    }
+
+    .share-action-btn.accent {
+      color: #F5F5F0;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .share-action-btn.accent:hover {
+      opacity: 0.85;
+    }
+
+    /* ================================================================
        TAB BAR — right column, 3 tabs
        ================================================================ */
     .tab-bar {
@@ -1399,6 +1590,10 @@
 
             <!-- Identity: username + rank name -->
             <div class="hero-identity">
+              <div class="rank-name-row">
+                <span id="rank-en">INITIATE</span>
+                <span id="rank-jp">入門</span>
+              </div>
               <input
                 id="username-input"
                 type="text"
@@ -1407,10 +1602,6 @@
                 autocomplete="off"
                 spellcheck="false"
               >
-              <div class="rank-name-row">
-                <span id="rank-en">INITIATE</span>
-                <span id="rank-jp">入門</span>
-              </div>
             </div>
 
           </div><!-- end hero-top -->
@@ -1435,10 +1626,12 @@
               <span class="stat-label">Since</span>
             </div>
             <div class="stat-col">
-              <span id="stat-spend" class="stat-value">—</span>
-              <span class="stat-label">Spend</span>
+              <span id="stat-dojo" class="stat-value">—</span>
+              <span class="stat-label">Days in Dojo</span>
             </div>
           </div>
+
+          <button id="share-card-btn" class="connect-btn" style="width: 100%; margin-top: 12px;">SHARE PROFILE →</button>
 
         </section><!-- end hero -->
 
@@ -1479,25 +1672,8 @@
           </div>
         </div>
 
-          <!-- Share / Download actions -->
-          <div class="card-actions">
-            <button id="share-card-btn" class="card-action-btn" title="Share profile">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-              </svg>
-              Share
-            </button>
-            <button id="download-card-btn" class="card-action-btn" title="Download card">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-              Download
-            </button>
-          </div>
+        <button id="intro-reopen-btn" class="intro-reopen-btn">INTRO</button>
 
-        </div><!-- end profile-card -->
       </div><!-- end left-col -->
 
       <!-- ══ RIGHT COLUMN: tabbed content ═════════════════════ -->
@@ -1567,6 +1743,118 @@
         <input id="ig-handle-input" class="inline-edit" placeholder="@handle" type="text" maxlength="50">
       </div>
 
+    </div>
+  </div>
+
+  <!-- ================================================================
+       INTRO POPUP — first-time onboarding modal
+       ================================================================ -->
+  <div id="intro-overlay" class="intro-overlay">
+    <div class="intro-card">
+      <img src="brand_assets/RBG_MAIN.png" alt="RBG" style="width: 32px; height: 32px; margin-bottom: 16px;">
+      <h2 style="font-family: 'Instrument Serif', Georgia, serif; font-size: 20px; font-weight: 400; letter-spacing: 0.06em; color: var(--text-primary); text-transform: uppercase; margin: 0 0 4px 0;">Welcome to the Guild</h2>
+      <p style="font-size: 9px; color: var(--text-muted); letter-spacing: 0.1em; margin: 0 0 20px 0; text-transform: uppercase;">Set up your profile</p>
+
+      <div class="intro-step"><span class="intro-step-num">01</span> Upload your profile picture</div>
+      <div class="intro-step"><span class="intro-step-num">02</span> Set your display name</div>
+      <div class="intro-step"><span class="intro-step-num">03</span> Link your socials (X, IG)</div>
+      <div class="intro-step"><span class="intro-step-num">04</span> Declare your MISOGI</div>
+
+      <label class="intro-checkbox">
+        <input type="checkbox" id="intro-dismiss-checkbox"> Don't show again
+      </label>
+
+      <button id="intro-begin-btn" class="intro-begin-btn">BEGIN</button>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SHARE CARD — hidden off-screen template for html2canvas
+       ================================================================ -->
+  <div id="share-card-wrap" style="position: absolute; left: -9999px; top: -9999px;">
+    <div id="share-card" style="width: 480px; height: 820px; background: #0a0a0a; border-radius: 11px; border: 15px solid #C8102E; box-shadow: inset 0 0 0 1px rgba(200,16,46,0.25); box-sizing: border-box; padding: 16px; font-family: 'Courier New', Courier, monospace; color: #F5F5F0; position: relative; overflow: hidden;">
+      <!-- Subtle grid texture -->
+      <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(245,245,240,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(245,245,240,0.03) 1px, transparent 1px); background-size: 32px 32px; border-radius: 0;"></div>
+
+      <div style="position: relative; z-index: 1;">
+        <!-- TOP BAR: Logo + Rank name + HP (pieces count) -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="brand_assets/RBG_MAIN.png" style="width: 20px; height: 20px;">
+            <span id="card-rank-en" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 13px; color: #C8102E; text-transform: uppercase; letter-spacing: 0.08em;">INITIATE</span>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 4px;">
+            <span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.1em;">HP</span>
+            <span id="card-hp" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 18px; color: #F5F5F0; font-weight: 400;">—</span>
+          </div>
+        </div>
+
+        <!-- HERO IMAGE: Avatar as the main card art (1:1 square) -->
+        <div style="width: 100%; aspect-ratio: 1/1; border: 1px solid rgba(245,245,240,0.10); overflow: hidden; background: #111; margin-bottom: 8px; position: relative;">
+          <img id="card-avatar" style="width: 100%; height: 100%; object-fit: cover; object-position: center center;" src="">
+          <!-- Shadow overlays for depth — top and bottom vignette -->
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, rgba(10,10,10,0.8), transparent);"></div>
+          <div style="position: absolute; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(to bottom, rgba(10,10,10,0.4), transparent);"></div>
+          <!-- Rank number badge overlaid bottom-right -->
+          <div style="position: absolute; bottom: 8px; right: 8px; border: 1px solid #C8102E; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(10,10,10,0.8);">
+            <span id="card-rank-num" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 14px; color: #C8102E;">01</span>
+          </div>
+        </div>
+
+        <!-- NAME BAR: Username + Japanese rank -->
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; border-bottom: 1px solid rgba(245,245,240,0.10); padding-bottom: 8px;">
+          <span id="card-username" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 18px; color: #F5F5F0; text-transform: uppercase; letter-spacing: 0.06em;"></span>
+          <span id="card-rank-jp" style="font-size: 10px; color: rgba(245,245,240,0.38); letter-spacing: 0.1em;">入門</span>
+        </div>
+
+        <!-- STATS ROW: Three stat boxes like abilities -->
+        <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+          <div style="flex: 1; border: 1px solid rgba(245,245,240,0.10); padding: 8px; text-align: center;">
+            <span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.15em; text-transform: uppercase; display: block; margin-bottom: 4px;">Pieces</span>
+            <span id="card-pieces" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 16px; color: #C8102E; display: block;">—</span>
+          </div>
+          <div style="flex: 1; border: 1px solid rgba(245,245,240,0.10); padding: 8px; text-align: center;">
+            <span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.15em; text-transform: uppercase; display: block; margin-bottom: 4px;">Since</span>
+            <span id="card-since" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 16px; color: #F5F5F0; display: block;">—</span>
+          </div>
+          <div style="flex: 1; border: 1px solid rgba(245,245,240,0.10); padding: 8px; text-align: center;">
+            <span style="font-size: 7px; color: rgba(245,245,240,0.38); letter-spacing: 0.15em; text-transform: uppercase; display: block; margin-bottom: 4px;">Days in Dojo</span>
+            <span id="card-dojo" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 16px; color: #F5F5F0; display: block;">—</span>
+          </div>
+        </div>
+
+        <!-- MISOGI: Flavor text (like Pokédex entry) -->
+        <div id="card-misogi-block" style="margin-bottom: 10px; display: none;">
+          <p id="card-misogi" style="font-family: 'Instrument Serif', Georgia, serif; font-size: 14px; font-style: italic; color: rgba(245,245,240,0.55); line-height: 1.4; margin: 0;"></p>
+        </div>
+
+        <!-- SOCIALS -->
+        <div id="card-socials" style="font-size: 8px; color: rgba(245,245,240,0.38); letter-spacing: 0.1em; text-transform: uppercase; display: none; margin-bottom: 10px;"></div>
+
+        <!-- FOOTER: Branding + rank icon (like energy type symbol) -->
+        <div style="position: absolute; bottom: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 7px; color: rgba(245,245,240,0.18); letter-spacing: 0.2em; text-transform: uppercase;">redbean.guild — 2026</span>
+          <img id="card-rank-icon" src="brand_assets/5ranks_icons/rbg_rank_recruit.png" style="width: 24px; height: 24px; opacity: 0.35;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SHARE MODAL — rendered card preview + action buttons
+       ================================================================ -->
+  <div id="share-modal" class="share-modal">
+    <div class="share-modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <span style="font-size: 9px; font-weight: 900; letter-spacing: 0.32em; color: var(--text-tertiary); text-transform: uppercase;">Share</span>
+        <button id="share-close-btn" class="bubble-close-btn">&times;</button>
+      </div>
+      <canvas id="share-canvas" style="width: 100%; border: 1px solid var(--border-std);"></canvas>
+      <div style="display: flex; gap: 8px; margin-top: 16px;">
+        <button id="share-copy-btn" class="share-action-btn">COPY</button>
+        <button id="share-download-btn" class="share-action-btn">DOWNLOAD</button>
+        <button id="share-x-btn" class="share-action-btn accent">SHARE ON X</button>
+      </div>
     </div>
   </div>
 
@@ -1727,6 +2015,11 @@
 
         profileContent.classList.remove('hidden');
 
+        // Show intro popup for first-time visitors
+        if (!localStorage.getItem('rbg_intro_seen')) {
+          document.getElementById('intro-overlay').classList.add('open');
+        }
+
         // Load wardrobe items from Supabase and render dynamic grid
         await loadAndRenderWardrobe();
 
@@ -1768,11 +2061,9 @@
           month: 'short', year: '2-digit'
         });
 
-        // Total spend
-        const spend = currentProfile?.total_spend;
-        document.getElementById('stat-spend').textContent = spend
-          ? '$' + Number(spend).toLocaleString()
-          : '—';
+        // Days in Dojo (days since join date)
+        const daysInDojo = Math.floor((Date.now() - joinDate.getTime()) / 86400000);
+        document.getElementById('stat-dojo').textContent = daysInDojo;
 
         // --- Username ---
         usernameInput.value = currentProfile?.display_name || '';
@@ -2137,6 +2428,29 @@
       }
 
       // ================================================================
+      // INTRO POPUP — open / close / dismiss
+      // ================================================================
+      const introOverlay = document.getElementById('intro-overlay');
+      const introBeginBtn = document.getElementById('intro-begin-btn');
+      const introDismissCheckbox = document.getElementById('intro-dismiss-checkbox');
+      const introReopenBtn = document.getElementById('intro-reopen-btn');
+
+      function closeIntro() {
+        introOverlay.classList.remove('open');
+        if (introDismissCheckbox.checked) {
+          localStorage.setItem('rbg_intro_seen', '1');
+        }
+      }
+
+      introBeginBtn.addEventListener('click', closeIntro);
+      introOverlay.addEventListener('click', (e) => {
+        if (e.target === introOverlay) closeIntro();
+      });
+      introReopenBtn.addEventListener('click', () => {
+        introOverlay.classList.add('open');
+      });
+
+      // ================================================================
       // SOCIAL BUBBLE OPEN / CLOSE
       // ================================================================
       function openBubble()  { socialBubble.classList.add('open');    }
@@ -2262,7 +2576,10 @@
         });
 
         document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') closeBubble();
+          if (e.key === 'Escape') {
+            closeBubble();
+            if (introOverlay.classList.contains('open')) closeIntro();
+          }
         });
 
         // If no handle set, clicking icon link opens bubble instead
@@ -2375,71 +2692,167 @@
       });
 
       // ================================================================
-      // SHARE / DOWNLOAD — profile card actions
+      // SHARE PROFILE CARD — populate, render, export
       // ================================================================
-      const shareBtn    = document.getElementById('share-card-btn');
-      const downloadBtn = document.getElementById('download-card-btn');
+      function populateShareCard() {
+        const rankCode = currentProfile?.rank || '01';
+        const rank = RANKS[rankCode] || RANKS['01'];
 
-      // Share — copy profile URL or use Web Share API
-      shareBtn.addEventListener('click', async () => {
-        const name = currentProfile?.display_name || 'RBG Member';
-        const text = name.toUpperCase() + ' — RedBean Guild';
-        const url  = window.location.href;
+        document.getElementById('card-rank-num').textContent = rank.num;
+        document.getElementById('card-rank-en').textContent = rank.en;
+        document.getElementById('card-rank-jp').textContent = rank.jp;
+        document.getElementById('card-username').textContent = currentProfile?.display_name || 'UNNAMED';
+        document.getElementById('card-pieces').textContent = document.getElementById('stat-pieces').textContent;
+        document.getElementById('card-since').textContent = document.getElementById('stat-since').textContent;
+        document.getElementById('card-dojo').textContent = document.getElementById('stat-dojo').textContent;
 
-        if (navigator.share) {
-          try {
-            await navigator.share({ title: text, text, url });
-          } catch (e) { /* user cancelled */ }
+        // HP = pieces count (Pokémon-style)
+        document.getElementById('card-hp').textContent = document.getElementById('stat-pieces').textContent;
+
+        // Rank icon (energy type symbol in footer)
+        const rankIcon = RANK_ICONS[rankCode] || RANK_ICONS['01'];
+        document.getElementById('card-rank-icon').src = rankIcon;
+
+        // Avatar
+        const avatarImg = document.getElementById('avatar-img');
+        const cardAvatar = document.getElementById('card-avatar');
+        if (avatarImg.src && !avatarImg.classList.contains('hidden')) {
+          cardAvatar.src = avatarImg.src;
+          cardAvatar.style.display = 'block';
         } else {
-          await navigator.clipboard.writeText(url);
-          shareBtn.innerHTML = shareBtn.querySelector('svg').outerHTML + ' Copied!';
-          setTimeout(() => {
-            shareBtn.innerHTML = shareBtn.querySelector('svg')?.outerHTML ||
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share';
-          }, 1500);
+          cardAvatar.style.display = 'none';
         }
+
+        // MISOGI
+        const misogiBlock = document.getElementById('card-misogi-block');
+        if (currentProfile?.misogi) {
+          document.getElementById('card-misogi').textContent = currentProfile.misogi;
+          misogiBlock.style.display = 'block';
+        } else {
+          misogiBlock.style.display = 'none';
+        }
+
+        // Socials
+        const parts = [];
+        if (currentProfile?.x_handle) parts.push('X · @' + currentProfile.x_handle);
+        if (currentProfile?.ig_handle) parts.push('IG · @' + currentProfile.ig_handle);
+        const cardSocials = document.getElementById('card-socials');
+        if (parts.length) {
+          cardSocials.textContent = parts.join('  ·  ');
+          cardSocials.style.display = 'block';
+        } else {
+          cardSocials.style.display = 'none';
+        }
+      }
+
+      async function generateShareCard() {
+        populateShareCard();
+        const cardEl = document.getElementById('share-card');
+        const canvas = await html2canvas(cardEl, {
+          backgroundColor: '#0a0a0a',
+          scale: 2,
+          useCORS: true,
+          width: 480,
+          height: 820,
+        });
+
+        const modalCanvas = document.getElementById('share-canvas');
+        modalCanvas.width = canvas.width;
+        modalCanvas.height = canvas.height;
+        modalCanvas.getContext('2d').drawImage(canvas, 0, 0);
+
+        document.getElementById('share-modal').classList.add('open');
+      }
+
+      // Share card trigger
+      document.getElementById('share-card-btn').addEventListener('click', generateShareCard);
+
+      // Close share modal
+      document.getElementById('share-close-btn').addEventListener('click', () => {
+        document.getElementById('share-modal').classList.remove('open');
+      });
+      document.getElementById('share-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'share-modal') e.target.classList.remove('open');
       });
 
-      // Download — capture the profile card as an image using html2canvas
-      downloadBtn.addEventListener('click', async () => {
-        const card = document.querySelector('.profile-card');
-        if (!card) return;
-
-        // Temporarily hide action buttons for clean capture
-        const actions = card.querySelector('.card-actions');
-        if (actions) actions.style.display = 'none';
-
-        downloadBtn.innerHTML = downloadBtn.querySelector('svg').outerHTML + ' Wait...';
-
+      // Copy to clipboard
+      document.getElementById('share-copy-btn').addEventListener('click', async () => {
+        const canvas = document.getElementById('share-canvas');
         try {
-          // Dynamically load html2canvas if not already loaded
-          if (!window.html2canvas) {
-            await new Promise((resolve, reject) => {
-              const s = document.createElement('script');
-              s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-              s.onload = resolve;
-              s.onerror = reject;
-              document.head.appendChild(s);
-            });
-          }
-
-          const canvas = await html2canvas(card, {
-            backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-elevated').trim() || '#111111',
-            scale: 2,
-            useCORS: true,
-          });
-
-          const link = document.createElement('a');
-          link.download = (currentProfile?.display_name || 'rbg-profile').replace(/\s+/g, '-').toLowerCase() + '-card.png';
-          link.href = canvas.toDataURL('image/png');
-          link.click();
+          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+          const btn = document.getElementById('share-copy-btn');
+          btn.textContent = 'COPIED';
+          setTimeout(() => { btn.textContent = 'COPY'; }, 2000);
         } catch (err) {
-          console.error('Download failed:', err);
-        } finally {
-          if (actions) actions.style.display = '';
-          downloadBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download';
+          console.error('Copy failed:', err);
         }
       });
+
+      // Download PNG
+      document.getElementById('share-download-btn').addEventListener('click', () => {
+        const canvas = document.getElementById('share-canvas');
+        const link = document.createElement('a');
+        link.download = 'rbg-profile.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+
+      // Share on X — Web Share API with image, fallback to download + tweet intent
+      document.getElementById('share-x-btn').addEventListener('click', async () => {
+        const canvas = document.getElementById('share-canvas');
+        const name = currentProfile?.display_name || 'member';
+        const rank = (RANKS[currentProfile?.rank] || RANKS['01']).en;
+        const shareText = rank + ' — ' + name + '\n\nRedBean Guild';
+
+        // Convert canvas to File
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        const file = new File([blob], 'rbg-profile.png', { type: 'image/png' });
+
+        // Try Web Share API with file support (mobile Chrome/Safari/Edge)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ text: shareText, files: [file] });
+            return;
+          } catch (err) {
+            if (err.name === 'AbortError') return;
+          }
+        }
+
+        // Fallback: download image + open tweet intent + toast
+        const link = document.createElement('a');
+        link.download = 'rbg-profile.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        window.open(
+          'https://x.com/intent/tweet?text=' + encodeURIComponent(shareText),
+          '_blank'
+        );
+
+        showShareToast('Image downloaded — attach it to your tweet');
+      });
+
+      function showShareToast(message) {
+        const existing = document.getElementById('share-toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.id = 'share-toast';
+        toast.textContent = message;
+        Object.assign(toast.style, {
+          position: 'fixed', bottom: '24px', left: '50%',
+          transform: 'translateX(-50%)', background: '#C8102E', color: '#F5F5F0',
+          fontFamily: "'Courier New', Courier, monospace", fontSize: '10px',
+          fontWeight: '900', letterSpacing: '0.15em', textTransform: 'uppercase',
+          padding: '10px 20px', zIndex: '300', opacity: '1',
+          transition: 'opacity 0.3s ease',
+        });
+        document.body.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
 
       // ================================================================
       // START
