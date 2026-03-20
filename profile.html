@@ -224,7 +224,7 @@
       margin: 0 auto;
       padding: 78px clamp(24px, 4vw, 80px) 48px;
       display: grid;
-      grid-template-columns: clamp(240px, 22vw, 340px) 1fr;
+      grid-template-columns: clamp(280px, 28vw, 440px) 1fr;
       gap: clamp(32px, 4vw, 80px);
       align-items: start;
     }
@@ -253,8 +253,8 @@
       nav { padding: 0 16px; }
 
       /* Hero — scale down for narrow screens */
-      #username-input { font-size: 16px; }
-      #avatar-ring { width: 72px; height: 72px; }
+      #username-input { font-size: 18px; }
+      #avatar-ring { width: 88px; height: 88px; }
 
       /* Stats — tighter on mobile */
       .stats-row { gap: 0; }
@@ -275,105 +275,10 @@
     }
 
     /* ================================================================
-       PROFILE CARD — bordered container for left column
-       ================================================================ */
-    .profile-card {
-      border: 1px solid var(--accent-border);
-      background: var(--bg-elevated);
-      padding: 20px;
-      position: relative;
-    }
-
-    /* Red accent line at top of card */
-    .profile-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--accent);
-    }
-
-    /* Corner marks — top-left and bottom-right for guild aesthetic */
-    .profile-card::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 12px;
-      height: 12px;
-      border-right: 2px solid var(--accent);
-      border-bottom: 2px solid var(--accent);
-      pointer-events: none;
-    }
-
-    .card-corner-tl {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 12px;
-      height: 12px;
-      border-left: 2px solid var(--accent);
-      border-top: 2px solid var(--accent);
-      pointer-events: none;
-    }
-
-    /* Card action buttons row */
-    .card-actions {
-      display: flex;
-      gap: 6px;
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border-subtle);
-    }
-
-    .card-action-btn {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 8px;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      background: transparent;
-      border: 1px solid var(--border-std);
-      padding: 7px 10px;
-      cursor: pointer;
-      transition: color 0.15s, border-color 0.15s, background-color 0.15s;
-    }
-
-    .card-action-btn:hover {
-      color: var(--text-primary);
-      border-color: var(--accent-border);
-      background-color: var(--accent-dim);
-    }
-
-    .card-action-btn:focus-visible {
-      outline: 1px solid var(--accent);
-      outline-offset: -1px;
-    }
-
-    .card-action-btn:active {
-      color: var(--accent);
-      border-color: var(--accent);
-    }
-
-    .card-action-btn svg {
-      width: 10px;
-      height: 10px;
-      flex-shrink: 0;
-    }
-
-    /* ================================================================
        HERO BLOCK
        ================================================================ */
     .hero {
-      padding: 0 0 0;
+      padding: 24px 0 20px;
     }
 
     /* Top row: avatar + rank badge + username */
@@ -391,8 +296,8 @@
     }
 
     #avatar-ring {
-      width: 80px;
-      height: 80px;
+      width: 104px;
+      height: 104px;
       overflow: hidden;
       cursor: pointer;
       border: 1px solid var(--border-medium);
@@ -429,7 +334,7 @@
     #avatar-initials {
       font-family: 'Instrument Serif', Georgia, serif;
       font-weight: 400;
-      font-size: 26px;
+      font-size: 32px;
       color: var(--text-secondary);
     }
 
@@ -446,8 +351,8 @@
 
     /* Rank badge — design spec: 36×36px box, 1px red border, numeral centered */
     #rank-badge-box {
-      width: 34px;
-      height: 34px;
+      width: 40px;
+      height: 40px;
       border: 1px solid var(--accent);
       display: flex;
       align-items: center;
@@ -458,7 +363,7 @@
     #rank-num {
       font-family: 'Instrument Serif', Georgia, serif;
       font-weight: 400;
-      font-size: 13px;
+      font-size: 15px;
       color: var(--accent);
       letter-spacing: 0;
     }
@@ -472,8 +377,8 @@
     #username-input {
       font-family: 'Instrument Serif', Georgia, serif;
       font-weight: 400;
-      font-size: 18px;
-      letter-spacing: 0.04em;
+      font-size: 22px;
+      letter-spacing: 0.06em;
       color: var(--text-primary);
       background: transparent;
       border: none;
@@ -500,9 +405,9 @@
 
     #rank-en {
       font-family: 'Instrument Serif', Georgia, serif;
-      font-size: 16px;
+      font-size: 20px;
       font-weight: 400;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       color: var(--accent);
       text-transform: uppercase;
     }
@@ -1548,8 +1453,6 @@
 
       <!-- ══ LEFT COLUMN: profile identity ══════════════════════ -->
       <div class="left-col">
-        <div class="profile-card">
-          <div class="card-corner-tl"></div>
 
         <section class="hero">
 
@@ -1671,8 +1574,6 @@
             <p id="wallet-status" style="font-size: 9px; color: var(--text-tertiary); margin-top: 4px;"></p>
           </div>
         </div>
-
-        <button id="intro-reopen-btn" class="intro-reopen-btn">INTRO</button>
 
       </div><!-- end left-col -->
 
@@ -2690,169 +2591,6 @@
         await signOut();
         window.location.href = 'login.html';
       });
-
-      // ================================================================
-      // SHARE PROFILE CARD — populate, render, export
-      // ================================================================
-      function populateShareCard() {
-        const rankCode = currentProfile?.rank || '01';
-        const rank = RANKS[rankCode] || RANKS['01'];
-
-        document.getElementById('card-rank-num').textContent = rank.num;
-        document.getElementById('card-rank-en').textContent = rank.en;
-        document.getElementById('card-rank-jp').textContent = rank.jp;
-        document.getElementById('card-username').textContent = currentProfile?.display_name || 'UNNAMED';
-        document.getElementById('card-pieces').textContent = document.getElementById('stat-pieces').textContent;
-        document.getElementById('card-since').textContent = document.getElementById('stat-since').textContent;
-        document.getElementById('card-dojo').textContent = document.getElementById('stat-dojo').textContent;
-
-        // HP = pieces count (Pokémon-style)
-        document.getElementById('card-hp').textContent = document.getElementById('stat-pieces').textContent;
-
-        // Rank icon (energy type symbol in footer)
-        const rankIcon = RANK_ICONS[rankCode] || RANK_ICONS['01'];
-        document.getElementById('card-rank-icon').src = rankIcon;
-
-        // Avatar
-        const avatarImg = document.getElementById('avatar-img');
-        const cardAvatar = document.getElementById('card-avatar');
-        if (avatarImg.src && !avatarImg.classList.contains('hidden')) {
-          cardAvatar.src = avatarImg.src;
-          cardAvatar.style.display = 'block';
-        } else {
-          cardAvatar.style.display = 'none';
-        }
-
-        // MISOGI
-        const misogiBlock = document.getElementById('card-misogi-block');
-        if (currentProfile?.misogi) {
-          document.getElementById('card-misogi').textContent = currentProfile.misogi;
-          misogiBlock.style.display = 'block';
-        } else {
-          misogiBlock.style.display = 'none';
-        }
-
-        // Socials
-        const parts = [];
-        if (currentProfile?.x_handle) parts.push('X · @' + currentProfile.x_handle);
-        if (currentProfile?.ig_handle) parts.push('IG · @' + currentProfile.ig_handle);
-        const cardSocials = document.getElementById('card-socials');
-        if (parts.length) {
-          cardSocials.textContent = parts.join('  ·  ');
-          cardSocials.style.display = 'block';
-        } else {
-          cardSocials.style.display = 'none';
-        }
-      }
-
-      async function generateShareCard() {
-        populateShareCard();
-        const cardEl = document.getElementById('share-card');
-        const canvas = await html2canvas(cardEl, {
-          backgroundColor: '#0a0a0a',
-          scale: 2,
-          useCORS: true,
-          width: 480,
-          height: 820,
-        });
-
-        const modalCanvas = document.getElementById('share-canvas');
-        modalCanvas.width = canvas.width;
-        modalCanvas.height = canvas.height;
-        modalCanvas.getContext('2d').drawImage(canvas, 0, 0);
-
-        document.getElementById('share-modal').classList.add('open');
-      }
-
-      // Share card trigger
-      document.getElementById('share-card-btn').addEventListener('click', generateShareCard);
-
-      // Close share modal
-      document.getElementById('share-close-btn').addEventListener('click', () => {
-        document.getElementById('share-modal').classList.remove('open');
-      });
-      document.getElementById('share-modal').addEventListener('click', (e) => {
-        if (e.target.id === 'share-modal') e.target.classList.remove('open');
-      });
-
-      // Copy to clipboard
-      document.getElementById('share-copy-btn').addEventListener('click', async () => {
-        const canvas = document.getElementById('share-canvas');
-        try {
-          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-          const btn = document.getElementById('share-copy-btn');
-          btn.textContent = 'COPIED';
-          setTimeout(() => { btn.textContent = 'COPY'; }, 2000);
-        } catch (err) {
-          console.error('Copy failed:', err);
-        }
-      });
-
-      // Download PNG
-      document.getElementById('share-download-btn').addEventListener('click', () => {
-        const canvas = document.getElementById('share-canvas');
-        const link = document.createElement('a');
-        link.download = 'rbg-profile.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      });
-
-      // Share on X — Web Share API with image, fallback to download + tweet intent
-      document.getElementById('share-x-btn').addEventListener('click', async () => {
-        const canvas = document.getElementById('share-canvas');
-        const name = currentProfile?.display_name || 'member';
-        const rank = (RANKS[currentProfile?.rank] || RANKS['01']).en;
-        const shareText = rank + ' — ' + name + '\n\nRedBean Guild';
-
-        // Convert canvas to File
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-        const file = new File([blob], 'rbg-profile.png', { type: 'image/png' });
-
-        // Try Web Share API with file support (mobile Chrome/Safari/Edge)
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            await navigator.share({ text: shareText, files: [file] });
-            return;
-          } catch (err) {
-            if (err.name === 'AbortError') return;
-          }
-        }
-
-        // Fallback: download image + open tweet intent + toast
-        const link = document.createElement('a');
-        link.download = 'rbg-profile.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-
-        window.open(
-          'https://x.com/intent/tweet?text=' + encodeURIComponent(shareText),
-          '_blank'
-        );
-
-        showShareToast('Image downloaded — attach it to your tweet');
-      });
-
-      function showShareToast(message) {
-        const existing = document.getElementById('share-toast');
-        if (existing) existing.remove();
-        const toast = document.createElement('div');
-        toast.id = 'share-toast';
-        toast.textContent = message;
-        Object.assign(toast.style, {
-          position: 'fixed', bottom: '24px', left: '50%',
-          transform: 'translateX(-50%)', background: '#C8102E', color: '#F5F5F0',
-          fontFamily: "'Courier New', Courier, monospace", fontSize: '10px',
-          fontWeight: '900', letterSpacing: '0.15em', textTransform: 'uppercase',
-          padding: '10px 20px', zIndex: '300', opacity: '1',
-          transition: 'opacity 0.3s ease',
-        });
-        document.body.appendChild(toast);
-        setTimeout(() => {
-          toast.style.opacity = '0';
-          setTimeout(() => toast.remove(), 300);
-        }, 4000);
-      }
 
       // ================================================================
       // START
