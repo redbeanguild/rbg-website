@@ -162,7 +162,7 @@
       left: 0;
       right: 0;
       z-index: 40;
-      height: 22px;
+      height: 28px;
       background-color: var(--accent);
       overflow: hidden;
       display: flex;
@@ -176,11 +176,13 @@
     }
 
     .ticker-text {
-      font-size: 9px;
-      letter-spacing: 0.2em;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.15em;
       color: #F5F5F0;
       text-transform: uppercase;
-      padding-right: 40px;
+      padding-right: 60px;
     }
 
     /* ================================================================
@@ -218,21 +220,21 @@
     /* ================================================================
        PAGE LAYOUT — 2-column grid
        ================================================================ */
-    /* Account for fixed nav (56px) + ticker (22px) = 78px top offset */
+    /* Account for fixed nav (56px) + ticker (28px) = 84px top offset */
     .page-wrap {
       max-width: 100%;
       margin: 0 auto;
-      padding: 78px clamp(24px, 4vw, 80px) 48px;
+      padding: 84px clamp(24px, 4vw, 48px) 48px;
       display: grid;
-      grid-template-columns: clamp(240px, 22vw, 340px) 1fr;
-      gap: clamp(32px, 4vw, 80px);
+      grid-template-columns: clamp(340px, 32vw, 480px) 1fr;
+      gap: clamp(24px, 3vw, 48px);
       align-items: start;
     }
 
     /* Right column — sticky so it stays in view while left scrolls */
     .right-col {
       position: sticky;
-      top: 86px;
+      top: 92px;
     }
 
     /* ================================================================
@@ -242,32 +244,31 @@
       .page-wrap {
         grid-template-columns: 1fr;
         gap: 24px;
-        padding: 78px 20px 48px;
+        padding: 84px 16px 48px;
         max-width: 100%;
       }
       .right-col {
         position: static;
       }
 
-      /* Nav — tighten padding on mobile */
       nav { padding: 0 16px; }
 
-      /* Hero — scale down for narrow screens */
-      #username-input { font-size: 16px; }
-      #avatar-ring { width: 72px; height: 72px; }
+      #username-input { font-size: 28px; }
+      #avatar-ring { width: 100%; aspect-ratio: 4/5; }
 
-      /* Stats — tighter on mobile */
+      #rank-en { font-size: 16px; }
+
+      .hero-identity { gap: 8px; }
+
       .stats-row { gap: 0; }
-      .stat-value { font-size: 12px; }
-      .stat-label { font-size: 7px; }
+      .stat-value { font-size: 16px; }
+      .stat-col + .stat-col::before { font-size: 16px; margin: 0 8px; }
 
-      /* Tabs — bigger touch targets */
       .tab { padding: 14px 0; }
-
-      /* Rank rows — comfortable tap size */
       .rank-row { padding: 14px 0; }
 
-      /* Social modal — full width on mobile */
+      .wardrobe-grid { grid-template-columns: repeat(2, 1fr); }
+
       .social-card {
         max-width: calc(100vw - 32px);
         margin: 0 16px;
@@ -278,54 +279,27 @@
        PROFILE CARD — bordered container for left column
        ================================================================ */
     .profile-card {
-      border: 1px solid var(--accent-border);
-      background: var(--bg-elevated);
-      padding: 20px;
+      border: none;
+      background: transparent;
+      padding: 0;
       position: relative;
     }
 
-    /* Red accent line at top of card */
     .profile-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--accent);
+      display: none;
     }
 
-    /* Corner marks — top-left and bottom-right for guild aesthetic */
     .profile-card::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 12px;
-      height: 12px;
-      border-right: 2px solid var(--accent);
-      border-bottom: 2px solid var(--accent);
-      pointer-events: none;
+      display: none;
     }
 
     .card-corner-tl {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 12px;
-      height: 12px;
-      border-left: 2px solid var(--accent);
-      border-top: 2px solid var(--accent);
-      pointer-events: none;
+      display: none;
     }
 
-    /* Card action buttons row */
+    /* Card action buttons row — hidden in new design */
     .card-actions {
-      display: flex;
-      gap: 6px;
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border-subtle);
+      display: none;
     }
 
     .card-action-btn {
@@ -376,23 +350,23 @@
       padding: 0 0 0;
     }
 
-    /* Top row: avatar + rank badge + username */
+    /* Hero layout: stacked (avatar, then name below) */
     .hero-top {
       display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 16px;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 0;
     }
 
-    /* Avatar — 80×80px square (design spec: 80×80, 1px border, corner pip) */
+    /* Avatar — full-width large image */
     .avatar-wrap {
       position: relative;
-      flex-shrink: 0;
+      width: 100%;
     }
 
     #avatar-ring {
-      width: 80px;
-      height: 80px;
+      width: 100%;
+      aspect-ratio: 4 / 5;
       overflow: hidden;
       cursor: pointer;
       border: 1px solid var(--border-medium);
@@ -414,7 +388,7 @@
       justify-content: center;
       opacity: 0;
       transition: opacity 0.15s;
-      font-size: 8px;
+      font-size: 10px;
       font-weight: 900;
       letter-spacing: 0.2em;
       color: #F5F5F0;
@@ -429,98 +403,103 @@
     #avatar-initials {
       font-family: 'Instrument Serif', Georgia, serif;
       font-weight: 400;
-      font-size: 26px;
+      font-size: 64px;
       color: var(--text-secondary);
     }
 
-    /* Red corner pip — design spec: 8×8px bottom-right of avatar */
+    /* Red corner pip — hidden in new design */
     .avatar-pip {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 10px;
-      height: 10px;
-      background-color: var(--accent);
-      pointer-events: none;
+      display: none;
     }
 
-    /* Rank badge — design spec: 36×36px box, 1px red border, numeral centered */
+    /* Guild emblem overlay — top-right of avatar */
+    .guild-emblem {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 72px;
+      height: 72px;
+      z-index: 2;
+      pointer-events: none;
+      filter: drop-shadow(0 2px 8px rgba(200, 16, 46, 0.5));
+    }
+
+    .guild-emblem img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Rank badge — hidden in new design */
     #rank-badge-box {
-      width: 34px;
-      height: 34px;
-      border: 1px solid var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+      display: none;
     }
 
     #rank-num {
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-weight: 400;
-      font-size: 13px;
-      color: var(--accent);
-      letter-spacing: 0;
+      display: none;
     }
 
-    /* Username + rank name block */
+    /* Username + rank name block — large display below avatar */
     .hero-identity {
-      flex: 1;
-      min-width: 0;
+      width: 100%;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-top: 12px;
     }
 
     #username-input {
       font-family: 'Instrument Serif', Georgia, serif;
       font-weight: 400;
-      font-size: 18px;
-      letter-spacing: 0.04em;
+      font-size: 52px;
+      letter-spacing: 0.02em;
       color: var(--text-primary);
       background: transparent;
       border: none;
       outline: none;
-      width: 100%;
+      width: auto;
+      flex-shrink: 1;
+      min-width: 0;
       padding: 0;
-      margin-top: 2px;
+      margin-top: 0;
       text-transform: uppercase;
+      line-height: 1.1;
     }
 
     #username-input::placeholder {
-      font-size: 13px;
+      font-size: 32px;
       color: var(--text-muted);
       letter-spacing: 0.02em;
       text-transform: none;
     }
 
-    /* Rank name display under username */
+    /* Rank name display beside username */
     .rank-name-row {
       display: flex;
       align-items: baseline;
       gap: 8px;
+      flex-shrink: 0;
     }
 
     #rank-en {
       font-family: 'Instrument Serif', Georgia, serif;
-      font-size: 16px;
+      font-size: 22px;
       font-weight: 400;
       letter-spacing: 0.06em;
       color: var(--accent);
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
     #rank-jp {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      color: var(--text-muted);
+      display: none;
     }
 
     /* ================================================================
        XP BAR — 3px red fill on dark track (design spec)
        ================================================================ */
     .xp-track {
-      height: 3px;
-      background: var(--border-std);
-      margin-bottom: 16px;
+      display: none;
     }
 
     #xp-fill {
@@ -533,44 +512,50 @@
        STATS ROW — 4 columns with 1px vertical dividers (design spec)
        ================================================================ */
     .stats-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      display: flex;
+      align-items: center;
+      gap: 0;
       margin-bottom: 16px;
+      margin-top: 8px;
     }
 
     .stat-col {
-      padding: 8px 0;
+      padding: 0;
       text-align: center;
-      border-right: 1px solid var(--border-std);
+      border-right: none;
+      display: flex;
+      align-items: center;
     }
     .stat-col:first-child { text-align: left; padding-left: 0; }
     .stat-col:last-child  { border-right: none; }
 
+    /* Pipe separator between stats */
+    .stat-col + .stat-col::before {
+      content: '|';
+      display: inline-block;
+      margin: 0 12px;
+      color: var(--text-muted);
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 20px;
+    }
+
     .stat-value {
       font-family: 'Instrument Serif', Georgia, serif;
       font-weight: 400;
-      font-size: 13px;
+      font-size: 20px;
       color: var(--text-primary);
-      display: block;
-      /* First stat (pieces) gets red — assigned in HTML */
+      display: inline;
     }
 
     .stat-label {
-      font-size: 7px;
-      letter-spacing: 0.2em;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      display: block;
-      margin-top: 2px;
+      display: none;
     }
 
     /* ================================================================
        MISOGI LORE BLOCK — Courier italic, red left stripe
        ================================================================ */
     .lore-block {
-      border-left: 3px solid rgba(200, 16, 46, 0.44);
-      padding-left: 12px;
-      margin-bottom: 14px;
+      display: none;
     }
 
     .lore-label {
@@ -709,39 +694,44 @@
     .social-row {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       flex-wrap: wrap;
-      margin-top: 8px;
+      margin-top: 12px;
+      margin-bottom: 16px;
     }
 
     .social-icon {
-      width: 12px;
-      height: 12px;
+      width: 20px;
+      height: 20px;
       flex-shrink: 0;
     }
 
     .social-handle-link {
-      font-size: 9px;
-      letter-spacing: 0.1em;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
       color: var(--text-tertiary);
       text-decoration: none;
-      text-transform: uppercase;
+      text-transform: none;
       transition: color 0.15s;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-std);
+      padding: 6px 12px;
     }
-    .social-handle-link:hover  { color: var(--text-primary); }
+    .social-handle-link:hover  { color: var(--text-primary); border-color: var(--border-strong); }
     .social-handle-link:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
     .social-handle-link:active { color: var(--text-secondary); }
 
     #edit-links-btn {
-      font-size: 8px;
-      letter-spacing: 0.2em;
+      font-size: 9px;
+      letter-spacing: 0.15em;
       color: var(--accent);
       background: none;
       border: 1px solid var(--accent-border);
-      padding: 3px 7px;
+      padding: 4px 10px;
       cursor: pointer;
       font-family: inherit;
       text-transform: uppercase;
@@ -753,9 +743,7 @@
        WALLET SECTION — below social row
        ================================================================ */
     .wallet-section {
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border-subtle);
+      display: none;
     }
 
     .connect-btn {
@@ -828,66 +816,50 @@
     .wardrobe-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      /* No gap — 1px borders on cells create the grid lines */
+      gap: 4px;
     }
 
     .wardrobe-cell {
-      aspect-ratio: 1 / 1;
+      aspect-ratio: 4 / 5;
       border: 1px solid var(--border-std);
       position: relative;
       overflow: hidden;
       background-color: var(--bg-elevated);
     }
 
-    /* Owned cell — slight bg tint, red hover */
+    /* Owned cell — clean bg, hover effect */
     .wardrobe-cell.owned {
-      background-color: rgba(245, 245, 240, 0.02);
+      background-color: #FFFFFF;
       cursor: pointer;
-      transition: background-color 0.15s;
+      transition: border-color 0.15s;
     }
     .wardrobe-cell.owned:hover {
-      background-color: rgba(200, 16, 46, 0.06);
+      border-color: var(--accent);
     }
 
-    /* Locked cell — grayed out (design spec: opacity 0.25) */
+    /* Selected/active state — blue border */
+    .wardrobe-cell.selected {
+      border: 2px solid #4A90D9;
+    }
+
+    /* Locked cell — hidden in new design */
     .wardrobe-cell.locked {
-      opacity: 0.25;
-      cursor: not-allowed;
+      display: none;
     }
 
-    /* Piece number watermark — Helvetica 900, 52px, red ghost, bottom-right */
+    /* Piece number watermark — hidden in new design */
     .piece-watermark {
-      position: absolute;
-      bottom: 2px;
-      right: 4px;
-      font-family: 'Instrument Serif', Georgia, serif;
-      font-weight: 400;
-      font-size: 52px;
-      color: rgba(200, 16, 46, 0.08);
-      line-height: 1;
-      pointer-events: none;
-      user-select: none;
+      display: none;
     }
 
-    /* Drop tag — Courier 8px, muted, top-left */
+    /* Drop tag — hidden in new design */
     .drop-tag {
-      position: absolute;
-      top: 6px;
-      left: 6px;
-      font-size: 7px;
-      letter-spacing: 0.15em;
-      color: var(--text-muted);
-      text-transform: uppercase;
+      display: none;
     }
 
-    /* Piece name block — bottom gradient overlay for text contrast */
+    /* Piece name block — hidden in new design, shown on hover */
     .piece-name-block {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 8px;
-      background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
+      display: none;
     }
 
     .piece-name {
@@ -912,9 +884,10 @@
     .piece-img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      object-position: center top;
+      object-fit: contain;
+      object-position: center center;
       transition: filter 0.2s ease;
+      padding: 8px;
     }
 
     /* Hover overlay — centered product name on blurred image */
@@ -1451,23 +1424,38 @@
     }
 
     .tab {
-      padding: 10px 0;
+      padding: 14px 0;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-weight: 700;
-      font-size: 9px;
-      letter-spacing: 0.2em;
+      font-size: 13px;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       text-align: center;
       background: transparent;
       border: none;
+      border-bottom: 2px solid transparent;
       color: var(--text-tertiary);
       cursor: pointer;
-      transition: background-color 0.15s, color 0.15s;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .tab:hover {
+      color: var(--text-secondary);
+    }
+
+    .tab:focus-visible {
+      outline: 1px solid var(--accent);
+      outline-offset: -1px;
+    }
+
+    .tab:active {
+      color: var(--text-primary);
     }
 
     .tab.active {
-      background-color: var(--accent);
-      color: #F5F5F0;
+      background-color: transparent;
+      color: var(--text-primary);
+      border-bottom-color: var(--text-primary);
     }
 
     .tab-content {
@@ -1496,9 +1484,10 @@
        NAV — logo | theme toggle | HOME | SIGN OUT
        ================================================================ -->
   <nav>
-    <a href="index.html" aria-label="RedBean Guild home">
+    <a href="index.html" aria-label="RedBean Guild home" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
       <img src="brand_assets/RBG_MAIN.png" alt="RBG"
            style="width: 24px; height: 24px; animation: spin 8s linear infinite; object-fit: contain;">
+      <span style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 900; font-size: 14px; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase;">REDBEANGUILD</span>
     </a>
 
     <div style="display: flex; align-items: center; gap: 20px;">
@@ -1553,47 +1542,32 @@
 
         <section class="hero">
 
-          <!-- Top row: avatar + rank badge + identity -->
+          <!-- Avatar — large, full-width -->
           <div class="hero-top">
 
-            <!-- Avatar (80×80 square) -->
             <div class="avatar-wrap">
               <div id="avatar-ring">
                 <img id="avatar-img" class="piece-img hidden" alt="Profile photo">
-                <div id="avatar-initials" style="font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 32px; color: var(--text-secondary);">
+                <div id="avatar-initials" style="font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 64px; color: var(--text-secondary);">
                   <span id="avatar-letter"></span>
                 </div>
                 <div class="avatar-overlay">UPLOAD</div>
               </div>
-              <!-- Hidden file input — clicking avatar triggers this -->
               <input id="avatar-input" type="file" accept="image/png,image/jpeg,image/webp" class="hidden">
-              <!-- Red corner pip (design spec) -->
               <div class="avatar-pip"></div>
-              <!-- Social links below avatar -->
-              <div class="social-row">
-                <a id="x-icon-btn" href="#" class="social-handle-link" style="display: none;">
-                  <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                  <span id="x-handle-text"></span>
-                </a>
-                <a id="ig-icon-btn" href="#" class="social-handle-link" style="display: none;">
-                  <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                  <span id="ig-handle-text"></span>
-                </a>
-                <button id="edit-links-btn">ADD LINKS</button>
+              <!-- Guild emblem — red seal top-right -->
+              <div class="guild-emblem">
+                <img src="brand_assets/RBG_MAIN.png" alt="RBG Guild">
               </div>
             </div>
 
-            <!-- Rank badge (36×36 box) -->
+            <!-- Rank badge (hidden) -->
             <div id="rank-badge-box">
               <span id="rank-num">01</span>
             </div>
 
-            <!-- Identity: username + rank name -->
+            <!-- Identity: name + rank side by side -->
             <div class="hero-identity">
-              <div class="rank-name-row">
-                <span id="rank-en">INITIATE</span>
-                <span id="rank-jp">入門</span>
-              </div>
               <input
                 id="username-input"
                 type="text"
@@ -1602,24 +1576,27 @@
                 autocomplete="off"
                 spellcheck="false"
               >
+              <div class="rank-name-row">
+                <span id="rank-en">INITIATE</span>
+                <span id="rank-jp">入門</span>
+              </div>
             </div>
 
           </div><!-- end hero-top -->
 
-          <!-- XP bar (3px, full width, red fill) -->
+          <!-- XP bar (hidden) -->
           <div class="xp-track">
             <div id="xp-fill" style="width: 20%;"></div>
           </div>
 
-          <!-- Stats row (4 columns) -->
+          <!-- Stats row — inline with pipes -->
           <div class="stats-row">
+            <div class="stat-col">
+              <img src="brand_assets/RBG_MAIN.png" alt="RBG" style="width: 24px; height: 24px; object-fit: contain;">
+            </div>
             <div class="stat-col">
               <span id="stat-pieces" class="stat-value" style="color: var(--accent);">—</span>
               <span class="stat-label">Pieces</span>
-            </div>
-            <div class="stat-col">
-              <span id="stat-rank" class="stat-value">01</span>
-              <span class="stat-label">Rank</span>
             </div>
             <div class="stat-col">
               <span id="stat-since" class="stat-value">—</span>
@@ -1631,9 +1608,26 @@
             </div>
           </div>
 
-          <button id="share-card-btn" class="connect-btn" style="width: 100%; margin-top: 12px;">SHARE PROFILE →</button>
+          <!-- Social row — moved here from avatar-wrap -->
+          <div class="social-row">
+            <a id="x-icon-btn" href="#" class="social-handle-link" style="display: none;">
+              <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              <span id="x-handle-text"></span>
+            </a>
+            <a id="ig-icon-btn" href="#" class="social-handle-link" style="display: none;">
+              <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+              <span id="ig-handle-text"></span>
+            </a>
+            <button id="edit-links-btn">ADD LINKS</button>
+          </div>
+
+          <!-- Share profile button -->
+          <button id="share-card-btn" class="connect-btn" style="width: 100%; font-family: 'Courier New', Courier, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; padding: 12px 0;">SHARE PROFILE &gt;&gt;</button>
 
         </section><!-- end hero -->
+
+        <!-- Hidden stat for JS compatibility -->
+        <span id="stat-rank" class="stat-value" style="display:none;">01</span>
 
         <!-- Misogi lore block (Courier italic, 3px left red stripe) -->
         <div class="lore-block">
@@ -1672,17 +1666,17 @@
           </div>
         </div>
 
-        <button id="intro-reopen-btn" class="intro-reopen-btn">INTRO</button>
+        <button id="intro-reopen-btn" class="intro-reopen-btn" style="display: none;">INTRO</button>
 
       </div><!-- end left-col -->
 
       <!-- ══ RIGHT COLUMN: tabbed content ═════════════════════ -->
       <div class="right-col">
 
-        <!-- Tab bar: WARDROBE | RANKS | PERKS -->
+        <!-- Tab bar: WARDROBE | EMBLEMS | PERKS -->
         <div class="tab-bar">
           <button class="tab active" data-tab="wardrobe">Wardrobe</button>
-          <button class="tab"        data-tab="ranks">Ranks</button>
+          <button class="tab"        data-tab="ranks">Emblems</button>
           <button class="tab"        data-tab="perks">Perks</button>
         </div>
 
@@ -1923,7 +1917,7 @@
 
       function updateTickerContent(misogiText) {
         const content = misogiText
-          ? 'MY MISOGI: ' + misogiText.toUpperCase() + ' ——— '
+          ? 'MISOGI: ' + misogiText.toUpperCase() + ' ——— '
           : DEFAULT_TICKER;
         const spans = tickerTrack.querySelectorAll('.ticker-text');
         spans.forEach(span => { span.textContent = content; });
