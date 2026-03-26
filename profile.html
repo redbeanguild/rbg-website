@@ -222,57 +222,101 @@
        ================================================================ */
     /* Account for fixed nav (56px) + ticker (28px) = 84px top offset */
     .page-wrap {
-      max-width: 100%;
+      max-width: 1440px;
       margin: 0 auto;
-      padding: 84px clamp(24px, 4vw, 48px) 48px;
+      padding: 84px clamp(16px, 3vw, 48px) 48px;
       display: grid;
-      grid-template-columns: clamp(340px, 32vw, 480px) 1fr;
-      gap: clamp(24px, 3vw, 48px);
+      grid-template-columns: minmax(320px, 34%) 1fr;
+      gap: clamp(20px, 2.5vw, 40px);
       align-items: start;
     }
 
-    /* Right column — sticky so it stays in view while left scrolls */
+    /* Right column — sticky so wardrobe stays in view */
     .right-col {
       position: sticky;
       top: 92px;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+
+    /* Custom scrollbar for right col */
+    .right-col::-webkit-scrollbar { width: 2px; }
+    .right-col::-webkit-scrollbar-thumb { background: var(--accent); }
+
+    /* ================================================================
+       RESPONSIVE — tablet breakpoint
+       ================================================================ */
+    @media (max-width: 1024px) {
+      .page-wrap {
+        grid-template-columns: minmax(280px, 38%) 1fr;
+        gap: 20px;
+      }
+
+      #username-input { font-size: 36px; }
+      #rank-en { font-size: 18px; }
+      .guild-emblem { width: 56px; height: 56px; }
     }
 
     /* ================================================================
-       MOBILE RESPONSIVE — stack layout on small screens
+       RESPONSIVE — mobile breakpoint
        ================================================================ */
     @media (max-width: 768px) {
       .page-wrap {
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: 32px;
         padding: 84px 16px 48px;
         max-width: 100%;
       }
+
       .right-col {
         position: static;
+        max-height: none;
+        overflow-y: visible;
       }
 
       nav { padding: 0 16px; }
 
-      #username-input { font-size: 28px; }
-      #avatar-ring { width: 100%; aspect-ratio: 4/5; }
+      /* Mobile avatar — centered, 70% width */
+      .avatar-wrap { max-width: 70%; margin: 0 auto; }
 
+      #username-input { font-size: 32px; }
       #rank-en { font-size: 16px; }
 
-      .hero-identity { gap: 8px; }
+      .hero-identity {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
 
-      .stats-row { gap: 0; }
+      .stats-row { flex-wrap: wrap; }
       .stat-value { font-size: 16px; }
       .stat-col + .stat-col::before { font-size: 16px; margin: 0 8px; }
 
-      .tab { padding: 14px 0; }
+      .tab { padding: 14px 0; font-size: 11px; }
       .rank-row { padding: 14px 0; }
 
       .wardrobe-grid { grid-template-columns: repeat(2, 1fr); }
 
-      .social-card {
+      .social-row { justify-content: flex-start; }
+
+      .social-bubble-card {
         max-width: calc(100vw - 32px);
         margin: 0 16px;
       }
+    }
+
+    /* ================================================================
+       RESPONSIVE — small phone
+       ================================================================ */
+    @media (max-width: 400px) {
+      #username-input { font-size: 26px; }
+      #rank-en { font-size: 14px; }
+
+      .stats-row { margin-top: 4px; }
+      .stat-value { font-size: 14px; }
+      .stat-col + .stat-col::before { margin: 0 6px; font-size: 14px; }
+
+      .guild-emblem { width: 44px; height: 44px; top: -4px; right: -4px; }
     }
 
     /* ================================================================
@@ -366,7 +410,7 @@
 
     #avatar-ring {
       width: 100%;
-      aspect-ratio: 4 / 5;
+      aspect-ratio: 1 / 1;
       overflow: hidden;
       cursor: pointer;
       border: 1px solid var(--border-medium);
@@ -415,13 +459,14 @@
     /* Guild emblem overlay — top-right of avatar */
     .guild-emblem {
       position: absolute;
-      top: -8px;
-      right: -8px;
-      width: 72px;
-      height: 72px;
+      top: 12px;
+      right: 12px;
+      width: clamp(48px, 6vw, 72px);
+      height: clamp(48px, 6vw, 72px);
       z-index: 2;
       pointer-events: none;
-      filter: drop-shadow(0 2px 8px rgba(200, 16, 46, 0.5));
+      filter: drop-shadow(0 2px 12px rgba(200, 16, 46, 0.6));
+      animation: spin 12s linear infinite;
     }
 
     .guild-emblem img {
@@ -444,15 +489,16 @@
       width: 100%;
       display: flex;
       align-items: baseline;
-      gap: 16px;
-      margin-top: 12px;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
     }
 
     #username-input {
       font-family: 'Instrument Serif', Georgia, serif;
       font-weight: 400;
-      font-size: 52px;
-      letter-spacing: 0.02em;
+      font-size: clamp(36px, 4vw, 56px);
+      letter-spacing: -0.01em;
       color: var(--text-primary);
       background: transparent;
       border: none;
@@ -463,12 +509,12 @@
       padding: 0;
       margin-top: 0;
       text-transform: uppercase;
-      line-height: 1.1;
+      line-height: 1;
     }
 
     #username-input::placeholder {
-      font-size: 32px;
-      color: var(--text-muted);
+      font-size: clamp(20px, 3vw, 32px);
+      color: var(--text-ghost);
       letter-spacing: 0.02em;
       text-transform: none;
     }
@@ -479,16 +525,18 @@
       align-items: baseline;
       gap: 8px;
       flex-shrink: 0;
+      padding-bottom: 4px;
     }
 
     #rank-en {
       font-family: 'Instrument Serif', Georgia, serif;
-      font-size: 22px;
+      font-size: clamp(16px, 2vw, 24px);
       font-weight: 400;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       color: var(--accent);
       text-transform: uppercase;
       white-space: nowrap;
+      opacity: 0.8;
     }
 
     #rank-jp {
@@ -515,8 +563,8 @@
       display: flex;
       align-items: center;
       gap: 0;
-      margin-bottom: 16px;
-      margin-top: 8px;
+      margin-bottom: 20px;
+      margin-top: 10px;
     }
 
     .stat-col {
@@ -533,17 +581,17 @@
     .stat-col + .stat-col::before {
       content: '|';
       display: inline-block;
-      margin: 0 12px;
-      color: var(--text-muted);
+      margin: 0 clamp(8px, 1.2vw, 14px);
+      color: var(--text-ghost);
       font-family: 'Instrument Serif', Georgia, serif;
-      font-size: 20px;
+      font-size: clamp(16px, 1.8vw, 22px);
     }
 
     .stat-value {
       font-family: 'Instrument Serif', Georgia, serif;
       font-weight: 400;
-      font-size: 20px;
-      color: var(--text-primary);
+      font-size: clamp(16px, 1.8vw, 22px);
+      color: var(--text-secondary);
       display: inline;
     }
 
@@ -694,34 +742,34 @@
     .social-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
-      margin-top: 12px;
-      margin-bottom: 16px;
+      margin-top: 0;
+      margin-bottom: 20px;
     }
 
     .social-icon {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       flex-shrink: 0;
     }
 
     .social-handle-link {
       font-family: 'Courier New', Courier, monospace;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      color: var(--text-tertiary);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
       text-decoration: none;
       text-transform: none;
-      transition: color 0.15s;
+      transition: color 0.2s ease, border-color 0.2s ease;
       display: inline-flex;
       align-items: center;
       gap: 6px;
       background: var(--bg-elevated);
-      border: 1px solid var(--border-std);
+      border: 1px solid var(--border-subtle);
       padding: 6px 12px;
     }
-    .social-handle-link:hover  { color: var(--text-primary); border-color: var(--border-strong); }
+    .social-handle-link:hover  { color: var(--text-primary); border-color: var(--border-medium); }
     .social-handle-link:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
     .social-handle-link:active { color: var(--text-secondary); }
 
@@ -731,13 +779,45 @@
       color: var(--accent);
       background: none;
       border: 1px solid var(--accent-border);
-      padding: 4px 10px;
+      padding: 5px 10px;
       cursor: pointer;
       font-family: inherit;
       text-transform: uppercase;
-      transition: border-color 0.15s;
+      transition: border-color 0.2s ease, color 0.2s ease;
     }
     #edit-links-btn:hover { border-color: var(--accent); }
+    #edit-links-btn:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
+    #edit-links-btn:active { color: var(--text-primary); }
+
+    /* Share profile CTA */
+    .share-profile-btn {
+      width: 100%;
+      padding: 14px 0;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: transparent;
+      border: 1px solid var(--accent);
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .share-profile-btn:hover {
+      background: var(--accent);
+      color: #F5F5F0;
+    }
+
+    .share-profile-btn:focus-visible {
+      outline: 1px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .share-profile-btn:active {
+      opacity: 0.85;
+    }
 
     /* ================================================================
        WALLET SECTION — below social row
@@ -816,28 +896,33 @@
     .wardrobe-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 4px;
+      gap: 6px;
+      padding: 8px 0;
     }
 
     .wardrobe-cell {
-      aspect-ratio: 4 / 5;
+      aspect-ratio: 1 / 1;
       border: 1px solid var(--border-std);
       position: relative;
       overflow: hidden;
       background-color: var(--bg-elevated);
+      transition: transform 0.2s ease, border-color 0.2s ease;
     }
 
-    /* Owned cell — clean bg, hover effect */
+    /* Owned cell — clean bg, hover lift */
     .wardrobe-cell.owned {
       background-color: #FFFFFF;
       cursor: pointer;
-      transition: border-color 0.15s;
     }
     .wardrobe-cell.owned:hover {
       border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .wardrobe-cell.owned:active {
+      transform: translateY(0);
     }
 
-    /* Selected/active state — blue border */
+    /* Selected/active state — accent border */
     .wardrobe-cell.selected {
       border: 2px solid #4A90D9;
     }
@@ -886,27 +971,34 @@
       height: 100%;
       object-fit: contain;
       object-position: center center;
-      transition: filter 0.2s ease;
-      padding: 8px;
+      transition: transform 0.25s ease, filter 0.2s ease;
+      padding: 12px;
     }
 
-    /* Hover overlay — centered product name on blurred image */
+    .wardrobe-cell.owned:hover .piece-img {
+      transform: scale(1.05);
+    }
+
+    /* Hover overlay — product name at bottom */
     .piece-hover-overlay {
       position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.45);
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 8px;
+      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.25s ease;
       z-index: 2;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
     }
 
     .piece-hover-overlay span {
       font-family: 'Instrument Serif', Georgia, serif;
-      font-size: 14px;
+      font-size: 11px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: #F5F5F0;
@@ -1421,10 +1513,11 @@
       grid-template-columns: repeat(3, 1fr);
       border-bottom: 1px solid var(--border-std);
       margin-bottom: 0;
+      position: relative;
     }
 
     .tab {
-      padding: 14px 0;
+      padding: 16px 0;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-weight: 700;
       font-size: 13px;
@@ -1434,9 +1527,10 @@
       background: transparent;
       border: none;
       border-bottom: 2px solid transparent;
-      color: var(--text-tertiary);
+      color: var(--text-muted);
       cursor: pointer;
-      transition: color 0.15s, border-color 0.15s;
+      transition: color 0.2s ease;
+      position: relative;
     }
 
     .tab:hover {
@@ -1453,7 +1547,6 @@
     }
 
     .tab.active {
-      background-color: transparent;
       color: var(--text-primary);
       border-bottom-color: var(--text-primary);
     }
@@ -1622,7 +1715,7 @@
           </div>
 
           <!-- Share profile button -->
-          <button id="share-card-btn" class="connect-btn" style="width: 100%; font-family: 'Courier New', Courier, monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; padding: 12px 0;">SHARE PROFILE &gt;&gt;</button>
+          <button id="share-card-btn" class="share-profile-btn">SHARE PROFILE &gt;&gt;</button>
 
         </section><!-- end hero -->
 
