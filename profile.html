@@ -176,10 +176,10 @@
     }
 
     .ticker-text {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-weight: 900;
-      font-size: 12px;
-      letter-spacing: 0.15em;
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.18em;
       color: #F5F5F0;
       text-transform: uppercase;
       padding-right: 60px;
@@ -603,33 +603,32 @@
        MISOGI LORE BLOCK — Courier italic, red left stripe
        ================================================================ */
     .lore-block {
-      display: none;
+      border-left: 3px solid rgba(200, 16, 46, 0.35);
+      padding-left: 12px;
+      margin-top: 20px;
+      margin-bottom: 0;
     }
 
     .lore-label {
       display: block;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-weight: 900;
-      font-size: 9px;
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 700;
+      font-size: 8px;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-tertiary);
-      margin-bottom: 4px;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
     }
 
     .lore-desc {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 9px;
-      line-height: 1.5;
-      color: var(--text-muted);
-      margin: 0 0 8px 0;
+      display: none;
     }
 
     #misogi-input {
       width: 100%;
-      min-height: 40px;
+      min-height: 36px;
       font-family: 'Instrument Serif', Georgia, serif;
-      font-size: 20px;
+      font-size: 18px;
       font-style: italic;
       letter-spacing: 0.01em;
       line-height: 1.4;
@@ -643,7 +642,7 @@
     }
 
     #misogi-input::placeholder {
-      color: var(--text-muted);
+      color: var(--text-ghost);
       font-style: italic;
     }
 
@@ -670,8 +669,8 @@
     }
 
     .misogi-save-btn {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      font-weight: 900;
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 700;
       font-size: 9px;
       letter-spacing: 0.2em;
       text-transform: uppercase;
@@ -1518,10 +1517,10 @@
 
     .tab {
       padding: 16px 0;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: 'Courier New', Courier, monospace;
       font-weight: 700;
-      font-size: 13px;
-      letter-spacing: 0.18em;
+      font-size: 12px;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       text-align: center;
       background: transparent;
@@ -1580,7 +1579,7 @@
     <a href="index.html" aria-label="RedBean Guild home" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
       <img src="brand_assets/RBG_MAIN.png" alt="RBG"
            style="width: 24px; height: 24px; animation: spin 8s linear infinite; object-fit: contain;">
-      <span style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 900; font-size: 14px; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase;">REDBEANGUILD</span>
+      <span style="font-family: 'Courier New', Courier, monospace; font-weight: 700; font-size: 13px; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase;">REDBEANGUILD</span>
     </a>
 
     <div style="display: flex; align-items: center; gap: 20px;">
@@ -1761,6 +1760,7 @@
 
         <button id="intro-reopen-btn" class="intro-reopen-btn" style="display: none;">INTRO</button>
 
+        </div><!-- end profile-card -->
       </div><!-- end left-col -->
 
       <!-- ══ RIGHT COLUMN: tabbed content ═════════════════════ -->
