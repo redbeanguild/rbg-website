@@ -12,6 +12,10 @@
         "SHOPIFY_ACCESS_TOKEN": "<your-shopify-admin-api-token>",
         "MYSHOPIFY_DOMAIN": "<your-store>.myshopify.com"
       }
+    },
+    "figma": {
+      "type": "http",
+      "url": "https://mcp.figma.com/mcp"
     }
   }
 }
