@@ -719,10 +719,7 @@
         // Fetch wallet addresses
         var wallets = [];
         try {
-          var result = await sbClient
-            .from('profiles')
-            .select('wallet_address')
-            .not('wallet_address', 'is', null);
+          var result = await sbClient.rpc('get_wallet_list');
 
           if (result.error) throw result.error;
           wallets = (result.data || []).map(function(row) { return row.wallet_address; });
